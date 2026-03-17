@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">FileForge — Free Online File Converter & Compressor</title>
-<meta name="description" id="meta-desc" content="Convert and compress any file online for free. DOCX, PPTX, XLSX, PDF, MP4 to MP3, JPG to PNG, HEIC and more. 100% local, no uploads.">
+<meta name="description" id="meta-desc" content="Convert and compress any file online for free. DOCX, PPTX, XLSX, PDF, MP4 to MP3, JPG to PNG, and more. 100% local, no uploads.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- All libs run locally in the browser — no data sent to these CDNs at processing time -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -19,221 +20,162 @@
   --green:#6dff8a;
   --text:#f0f0f0;--text2:#888;--text3:#555;
   --radius:4px;--mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
-  --transition:0.15s ease;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-.wrapper{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 16px}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.wrapper{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px}
 
-/* HEADER */
-header{padding:20px 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.logo{font-family:var(--mono);font-size:1.05rem;font-weight:700;letter-spacing:-.02em;color:var(--accent)}
+header{padding:24px 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{font-family:var(--mono);font-size:1.1rem;font-weight:700;letter-spacing:-.02em;color:var(--accent)}
 .logo span{color:var(--text2);font-weight:400}
-.header-right{display:flex;gap:6px;flex-wrap:wrap}
-.badge-g{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid rgba(109,255,138,.22);padding:4px 8px;border-radius:2px;background:rgba(109,255,138,.04)}
-.badge-r{font-family:var(--mono);font-size:.58rem;color:var(--accent3);border:1px solid rgba(255,107,71,.18);padding:4px 8px;border-radius:2px;background:rgba(255,107,71,.04)}
+.header-right{display:flex;gap:8px;flex-wrap:wrap}
+.badge-g{font-family:var(--mono);font-size:.6rem;color:var(--green);border:1px solid rgba(109,255,138,.22);padding:4px 9px;border-radius:2px;background:rgba(109,255,138,.04)}
+.badge-r{font-family:var(--mono);font-size:.6rem;color:var(--accent3);border:1px solid rgba(255,107,71,.18);padding:4px 9px;border-radius:2px;background:rgba(255,107,71,.04)}
 
-/* HERO */
-.hero{padding:30px 0 18px}
-.hero-ey{font-family:var(--mono);font-size:.65rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:9px}
-.hero-ey::before{content:'';width:18px;height:1px;background:var(--accent)}
-#hero-title{font-size:clamp(1.5rem,4.5vw,2.8rem);font-weight:800;line-height:1.07;letter-spacing:-.03em;transition:all .3s ease}
+.hero{padding:38px 0 22px}
+.hero-ey{font-family:var(--mono);font-size:.67rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.hero-ey::before{content:'';width:22px;height:1px;background:var(--accent)}
+#hero-title{font-size:clamp(1.8rem,4.8vw,3rem);font-weight:800;line-height:1.07;letter-spacing:-.03em;transition:all .3s ease}
 #hero-title .hl{color:var(--accent)}
 #hero-title .hl2{color:var(--accent2)}
 #hero-title .hl3{color:var(--accent4)}
-.hero-sub{margin-top:10px;color:var(--text2);font-family:var(--mono);font-size:.7rem;max-width:540px;line-height:1.65}
+.hero-sub{margin-top:12px;color:var(--text2);font-family:var(--mono);font-size:.73rem;max-width:560px;line-height:1.65}
 
-/* PRIVACY BANNER */
-.privacy-banner{display:flex;align-items:flex-start;gap:10px;background:rgba(109,255,138,.04);border:1px solid rgba(109,255,138,.14);border-radius:var(--radius);padding:11px 14px;margin:14px 0 0}
-.privacy-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
-.privacy-text{font-family:var(--mono);font-size:.64rem;color:var(--text2);line-height:1.65}
+.privacy-banner{display:flex;align-items:flex-start;gap:11px;background:rgba(109,255,138,.04);border:1px solid rgba(109,255,138,.14);border-radius:var(--radius);padding:12px 15px;margin:16px 0 0}
+.privacy-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px}
+.privacy-text{font-family:var(--mono);font-size:.67rem;color:var(--text2);line-height:1.65}
 .privacy-text strong{color:var(--green)}
 
-/* TABS */
-.tabs{display:flex;gap:2px;margin:22px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);padding:9px 13px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--transition),border-color var(--transition);white-space:nowrap;flex-shrink:0}
+.tabs{display:flex;gap:3px;margin:24px 0 0;border-bottom:1px solid var(--border)}
+.tab{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);padding:9px 14px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .14s,border-color .14s;white-space:nowrap}
 .tab:hover{color:var(--text2)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* CARD */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-top:0}
 .panel{display:none}.panel.active{display:block}
 
-/* STATE ROW */
-.state-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.63rem;color:var(--text3);margin-bottom:14px;padding:8px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
+.state-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.65rem;color:var(--text3);margin-bottom:16px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
 .dot.live{background:var(--accent);box-shadow:0 0 6px var(--accent)}
-.dot.processing{background:var(--accent2);box-shadow:0 0 6px var(--accent2);animation:dotPulse 1s infinite}
-@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* FORMAT CATS */
-.format-cats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
-.cat-btn{font-family:var(--mono);font-size:.59rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 8px;border-radius:2px;cursor:pointer;transition:all .12s}
+/* FORMAT CATEGORIES */
+.format-cats{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.cat-btn{font-family:var(--mono);font-size:.61rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .12s}
 .cat-btn:hover,.cat-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.05)}
 
-/* CONVERSION ROW */
-.conversion-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:14px}
-@media(max-width:480px){.conversion-row{grid-template-columns:1fr;gap:6px}.swap-btn{width:100%;height:32px;transform:rotate(90deg)}.swap-btn:hover{transform:rotate(270deg)}}
-.field-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
-
-/* SELECTS & INPUTS */
-select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:9px 26px 9px 10px;border-radius:var(--radius);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:border-color var(--transition)}
+.conversion-row{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:end;margin-bottom:16px}
+.field-label{font-family:var(--mono);font-size:.6rem;color:var(--text3);letter-spacing:.09em;text-transform:uppercase;margin-bottom:6px}
+select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.76rem;padding:9px 28px 9px 11px;border-radius:var(--radius);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .13s}
 select:focus{outline:none;border-color:var(--accent)}
 select option,select optgroup{background:#1a1a1a}
-.swap-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:34px;height:36px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;flex-shrink:0;align-self:flex-end}
+.swap-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:36px;height:36px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all .2s;flex-shrink:0;align-self:flex-end}
 .swap-btn:hover{border-color:var(--accent);color:var(--accent);transform:rotate(180deg)}
 
-.size-row{display:flex;gap:8px;align-items:end;margin-bottom:12px;flex-wrap:wrap}
-.size-field{flex:1;min-width:120px}
-input[type="number"],input[type="text"]{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:9px 10px;border-radius:var(--radius);transition:border-color var(--transition)}
+.size-row{display:flex;gap:9px;align-items:end;margin-bottom:14px;flex-wrap:wrap}
+.size-field{flex:1;min-width:130px}
+input[type="number"],input[type="text"]{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.76rem;padding:9px 11px;border-radius:var(--radius);transition:border-color .13s}
 input[type="number"]:focus,input[type="text"]:focus{outline:none;border-color:var(--accent2)}
-input::placeholder{color:var(--text3)}
 
-/* UNIT GROUP */
 .unit-group{display:flex;gap:3px}
-.unit-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.63rem;padding:5px 9px;border-radius:var(--radius);cursor:pointer;transition:all .12s}
+.unit-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.65rem;padding:5px 10px;border-radius:var(--radius);cursor:pointer;transition:all .12s}
 .unit-btn.active,.unit-btn:hover{border-color:var(--accent2);color:var(--accent2)}
 
 /* QUALITY SELECTOR */
-.quality-row{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
-.quality-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
-.q-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px}
+.quality-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.quality-label{font-family:var(--mono);font-size:.6rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.q-btn{font-family:var(--mono);font-size:.62rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px}
 .q-btn:hover{border-color:var(--accent2);color:var(--accent2)}
 .q-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.06)}
-.q-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.q-dot{width:6px;height:6px;border-radius:50%}
 
-/* PRESETS */
-.presets{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
-.preset-btn{font-family:var(--mono);font-size:.58rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 8px;border-radius:2px;cursor:pointer;transition:all .11s}
+.presets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.preset-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .11s}
 .preset-btn:hover{color:var(--accent2);border-color:var(--accent2)}
 
 /* PDF TOOLS */
-.pdf-note{font-family:var(--mono);font-size:.63rem;color:var(--text2);background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.14);border-radius:var(--radius);padding:9px 12px;margin-bottom:12px;line-height:1.6}
+.pdf-note{font-family:var(--mono);font-size:.65rem;color:var(--text2);background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.14);border-radius:var(--radius);padding:9px 13px;margin-bottom:14px;line-height:1.6}
 .pdf-note b{color:var(--accent4)}
-.pdf-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:14px}
-.pdf-tool-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:11px 9px;cursor:pointer;transition:all .12s;text-align:left}
+.pdf-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px;margin-bottom:16px}
+.pdf-tool-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 10px;cursor:pointer;transition:all .12s;text-align:left}
 .pdf-tool-btn:hover{border-color:var(--accent4);background:rgba(167,139,250,.05)}
 .pdf-tool-btn.active{border-color:var(--accent4);background:rgba(167,139,250,.09)}
-.pdf-tool-icon{font-size:1.1rem;margin-bottom:4px}
-.pdf-tool-title{font-size:.74rem;font-weight:700;margin-bottom:2px;color:var(--text)}
-.pdf-tool-desc{font-family:var(--mono);font-size:.57rem;color:var(--text3);line-height:1.45}
+.pdf-tool-icon{font-size:1.15rem;margin-bottom:4px}
+.pdf-tool-title{font-size:.76rem;font-weight:700;margin-bottom:2px}
+.pdf-tool-desc{font-family:var(--mono);font-size:.59rem;color:var(--text3);line-height:1.45}
 
-/* BOTH PANEL INFO */
-.combined-info{display:flex;align-items:flex-start;gap:9px;background:rgba(71,200,255,.04);border:1px solid rgba(71,200,255,.11);border-radius:var(--radius);padding:10px 13px;margin-bottom:12px}
-.combined-info p{font-family:var(--mono);font-size:.65rem;color:var(--text2);line-height:1.55}
+.combined-info{display:flex;align-items:flex-start;gap:9px;background:rgba(71,200,255,.04);border:1px solid rgba(71,200,255,.11);border-radius:var(--radius);padding:11px 14px;margin-bottom:14px}
+.combined-info p{font-family:var(--mono);font-size:.67rem;color:var(--text2);line-height:1.55}
 .combined-info p b{color:var(--accent2)}
 
-.divider{height:1px;background:var(--border);margin:16px 0}
+.divider{height:1px;background:var(--border);margin:18px 0}
 
-/* DROPZONE */
-.dropzone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:28px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;user-select:none}
+.dropzone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:32px 22px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;user-select:none}
 .dropzone::before{content:'';position:absolute;inset:0;background:var(--accent);opacity:0;transition:opacity .18s;pointer-events:none}
 .dropzone.dragover{border-color:var(--accent)}.dropzone.dragover::before{opacity:.04}
 .dropzone:hover{border-color:var(--text3)}
-.drop-icon{font-size:1.7rem;margin-bottom:7px;display:block;opacity:.4}
-.drop-title{font-size:.88rem;font-weight:700;margin-bottom:4px}
-.drop-sub{font-family:var(--mono);font-size:.62rem;color:var(--text3)}
+.drop-icon{font-size:1.8rem;margin-bottom:8px;display:block;opacity:.45}
+.drop-title{font-size:.9rem;font-weight:700;margin-bottom:4px}
+.drop-sub{font-family:var(--mono);font-size:.65rem;color:var(--text3)}
 .drop-sub span{color:var(--accent);cursor:pointer;text-decoration:underline}
 #file-input{display:none}
 
-/* FILE LIST */
-.file-list{margin-top:10px;display:flex;flex-direction:column;gap:5px}
-.file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 11px;display:flex;align-items:center;gap:8px;animation:slideIn .17s ease;flex-wrap:nowrap}
+.file-list{margin-top:11px;display:flex;flex-direction:column;gap:6px}
+.file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;display:flex;align-items:center;gap:9px;animation:slideIn .17s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.file-ext{font-family:var(--mono);font-size:.56rem;font-weight:700;padding:3px 5px;border-radius:2px;background:var(--border);color:var(--accent);flex-shrink:0;text-transform:uppercase;min-width:36px;text-align:center}
-.file-info{flex:1;min-width:0;overflow:hidden}
-.file-name{font-size:.78rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.file-size{font-family:var(--mono);font-size:.58rem;color:var(--text3);margin-top:2px}
-.progress-wrap{margin-top:5px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px;transition:width .3s ease;width:0}
-.progress-bar.done{background:var(--green)}
-.progress-bar.error{background:var(--accent3)}
-.file-actions{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.file-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;padding:3px 5px;border-radius:2px;transition:color .11s}
+.file-ext{font-family:var(--mono);font-size:.58rem;font-weight:700;padding:3px 6px;border-radius:2px;background:var(--border);color:var(--accent);flex-shrink:0;text-transform:uppercase;min-width:38px;text-align:center}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-size{font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-top:2px}
+.progress-wrap{margin-top:4px;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent2);border-radius:1px;transition:width .22s ease;width:0}
+.file-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:2px 5px;border-radius:2px;transition:color .11s;flex-shrink:0}
 .file-remove:hover{color:var(--accent3)}
-.file-status{font-family:var(--mono);font-size:.58rem;color:var(--text3);white-space:nowrap}
+.file-status{font-family:var(--mono);font-size:.6rem;color:var(--text3);flex-shrink:0}
 .file-status.done{color:var(--green)}.file-status.error{color:var(--accent3)}
-.file-status.working{color:var(--accent2)}
-.working-spinner{display:inline-block;width:10px;height:10px;border:1.5px solid rgba(71,200,255,.3);border-top-color:var(--accent2);border-radius:50%;animation:spin .7s linear infinite;margin-right:4px;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-.size-saved{font-family:var(--mono);font-size:.58rem;color:var(--green);white-space:nowrap}
+.file-status.working{color:var(--accent2);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* ACTION ROW */
-.action-row{display:flex;gap:8px;margin-top:13px;align-items:center;flex-wrap:wrap}
-.btn-primary{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--accent);color:#000;border:none;padding:11px 20px;border-radius:var(--radius);cursor:pointer;transition:all .16s;display:flex;align-items:center;gap:6px;flex-shrink:0}
-.btn-primary:hover:not(:disabled){background:#d4eb2a;transform:translateY(-1px);box-shadow:0 5px 20px rgba(232,255,71,.16)}
-.btn-primary:active:not(:disabled){transform:translateY(0)}
+.action-row{display:flex;gap:9px;margin-top:15px;align-items:center;flex-wrap:wrap}
+.btn-primary{font-family:var(--mono);font-size:.73rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--accent);color:#000;border:none;padding:11px 22px;border-radius:var(--radius);cursor:pointer;transition:all .16s;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.btn-primary:hover{background:#d4eb2a;transform:translateY(-1px);box-shadow:0 5px 20px rgba(232,255,71,.16)}
+.btn-primary:active{transform:translateY(0)}
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-secondary{font-family:var(--mono);font-size:.65rem;color:var(--text3);border:1px solid var(--border);background:none;padding:10px 13px;border-radius:var(--radius);cursor:pointer;transition:all .11s}
+.btn-secondary{font-family:var(--mono);font-size:.67rem;color:var(--text3);border:1px solid var(--border);background:none;padding:10px 14px;border-radius:var(--radius);cursor:pointer;transition:all .11s}
 .btn-secondary:hover{color:var(--text);border-color:var(--text3)}
-.btn-dl-all{font-family:var(--mono);font-size:.65rem;color:var(--accent2);border:1px solid rgba(71,200,255,.28);background:rgba(71,200,255,.05);padding:10px 13px;border-radius:var(--radius);cursor:pointer;transition:all .11s}
+.btn-dl-all{font-family:var(--mono);font-size:.67rem;color:var(--accent2);border:1px solid rgba(71,200,255,.28);background:rgba(71,200,255,.05);padding:10px 14px;border-radius:var(--radius);cursor:pointer;transition:all .11s}
 .btn-dl-all:hover{background:rgba(71,200,255,.11)}
-.result-info{font-family:var(--mono);font-size:.63rem;color:var(--text3);flex:1;line-height:1.6;min-width:0}
+.result-info{font-family:var(--mono);font-size:.65rem;color:var(--text3);flex:1;line-height:1.6}
 .result-info b{color:var(--accent2)}
 
-.btn-dl{font-family:var(--mono);font-size:.57rem;background:rgba(109,255,138,.06);border:1px solid rgba(109,255,138,.22);color:var(--green);padding:4px 8px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-block}
+.btn-dl{font-family:var(--mono);font-size:.59rem;background:rgba(109,255,138,.06);border:1px solid rgba(109,255,138,.22);color:var(--green);padding:4px 9px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-block}
 .btn-dl:hover{background:rgba(109,255,138,.14)}
 
-/* QUICK LINKS */
-.quick-links{display:flex;gap:4px;flex-wrap:wrap;margin:12px 0 16px}
-.ql-btn{font-family:var(--mono);font-size:.56rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 7px;border-radius:2px;cursor:pointer;transition:all .11s;white-space:nowrap}
+/* CONVERSION QUICK LINKS */
+.quick-links{display:flex;gap:5px;flex-wrap:wrap;margin:14px 0 18px}
+.ql-btn{font-family:var(--mono);font-size:.58rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 8px;border-radius:2px;cursor:pointer;transition:all .11s;white-space:nowrap}
 .ql-btn:hover{border-color:var(--accent5);color:var(--accent5)}
+.ql-sep{font-family:var(--mono);font-size:.58rem;color:var(--text3);padding:4px 2px;opacity:.4}
 
-/* FEATURES */
-.features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:26px 0}
-@media(max-width:650px){.features{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:380px){.features{grid-template-columns:1fr}}
-.feature{padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
-.feature-icon{font-size:1.1rem;margin-bottom:6px}
-.feature-title{font-size:.78rem;font-weight:700;margin-bottom:4px}
-.feature-desc{font-family:var(--mono);font-size:.59rem;color:var(--text3);line-height:1.55}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin:30px 0}
+@media(max-width:700px){.features{grid-template-columns:repeat(2,1fr)}.conversion-row{grid-template-columns:1fr}}
+@media(max-width:420px){.features{grid-template-columns:1fr}}
+.feature{padding:15px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+.feature-icon{font-size:1.2rem;margin-bottom:7px}
+.feature-title{font-size:.8rem;font-weight:700;margin-bottom:4px}
+.feature-desc{font-family:var(--mono);font-size:.61rem;color:var(--text3);line-height:1.55}
 
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px}
-.footer-left{font-family:var(--mono);font-size:.57rem;color:var(--text3)}
-.supported-list{display:flex;gap:3px;flex-wrap:wrap}
-.fmt-tag{font-family:var(--mono);font-size:.54rem;color:var(--text3);border:1px solid var(--border);padding:2px 5px;border-radius:2px}
+footer{border-top:1px solid var(--border);padding:18px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.footer-left{font-family:var(--mono);font-size:.59rem;color:var(--text3)}
+.supported-list{display:flex;gap:4px;flex-wrap:wrap}
+.fmt-tag{font-family:var(--mono);font-size:.56rem;color:var(--text3);border:1px solid var(--border);padding:2px 6px;border-radius:2px}
 
-/* TOAST */
-.toast{position:fixed;bottom:16px;right:16px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.67rem;padding:10px 14px;border-radius:var(--radius);z-index:9999;transform:translateY(70px);opacity:0;transition:all .26s ease;max-width:280px;line-height:1.5;pointer-events:none}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.69rem;padding:11px 15px;border-radius:var(--radius);z-index:9999;transform:translateY(70px);opacity:0;transition:all .26s ease;max-width:290px;line-height:1.5}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{border-color:rgba(109,255,138,.38);color:var(--green)}
 .toast.error{border-color:rgba(255,107,71,.32);color:var(--accent3)}
 .toast.info{border-color:rgba(71,200,255,.32);color:var(--accent2)}
-
-/* HEIC NOTE */
-.heic-note{font-family:var(--mono);font-size:.62rem;color:var(--accent5);background:rgba(251,146,60,.05);border:1px solid rgba(251,146,60,.2);border-radius:var(--radius);padding:8px 11px;margin-bottom:12px;display:none;line-height:1.6}
-
-/* PROGRESS OVERLAY */
-.global-progress{display:none;align-items:center;gap:10px;font-family:var(--mono);font-size:.62rem;color:var(--accent2);margin-top:8px;padding:8px 11px;background:rgba(71,200,255,.04);border:1px solid rgba(71,200,255,.11);border-radius:var(--radius)}
-.global-progress.show{display:flex}
-.global-progress-bar-wrap{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.global-progress-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));width:0;transition:width .3s ease;border-radius:2px}
-
-/* SUPPORTED NOTICE */
-.unsupported-note{display:none;font-family:var(--mono);font-size:.62rem;color:var(--accent3);background:rgba(255,107,71,.04);border:1px solid rgba(255,107,71,.18);border-radius:var(--radius);padding:8px 11px;margin-bottom:12px;line-height:1.6}
-.unsupported-note.show{display:block}
-
-/* COMPRESS SUPPORTED LIST */
-.compress-supported{font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-bottom:10px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);line-height:1.7}
-.compress-supported b{color:var(--accent2)}
-
-/* RESPONSIVE TWEAKS */
-@media(max-width:600px){
-  .card{padding:14px}
-  .pdf-tools{grid-template-columns:repeat(2,1fr)}
-  .action-row{gap:6px}
-  .btn-primary{padding:10px 16px;font-size:.66rem}
-  .result-info{font-size:.58rem}
-}
-@media(max-width:380px){
-  .pdf-tools{grid-template-columns:1fr}
-  header{flex-direction:column;align-items:flex-start}
-  .header-right{width:100%}
-}
 </style>
 </head>
 <body>
@@ -250,7 +192,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 <section class="hero">
   <div class="hero-ey">Free File Tools</div>
   <h1 id="hero-title"><span class="hl">ANY</span> → <span class="hl2">ANY</span><br>File Converter</h1>
-  <p class="hero-sub" id="hero-sub">Convert DOCX, PPTX, XLSX, PDF, images, audio, video, HEIC and more — entirely in your browser. Zero uploads, zero tracking.</p>
+  <p class="hero-sub" id="hero-sub">Convert DOCX, PPTX, XLSX, PDF, images, audio, video and more — entirely in your browser. Zero uploads, zero tracking.</p>
 </section>
 
 <div class="privacy-banner">
@@ -270,26 +212,23 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 <div class="card">
 
   <div class="state-row">
-    <div class="dot live" id="state-dot"></div>
+    <div class="dot live"></div>
     <span id="state-label">Select options then drop your files below</span>
   </div>
 
-  <!-- QUICK LINKS -->
+  <!-- QUICK CONVERSION LINKS -->
   <div class="quick-links" id="quick-links">
-    <span style="font-family:var(--mono);font-size:.57rem;color:var(--text3);padding:3px 0;flex-shrink:0">Popular:</span>
+    <span style="font-family:var(--mono);font-size:.59rem;color:var(--text3);padding:4px 0;flex-shrink:0">Popular:</span>
     <button class="ql-btn" onclick="quickSet('mp4','mp3')">MP4→MP3</button>
     <button class="ql-btn" onclick="quickSet('jpg','png')">JPG→PNG</button>
     <button class="ql-btn" onclick="quickSet('jpg','webp')">JPG→WebP</button>
     <button class="ql-btn" onclick="quickSet('png','jpg')">PNG→JPG</button>
-    <button class="ql-btn" onclick="quickSet('heic','jpg')">HEIC→JPG</button>
-    <button class="ql-btn" onclick="quickSet('heic','png')">HEIC→PNG</button>
-    <button class="ql-btn" onclick="quickSet('mov','mp4')">MOV→MP4</button>
-    <button class="ql-btn" onclick="quickSet('mov','mp3')">MOV→MP3</button>
     <button class="ql-btn" onclick="quickSet('docx','pdf')">DOCX→PDF</button>
     <button class="ql-btn" onclick="quickSet('pptx','pdf')">PPTX→PDF</button>
     <button class="ql-btn" onclick="quickSet('xlsx','csv')">XLSX→CSV</button>
     <button class="ql-btn" onclick="quickSet('xlsx','json')">XLSX→JSON</button>
     <button class="ql-btn" onclick="quickSet('pdf','txt')">PDF→TXT</button>
+    <button class="ql-btn" onclick="quickSet('txt','pdf')">TXT→PDF</button>
     <button class="ql-btn" onclick="quickSet('csv','json')">CSV→JSON</button>
     <button class="ql-btn" onclick="quickSet('json','csv')">JSON→CSV</button>
   </div>
@@ -305,16 +244,12 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       <button class="cat-btn" onclick="filterCat('doc',this)">📝 Document</button>
       <button class="cat-btn" onclick="filterCat('data',this)">⚙ Data</button>
     </div>
-    <div id="heic-note-convert" class="heic-note">
-      ⚠ HEIC conversion uses a browser-based decoder. Results may vary by browser. Chrome/Edge recommended.
-    </div>
-    <div id="unsupported-note" class="unsupported-note"></div>
     <div class="conversion-row">
       <div>
         <div class="field-label">From Format</div>
         <select id="sel-from" onchange="onFromChange('sel-from','sel-to')"></select>
       </div>
-      <button class="swap-btn" onclick="swapFormats('sel-from','sel-to')" title="Swap formats">⇄</button>
+      <button class="swap-btn" onclick="swapFormats('sel-from','sel-to')">⇄</button>
       <div>
         <div class="field-label">To Format</div>
         <select id="sel-to" onchange="refreshUI()"></select>
@@ -324,9 +259,6 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
   <!-- ===== COMPRESS PANEL ===== -->
   <div class="panel" id="panel-compress">
-    <div class="compress-supported">
-      <b>Supported types:</b> Images (JPG, PNG, WEBP, GIF, BMP) · PDF · Office (DOCX, PPTX, XLSX)
-    </div>
     <div class="quality-row">
       <span class="quality-label">Clarity Priority:</span>
       <button class="q-btn active" id="q-max" onclick="setQuality('max',this)"><span class="q-dot" style="background:#6dff8a"></span>Max Quality</button>
@@ -347,7 +279,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </div>
     </div>
     <div class="presets">
-      <span style="font-family:var(--mono);font-size:.57rem;color:var(--text3);padding:4px 0;margin-right:3px">Quick:</span>
+      <span style="font-family:var(--mono);font-size:.59rem;color:var(--text3);padding:4px 0;margin-right:3px">Quick:</span>
       <button class="preset-btn" onclick="setPreset(50,'KB','size-val','KB')">50 KB</button>
       <button class="preset-btn" onclick="setPreset(100,'KB','size-val','KB')">100 KB</button>
       <button class="preset-btn" onclick="setPreset(200,'KB','size-val','KB')">200 KB</button>
@@ -363,20 +295,20 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   <!-- ===== PDF PANEL ===== -->
   <div class="panel" id="panel-pdf">
     <div class="pdf-note">
-      <b>100% local PDF processing</b> — PDF-lib &amp; PDF.js run entirely in your browser.
+      <b>100% local PDF processing</b> — PDF-lib &amp; PDF.js run entirely in your browser. Nothing uploaded.
     </div>
     <div class="pdf-tools">
       <button class="pdf-tool-btn active" id="pt-compress"  onclick="setPdfTool('compress',this)">
-        <div class="pdf-tool-icon">⊟</div><div class="pdf-tool-title">Compress</div>
-        <div class="pdf-tool-desc">Reduce PDF file size</div>
+        <div class="pdf-tool-icon">⊟</div><div class="pdf-tool-title">Compress PDF</div>
+        <div class="pdf-tool-desc">Reduce size with object streams</div>
       </button>
       <button class="pdf-tool-btn" id="pt-merge" onclick="setPdfTool('merge',this)">
         <div class="pdf-tool-icon">⊕</div><div class="pdf-tool-title">Merge PDFs</div>
-        <div class="pdf-tool-desc">Combine multiple PDFs</div>
+        <div class="pdf-tool-desc">Combine multiple PDFs into one</div>
       </button>
       <button class="pdf-tool-btn" id="pt-split" onclick="setPdfTool('split',this)">
         <div class="pdf-tool-icon">⊘</div><div class="pdf-tool-title">Split PDF</div>
-        <div class="pdf-tool-desc">Each page → PDF</div>
+        <div class="pdf-tool-desc">Each page → separate PDF</div>
       </button>
       <button class="pdf-tool-btn" id="pt-rotate" onclick="setPdfTool('rotate',this)">
         <div class="pdf-tool-icon">↻</div><div class="pdf-tool-title">Rotate Pages</div>
@@ -384,7 +316,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </button>
       <button class="pdf-tool-btn" id="pt-toimg" onclick="setPdfTool('toimg',this)">
         <div class="pdf-tool-icon">🖼</div><div class="pdf-tool-title">PDF → Images</div>
-        <div class="pdf-tool-desc">Each page as PNG (ZIP)</div>
+        <div class="pdf-tool-desc">Each page as PNG</div>
       </button>
       <button class="pdf-tool-btn" id="pt-topdf" onclick="setPdfTool('topdf',this)">
         <div class="pdf-tool-icon">📄</div><div class="pdf-tool-title">Images → PDF</div>
@@ -395,15 +327,15 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
         <div class="pdf-tool-desc">Get plain text from PDF</div>
       </button>
       <button class="pdf-tool-btn" id="pt-watermark" onclick="setPdfTool('watermark',this)">
-        <div class="pdf-tool-icon">💧</div><div class="pdf-tool-title">Watermark</div>
+        <div class="pdf-tool-icon">💧</div><div class="pdf-tool-title">Add Watermark</div>
         <div class="pdf-tool-desc">Stamp text on every page</div>
       </button>
     </div>
-    <div id="watermark-opts" style="display:none;margin-bottom:12px">
+    <div id="watermark-opts" style="display:none;margin-bottom:13px">
       <div class="field-label">Watermark Text</div>
       <input type="text" id="watermark-text" placeholder="e.g. CONFIDENTIAL">
     </div>
-    <div id="rotate-opts" style="display:none;margin-bottom:12px">
+    <div id="rotate-opts" style="display:none;margin-bottom:13px">
       <div class="field-label">Rotation Angle</div>
       <div class="unit-group">
         <button class="unit-btn active" id="rot-90"  onclick="setRot(90)">90°</button>
@@ -416,7 +348,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   <!-- ===== BOTH PANEL ===== -->
   <div class="panel" id="panel-both">
     <div class="combined-info">
-      <div style="font-size:1rem;flex-shrink:0">✦</div>
+      <div style="font-size:1.05rem;flex-shrink:0">✦</div>
       <p>Convert format <b>AND</b> reduce file size in one step — e.g. JPG → WebP under 200 KB.</p>
     </div>
     <div class="conversion-row">
@@ -450,7 +382,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </div>
     </div>
     <div class="presets">
-      <span style="font-family:var(--mono);font-size:.57rem;color:var(--text3);padding:4px 0;margin-right:3px">Quick:</span>
+      <span style="font-family:var(--mono);font-size:.59rem;color:var(--text3);padding:4px 0;margin-right:3px">Quick:</span>
       <button class="preset-btn" onclick="setPreset(100,'KB','size-val-b','KB')">100 KB</button>
       <button class="preset-btn" onclick="setPreset(200,'KB','size-val-b','KB')">200 KB</button>
       <button class="preset-btn" onclick="setPreset(400,'KB','size-val-b','KB')">400 KB</button>
@@ -472,17 +404,8 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
   <div class="file-list" id="file-list"></div>
 
-  <div class="global-progress" id="global-progress">
-    <span id="global-progress-text">Processing…</span>
-    <div class="global-progress-bar-wrap">
-      <div class="global-progress-bar" id="global-progress-bar"></div>
-    </div>
-    <span id="global-progress-count">0/0</span>
-  </div>
-
   <div class="action-row">
     <button class="btn-primary" id="btn-go" onclick="startConversion()" disabled>
-      <span id="btn-spinner" style="display:none" class="working-spinner"></span>
       <span id="btn-text">▶ Convert</span>
     </button>
     <button class="btn-secondary" onclick="clearAll()">Clear All</button>
@@ -499,13 +422,13 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   </div>
   <div class="feature">
     <div class="feature-icon">📑</div>
-    <div class="feature-title">Office + HEIC</div>
-    <div class="feature-desc">DOCX, PPTX, XLSX, HEIC, MOV — convert to PDF, images, audio and more.</div>
+    <div class="feature-title">Office Files</div>
+    <div class="feature-desc">DOCX, PPTX, XLSX — convert to PDF, text, HTML, CSV, JSON and more.</div>
   </div>
   <div class="feature">
     <div class="feature-icon">🎯</div>
     <div class="feature-title">Smart Compress</div>
-    <div class="feature-desc">Quality-first compression for images, PDF, and office files.</div>
+    <div class="feature-desc">Quality-first compression — adjusts quality before dimensions. Best clarity at target size.</div>
   </div>
   <div class="feature">
     <div class="feature-icon">⚡</div>
@@ -517,13 +440,12 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 <footer>
   <div class="footer-left">© FileForge · 100% local · No server · No tracking · No data collection</div>
   <div class="supported-list">
-    <span class="fmt-tag">JPG</span><span class="fmt-tag">PNG</span><span class="fmt-tag">WEBP</span><span class="fmt-tag">GIF</span><span class="fmt-tag">BMP</span>
-    <span class="fmt-tag">HEIC</span><span class="fmt-tag">AVIF</span>
+    <span class="fmt-tag">JPG</span><span class="fmt-tag">PNG</span><span class="fmt-tag">WEBP</span><span class="fmt-tag">SVG</span>
     <span class="fmt-tag">MP3</span><span class="fmt-tag">WAV</span><span class="fmt-tag">OGG</span>
-    <span class="fmt-tag">MP4</span><span class="fmt-tag">WEBM</span><span class="fmt-tag">MOV</span>
+    <span class="fmt-tag">MP4</span><span class="fmt-tag">WEBM</span>
     <span class="fmt-tag">PDF</span><span class="fmt-tag">DOCX</span><span class="fmt-tag">PPTX</span><span class="fmt-tag">XLSX</span>
     <span class="fmt-tag">TXT</span><span class="fmt-tag">MD</span><span class="fmt-tag">HTML</span>
-    <span class="fmt-tag">JSON</span><span class="fmt-tag">CSV</span><span class="fmt-tag">XML</span><span class="fmt-tag">YAML</span>
+    <span class="fmt-tag">JSON</span><span class="fmt-tag">CSV</span><span class="fmt-tag">XML</span>
     <span class="fmt-tag">ZIP</span>
   </div>
 </footer>
@@ -533,98 +455,90 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
 <script>
 /* ================================================================
-   PDF.JS WORKER
-================================================================ */
+   PDF.JS WORKER — CDN only (no file processing happens at CDN)
+   ================================================================ */
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; } catch(e){}
 
 /* ================================================================
    FORMAT DEFINITIONS
-================================================================ */
+   ================================================================ */
 const FORMATS = {
-  image:  { label:'🖼 Image',    fmts:['jpg','jpeg','png','webp','gif','bmp','ico','tiff','avif','svg','heic'] },
-  audio:  { label:'🎵 Audio',    fmts:['mp3','wav','ogg','flac','aac','m4a','weba'] },
+  image:  { label:'🖼 Image',    fmts:['jpg','jpeg','png','webp','svg'] },
+  audio:  { label:'🎵 Audio',    fmts:['mp3','wav','ogg','aac','m4a','weba'] },
   video:  { label:'🎬 Video',    fmts:['mp4','webm','ogv','avi','mov'] },
   office: { label:'📑 Office',   fmts:['docx','pptx','xlsx'] },
-  doc:    { label:'📝 Document', fmts:['pdf','txt','md','html','rtf'] },
-  data:   { label:'⚙ Data',     fmts:['json','csv','xml','yaml','tsv'] }
+  doc:    { label:'📝 Document', fmts:['pdf','txt','md','html'] },
+  data:   { label:'⚙ Data',     fmts:['json','csv','xml'] }
 };
 
+// Valid client-side conversion paths
 const CONV = {
-  // Images — comprehensive mapping
-  jpg:   ['png','webp','gif','bmp','jpeg','pdf'],
-  jpeg:  ['png','webp','gif','bmp','jpg','pdf'],
-  png:   ['jpg','jpeg','webp','gif','bmp','pdf'],
-  webp:  ['png','jpg','jpeg','gif','bmp','pdf'],
-  gif:   ['png','jpg','jpeg','webp','bmp','pdf'],
-  bmp:   ['png','jpg','jpeg','webp','gif','pdf'],
-  ico:   ['png','jpg','jpeg'],
-  tiff:  ['png','jpg','jpeg','webp'],
-  avif:  ['png','jpg','jpeg','webp'],
-  svg:   ['png','jpg','jpeg','webp'],
-  heic:  ['jpg','jpeg','png','webp','bmp','pdf'],   // HEIC support
+  // Images
+  jpg:['png','webp','jpeg','pdf'], jpeg:['png','webp','jpg','pdf'],
+  png:['jpg','jpeg','webp','pdf'], webp:['png','jpg','jpeg'],
+  svg:['png','jpg','jpeg','webp'],
   // Audio
   mp3:['wav','ogg','weba'], wav:['mp3','ogg','weba'],
   ogg:['mp3','wav','weba'], weba:['mp3','wav','ogg'],
-  flac:['wav','mp3','ogg'], aac:['wav','mp3','ogg'], m4a:['wav','mp3','ogg'],
-  // Video
-  mp4: ['mp3','wav','ogg'],
-  webm:['mp3','wav','ogg'],
-  ogv: ['mp3','wav','ogg'],
-  avi: ['mp3','wav'],
-  mov: ['mp4','webm','mp3','wav','ogg','aac'],       // MOV support
+  aac:['wav','mp3','ogg'], m4a:['wav','mp3','ogg'],
+  // Video → audio only (browsers cannot encode video containers)
+  mp4:['mp3','wav','ogg'], webm:['mp3','wav','ogg'],
+  ogv:['mp3','wav','ogg'], avi:['mp3','wav'], mov:['mp3','wav'],
   // Office
   docx:['pdf','txt','html','md'],
   pptx:['pdf','txt','html'],
   xlsx:['csv','json','txt','html','pdf'],
   // Document
-  pdf: ['txt','html','png'],
+  pdf: ['txt','html','png'],  // pdf→png means pdf→images
   txt: ['pdf','html','md','json'],
   md:  ['html','txt','pdf'],
   html:['txt','md','pdf'],
-  rtf: ['txt','html'],
   // Data
-  json:['csv','txt','xml','yaml','pdf'],
-  csv: ['json','txt','tsv','pdf','xlsx'],
-  xml: ['json','txt','csv'],
-  yaml:['json','txt'],
-  tsv: ['csv','json','txt']
+  json:['csv','txt','xml','pdf'],
+  csv: ['json','txt','pdf','xlsx'],
+  xml: ['json','txt']
 };
-
-// Formats that support compression
-const COMPRESS_SUPPORTED = new Set(['jpg','jpeg','png','webp','gif','bmp','pdf','docx','pptx','xlsx']);
 
 const ALL_FMTS = Object.values(FORMATS).flatMap(c=>c.fmts);
 
 /* ================================================================
    STATE
-================================================================ */
+   ================================================================ */
 let MODE = 'convert';
 let UNIT = 'KB', UNIT_B = 'KB';
-let QUALITY = 'max';
+let QUALITY = 'max';      // 'max' | 'balanced' | 'smallest'
 let QUALITY_B = 'max';
 let FILES = [];
 let PDF_TOOL = 'compress';
 let ROT_DEG = 90;
-let IS_PROCESSING = false;
 
+/* ================================================================
+   QUALITY CONFIG
+   startQ   = where quality loop begins
+   stepQ    = how much to subtract each quality iteration
+   minQ     = quality floor before switching to dimension scaling
+   scaleStep= how aggressively to shrink dimensions (closer to 1 = gentler)
+   ================================================================ */
 const QUALITY_CFG = {
-  max:      { startQ:0.95, stepQ:0.02, minQ:0.50, scaleStep:0.95 },
-  balanced: { startQ:0.85, stepQ:0.04, minQ:0.20, scaleStep:0.88 },
-  smallest: { startQ:0.75, stepQ:0.06, minQ:0.08, scaleStep:0.78 }
+  max:      { startQ: 0.95, stepQ: 0.03, minQ: 0.50, scaleStep: 0.97 },
+  balanced: { startQ: 0.90, stepQ: 0.05, minQ: 0.20, scaleStep: 0.90 },
+  smallest: { startQ: 0.85, stepQ: 0.08, minQ: 0.10, scaleStep: 0.80 }
 };
 
 /* ================================================================
-   INIT
-================================================================ */
+   INIT — reads URL params (no history API calls ever)
+   ================================================================ */
 function init() {
   buildSelects();
+
+  // Read URL params safely — NEVER call pushState/replaceState
   let from='', to='', size='', mode='';
   try {
     const p = new URLSearchParams(window.location.search);
     from = (p.get('from')||'').toLowerCase().replace(/\./g,'');
     to   = (p.get('to')  ||'').toLowerCase().replace(/\./g,'');
-    size = p.get('size') || '';
-    mode = p.get('mode') || '';
+    size  = p.get('size') || '';
+    mode  = p.get('mode') || '';
   } catch(e) {}
 
   let m = 'convert';
@@ -652,32 +566,20 @@ function init() {
 
 /* ================================================================
    QUICK SET
-================================================================ */
+   ================================================================ */
 function quickSet(from, to) {
   switchTab('convert', false);
   if (ALL_FMTS.includes(from)) {
-    // Rebuild from select ensuring 'from' is available
-    const sel = document.getElementById('sel-from');
-    let found = false;
-    for(const opt of sel.querySelectorAll('option')) { if(opt.value===from){found=true;break;} }
-    if(!found) {
-      // Reset filter to all so HEIC/MOV are visible
-      document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-      const allBtn = document.querySelector('.cat-btn');
-      if(allBtn) allBtn.classList.add('active');
-      buildSelectAll('sel-from');
-    }
     setSelVal('sel-from',from);
     buildToSel('sel-from','sel-to');
   }
   if (ALL_FMTS.includes(to)) setSelVal('sel-to',to);
   refreshUI(); checkReady();
-  updateHeicNote(from);
 }
 
 /* ================================================================
    TABS
-================================================================ */
+   ================================================================ */
 function switchTab(mode, doR=true) {
   MODE=mode;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -692,18 +594,16 @@ function switchTab(mode, doR=true) {
 
 /* ================================================================
    SELECTS
-================================================================ */
-function buildSelectAll(id) {
-  const s=document.getElementById(id); if(!s) return; s.innerHTML='';
-  Object.entries(FORMATS).forEach(([,d])=>{
-    const og=document.createElement('optgroup'); og.label=d.label;
-    d.fmts.forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f.toUpperCase();og.appendChild(o);});
-    s.appendChild(og);
-  });
-}
-
+   ================================================================ */
 function buildSelects() {
-  ['sel-from','sel-from-b'].forEach(id=>buildSelectAll(id));
+  ['sel-from','sel-from-b'].forEach(id=>{
+    const s=document.getElementById(id); if(!s) return; s.innerHTML='';
+    Object.entries(FORMATS).forEach(([,d])=>{
+      const og=document.createElement('optgroup'); og.label=d.label;
+      d.fmts.forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f.toUpperCase();og.appendChild(o);});
+      s.appendChild(og);
+    });
+  });
   buildToSel('sel-from','sel-to'); buildToSel('sel-from-b','sel-to-b');
 }
 
@@ -715,64 +615,36 @@ function buildToSel(fId, tId) {
   const opts=possible.length ? possible : (FORMATS[getCat(from)]?.fmts||ALL_FMTS).filter(f=>f!==from);
   opts.forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f.toUpperCase();tS.appendChild(o);});
   if(opts.includes(prev)) tS.value=prev;
-  else if(opts.length) tS.value=opts[0];
 }
 
-function onFromChange(fId, tId) {
-  buildToSel(fId,tId);
-  if(fId==='sel-from') updateHeicNote(document.getElementById(fId)?.value||'');
-  refreshUI(); checkReady();
-}
-
+function onFromChange(fId, tId) { buildToSel(fId,tId); refreshUI(); checkReady(); }
 function swapFormats(fId, tId) {
   const f=document.getElementById(fId), t=document.getElementById(tId);
-  if(!f||!t) return;
-  const tmpFrom=f.value, tmpTo=t.value;
-  // Check reverse is possible
-  if(CONV[tmpTo] && CONV[tmpTo].includes(tmpFrom)) {
-    buildSelectAll(fId);
-    setSelVal(fId, tmpTo);
-    buildToSel(fId, tId);
-    setSelVal(tId, tmpFrom);
-  } else {
-    toast('Reverse conversion not supported for these formats','error');
-  }
+  const tmp=f.value; setSelVal(fId,t.value); buildToSel(fId,tId); setSelVal(tId,tmp);
   refreshUI(); checkReady();
 }
-
 function setSelVal(id, v) {
   const s=document.getElementById(id); if(!s) return;
-  const opts=[...s.querySelectorAll('option')].map(o=>o.value);
-  if(opts.includes(v)) s.value=v;
+  if([...s.querySelectorAll('option')].map(o=>o.value).includes(v)) s.value=v;
 }
-
 function filterCat(cat, btn) {
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
   const s=document.getElementById('sel-from'); s.innerHTML='';
   (cat==='all' ? Object.entries(FORMATS) : [[cat,FORMATS[cat]]]).forEach(([,d])=>{
-    if(!d) return;
     const og=document.createElement('optgroup'); og.label=d.label;
     d.fmts.forEach(f=>{const o=document.createElement('option');o.value=f;o.textContent=f.toUpperCase();og.appendChild(o);});
     s.appendChild(og);
   });
-  buildToSel('sel-from','sel-to');
-  updateHeicNote(s.value||'');
-  refreshUI(); checkReady();
+  buildToSel('sel-from','sel-to'); refreshUI(); checkReady();
 }
-
 function getCat(fmt) {
   for(const [c,d] of Object.entries(FORMATS)) if(d.fmts.includes(fmt)) return c;
   return 'doc';
 }
 
-function updateHeicNote(fmt) {
-  const note = document.getElementById('heic-note-convert');
-  if(note) note.style.display = (fmt==='heic') ? 'block' : 'none';
-}
-
 /* ================================================================
    UNITS / SIZE / QUALITY
-================================================================ */
+   ================================================================ */
 function setUnit(u){UNIT=u;document.getElementById('unit-kb').classList.toggle('active',u==='KB');document.getElementById('unit-mb').classList.toggle('active',u==='MB');refreshUI();}
 function setUnitB(u){UNIT_B=u;document.getElementById('unit-kb-b').classList.toggle('active',u==='KB');document.getElementById('unit-mb-b').classList.toggle('active',u==='MB');refreshUI();}
 function setPreset(v,u,fId,uStr){document.getElementById(fId).value=v;if(fId==='size-val')setUnit(uStr);else setUnitB(uStr);refreshUI();checkReady();}
@@ -788,29 +660,30 @@ function setQualityB(q, btn) {
   btn.classList.add('active');
 }
 
-function getSizeBytes(isBoth) {
-  const ib = isBoth !== undefined ? isBoth : (MODE==='both');
-  const v=document.getElementById(ib?'size-val-b':'size-val')?.value;
-  const u=ib?UNIT_B:UNIT;
-  if(!v||isNaN(v)||parseFloat(v)<=0) return 0;
+function getSizeBytes() {
+  const iB=(MODE==='both');
+  const v=document.getElementById(iB?'size-val-b':'size-val').value;
+  const u=iB?UNIT_B:UNIT;
+  if(!v||isNaN(v)) return 0;
   return parseFloat(v)*(u==='MB'?1048576:1024);
 }
 
 /* ================================================================
    PDF TOOLS
-================================================================ */
+   ================================================================ */
 function setPdfTool(t, btn) {
   PDF_TOOL=t;
   document.querySelectorAll('.pdf-tool-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
   document.getElementById('watermark-opts').style.display=t==='watermark'?'block':'none';
   document.getElementById('rotate-opts').style.display=t==='rotate'?'block':'none';
+  checkReady();
   refreshUI(); checkReady();
 }
-function setRot(d){ROT_DEG=d;[90,180,270].forEach(r=>document.getElementById('rot-'+r)?.classList.toggle('active',r===d));}
+function setRot(d){ROT_DEG=d;[90,180,270].forEach(r=>document.getElementById('rot-'+r).classList.toggle('active',r===d));}
 
 /* ================================================================
    REFRESH UI
-================================================================ */
+   ================================================================ */
 function refreshUI() {
   const from=getFrom().toUpperCase()||'ANY', to=getTo().toUpperCase()||'ANY';
   const sb=getSizeBytes(), sl=sb?fmtSize(sb):'';
@@ -824,7 +697,7 @@ function refreshUI() {
     dropTitle=PDF_TOOL==='topdf'?'Drop images to combine into PDF':'Drop PDF files here';
   } else if(MODE==='compress'&&sl){
     heroHTML=`Compress Files<br><span class="hl2">Under ${sl}</span>`;
-    heroSub=`Reduce file size to under ${sl} with quality-first compression. Supports: Images, PDF, Office.`;
+    heroSub=`Reduce any file to under ${sl} with quality-first compression.`;
     stateLbl=`Compressing to under ${sl}`;
     dropTitle=`Drop files to compress under ${sl}`;
   } else if(MODE==='both'){
@@ -840,7 +713,7 @@ function refreshUI() {
     dropTitle=`Drop ${from} files to convert to ${to}`;
   } else {
     heroHTML=`<span class="hl">ANY</span> → <span class="hl2">ANY</span><br>File Converter`;
-    heroSub=`Convert DOCX, PPTX, XLSX, PDF, HEIC, MOV, images, audio and more. Zero uploads.`;
+    heroSub=`Convert DOCX, PPTX, XLSX, PDF, images, audio, video and more. Zero uploads.`;
     stateLbl=`Select options then drop your files below`;
   }
 
@@ -848,17 +721,6 @@ function refreshUI() {
   document.getElementById('hero-sub').textContent=heroSub;
   document.getElementById('state-label').textContent=stateLbl;
   document.getElementById('drop-title').textContent=dropTitle;
-
-  // Update unsupported note for compress
-  const unsNote = document.getElementById('unsupported-note');
-  if(MODE==='convert'){
-    const fromFmt=getFrom();
-    const toFmt=getTo();
-    if(fromFmt && toFmt && CONV[fromFmt] && !CONV[fromFmt].includes(toFmt)){
-      if(unsNote){unsNote.textContent=`⚠ ${fromFmt.toUpperCase()} → ${toFmt.toUpperCase()} is not supported in the browser.`;unsNote.classList.add('show');}
-    } else if(unsNote) unsNote.classList.remove('show');
-  } else if(unsNote) unsNote.classList.remove('show');
-
   try{
     const t=(MODE==='compress'&&sl)?`Compress Under ${sl} — FileForge`
       :(MODE==='pdf')?'PDF Tools — FileForge'
@@ -872,873 +734,207 @@ function getTo(){return MODE==='both'?(document.getElementById('sel-to-b')?.valu
 
 /* ================================================================
    FILE HANDLING
-================================================================ */
+   ================================================================ */
 function onDragOver(e){e.preventDefault();document.getElementById('dropzone').classList.add('dragover');}
 function onDragLeave(){document.getElementById('dropzone').classList.remove('dragover');}
 function onDrop(e){e.preventDefault();document.getElementById('dropzone').classList.remove('dragover');addFiles(e.dataTransfer.files);}
 
 function addFiles(list){
+  const accept=document.getElementById("file-input").accept
+  let allowed=[]
+  
+  if(accept){
+    allowed=accept.split(",").map(a=>a.replace(".","").trim())
+  }
+  
   for(const f of list){
-    const ext=f.name.split('.').pop().toLowerCase();
+    const ext=f.name.split(".").pop().toLowerCase()
+    
+    if(allowed.length && accept!=="image/*" && !allowed.includes(ext)){
+      toast("Invalid file type: "+ext,"error")
+      continue
+    }
+    
     FILES.push({
       file:f,
-      ext:ext,
-      status:'ready',
+      status:"ready",
       url:null,
       outName:null,
       outSize:null,
-      err:null,
-      progress:0
-    });
+      err:null
+    })
   }
-  renderFiles();
-  checkReady();
+  
+  renderFiles()
+  checkReady()
 }
 
-function removeFile(i){
-  // Revoke object URL to free memory
-  if(FILES[i]?.url) { try{URL.revokeObjectURL(FILES[i].url);}catch(e){} }
-  FILES.splice(i,1);
-  renderFiles();
-  checkReady();
-}
-
-function clearAll(){
-  FILES.forEach(f=>{ if(f.url){try{URL.revokeObjectURL(f.url);}catch(e){}} });
-  FILES=[];
-  renderFiles();
-  document.getElementById('result-info').textContent='';
-  document.getElementById('btn-dl-all').style.display='none';
-  document.getElementById('global-progress').classList.remove('show');
-  checkReady();
-}
+function removeFile(i){FILES.splice(i,1);renderFiles();checkReady();}
+function clearAll(){FILES=[];renderFiles();document.getElementById('result-info').textContent='';document.getElementById('btn-dl-all').style.display='none';checkReady();}
 
 function renderFiles(){
   const list=document.getElementById('file-list'); list.innerHTML='';
   FILES.forEach((f,i)=>{
-    const ext=f.ext||f.file.name.split('.').pop().toUpperCase();
-    let sizeStr='';
-    if(f.status==='done'&&f.outSize!=null){
-      const saved = f.file.size - f.outSize;
-      const pct = f.file.size>0 ? Math.round((saved/f.file.size)*100) : 0;
-      const saveTxt = saved>0 ? ` <span class="size-saved">↓${pct}% saved</span>` : '';
-      sizeStr=`${fmtSize(f.file.size)} → <b style="color:var(--accent2)">${fmtSize(f.outSize)}</b>${saveTxt}`;
-    } else {
-      sizeStr=fmtSize(f.file.size);
-    }
-
+    const ext=f.file.name.split('.').pop().toUpperCase();
+    const sz=f.outSize!=null?`${fmtSize(f.file.size)} → <b style="color:var(--accent2)">${fmtSize(f.outSize)}</b>`:fmtSize(f.file.size);
     let st='';
     if(f.status==='ready')   st=`<span class="file-status">READY</span>`;
-    if(f.status==='working') st=`<span class="file-status working"><span class="working-spinner"></span>WORKING…</span>`;
+    if(f.status==='working') st=`<span class="file-status working">WORKING…</span>`;
     if(f.status==='done')    st=`<a class="btn-dl" href="${f.url}" download="${f.outName}">↓ Download</a>`;
-    if(f.status==='error')   st=`<span class="file-status error" title="${esc(f.err||'')}">✕ ${esc((f.err||'Failed').substring(0,30))}</span>`;
-
-    const progPct = f.status==='done' ? 100 : (f.status==='error' ? 100 : f.progress||0);
-    const progClass = f.status==='done' ? 'done' : (f.status==='error' ? 'error' : '');
-
+    if(f.status==='error')   st=`<span class="file-status error" title="${esc(f.err||'')}">✕ FAILED</span>`;
     const div=document.createElement('div'); div.className='file-item'; div.id='fi-'+i;
-    div.innerHTML=`
-      <div class="file-ext">${ext.toUpperCase()}</div>
-      <div class="file-info">
-        <div class="file-name" title="${esc(f.file.name)}">${esc(f.file.name)}</div>
-        <div class="file-size">${sizeStr}</div>
-        <div class="progress-wrap"><div class="progress-bar ${progClass}" id="pb-${i}" style="width:${progPct}%"></div></div>
-      </div>
-      <div class="file-actions">
-        ${st}
-        <button class="file-remove" onclick="removeFile(${i})" title="Remove">✕</button>
-      </div>`;
+    div.innerHTML=`<div class="file-ext">${ext}</div><div class="file-info"><div class="file-name">${esc(f.file.name)}</div><div class="file-size">${sz}</div><div class="progress-wrap"><div class="progress-bar" id="pb-${i}"></div></div></div>${st}<button class="file-remove" onclick="removeFile(${i})">✕</button>`;
     list.appendChild(div);
   });
 }
-
-function setProg(i,p){
-  if(FILES[i]) FILES[i].progress=p;
-  const e=document.getElementById('pb-'+i);
-  if(e){e.style.width=p+'%';}
-}
-
-function setGlobalProgress(done, total) {
-  const gp = document.getElementById('global-progress');
-  const gpb = document.getElementById('global-progress-bar');
-  const gpt = document.getElementById('global-progress-text');
-  const gpc = document.getElementById('global-progress-count');
-  if(total===0){gp.classList.remove('show');return;}
-  gp.classList.add('show');
-  const pct = Math.round((done/total)*100);
-  gpb.style.width=pct+'%';
-  gpc.textContent=`${done}/${total}`;
-  gpt.textContent=done<total?'Processing files…':'Done!';
-}
-
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function setProg(i,p){const e=document.getElementById('pb-'+i);if(e)e.style.width=p+'%';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 /* ================================================================
-   CHECK READY
-================================================================ */
+   CHECKREADY
+   ================================================================ */
 function checkReady(){
-  if(IS_PROCESSING){
-    document.getElementById('btn-go').disabled=true;
-    return;
+  const fi=document.getElementById("file-input")
+
+  if(MODE==="convert"||MODE==="both"){
+    const from=getFrom()
+    if(from){
+      fi.accept="."+from
+    }
   }
-  let ok = FILES.length>0;
-  if(MODE==='compress') ok = ok && getSizeBytes(false)>0;
-  if(MODE==='pdf' && PDF_TOOL==='watermark'){
-    const wt=document.getElementById('watermark-text')?.value?.trim();
-    ok = ok && !!wt;
+
+  if(MODE==="compress"){
+    fi.accept=".jpg,.jpeg,.png,.webp,.pdf,.txt,.json,.csv,.html,.xml,.docx,.pptx,.xlsx"
   }
-  document.getElementById('btn-go').disabled=!ok;
+
+  if(MODE==="pdf"){
+    if(PDF_TOOL==="topdf")
+      fi.accept="image/*"
+    else
+      fi.accept=".pdf"
+  }
+
+  const ok=FILES.length>0&&((MODE==="convert"||MODE==="pdf")||getSizeBytes()>0||MODE==="both")
+
+  document.getElementById("btn-go").disabled=!ok
 }
 
-function fmtSize(b){
-  if(b==null||isNaN(b))return'?';
-  if(b<1024)return b+' B';
-  if(b<1048576)return(b/1024).toFixed(1)+' KB';
-  return(b/1048576).toFixed(2)+' MB';
-}
+function fmtSize(b){if(b==null||isNaN(b))return'?';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
 
 /* ================================================================
    MAIN CONVERSION LOOP
-================================================================ */
+   ================================================================ */
 async function startConversion(){
-  if(IS_PROCESSING) return;
-  IS_PROCESSING=true;
   document.getElementById('btn-go').disabled=true;
-  document.getElementById('btn-spinner').style.display='inline-block';
   document.getElementById('btn-dl-all').style.display='none';
   document.getElementById('result-info').textContent='';
 
-  // Update state dot
-  const dot = document.getElementById('state-dot');
-  dot.classList.remove('live'); dot.classList.add('processing');
-
-  // Batch PDF ops (merge / images→pdf)
+  // Batch PDF ops
   if(MODE==='pdf'&&(PDF_TOOL==='merge'||PDF_TOOL==='topdf')){
-    FILES.forEach(f=>{f.status='working';f.progress=30;}); renderFiles();
-    setGlobalProgress(0, FILES.length);
+    FILES.forEach(f=>{f.status='working';}); renderFiles();
     try{
       const [blob,ext]=PDF_TOOL==='merge'?await pdfMerge(FILES.map(f=>f.file)):await imagesToPdf(FILES.map(f=>f.file));
       const url=URL.createObjectURL(blob);
-      const baseName=FILES[0]?.file.name.replace(/\.[^.]+$/,'')||'fileforge';
-      FILES.forEach((f,i)=>{
-        f.url=url;
-        f.outName=(i===0?baseName+'-merged':f.file.name.replace(/\.[^.]+$/,''))+'.'+ext;
-        f.outSize=blob.size;
-        f.status='done';
-        f.progress=100;
-      });
-      renderFiles(); setGlobalProgress(FILES.length, FILES.length);
-      toast('Done! Click Download.','success');
-    }catch(err){
-      FILES.forEach(f=>{f.status='error';f.err=err.message||'Unknown error';}); renderFiles();
-      toast('Failed: '+(err.message||err),'error');
-    }
-    doneProcessing(); return;
+      FILES.forEach((f,i)=>{f.url=url;f.outName=(i===0?'fileforge-merged':f.file.name.replace(/\.[^.]+$/,''))+'.'+ext;f.outSize=blob.size;f.status='done';});
+      renderFiles(); toast('Done!','success');
+    }catch(err){FILES.forEach(f=>{f.status='error';f.err=err.message;});renderFiles();toast('Failed: '+err.message,'error');}
+    document.getElementById('btn-go').disabled=false; return;
   }
 
-  let ok=0, fail=0;
-  const total=FILES.length;
-  setGlobalProgress(0, total);
-
-  for(let i=0;i<total;i++){
-    const item=FILES[i];
-    item.status='working'; item.progress=5; renderFiles(); setProg(i,5);
-
+  let ok=0,fail=0;
+  for(let i=0;i<FILES.length;i++){
+    const item=FILES[i]; item.status='working'; renderFiles(); setProg(i,8);
     try{
       let blob=null, outExt='';
-      const fileExt=item.ext||item.file.name.split('.').pop().toLowerCase();
+      const fileExt=item.file.name.split('.').pop().toLowerCase();
 
       if(MODE==='pdf'){
-        setProg(i,20);
-        [blob,outExt]=await runPdfTool(item.file);
-        if(!blob) throw new Error('PDF processing returned empty result');
-
+        setProg(i,25); [blob,outExt]=await runPdfTool(item.file);
       } else {
         const toExt=getTo();
         outExt=(MODE==='compress')?fileExt:toExt;
 
-        // Validate conversion path
-        if(MODE!=='compress'){
-          const supported=CONV[fileExt];
-          if(!supported){
-            throw new Error(`${fileExt.toUpperCase()} conversion not supported`);
-          }
-          if(!supported.includes(toExt)){
-            throw new Error(`${fileExt.toUpperCase()} → ${toExt.toUpperCase()} not supported in browser`);
-          }
-        } else {
-          // Compress mode: only supported types
-          if(!COMPRESS_SUPPORTED.has(fileExt)){
-            throw new Error(`Compression not supported for ${fileExt.toUpperCase()} files`);
+        if(MODE!=="compress"){
+          if(!CONV[fileExt] || !CONV[fileExt].includes(toExt)){
+            throw new Error(fileExt+" → "+toExt+" not supported in browser")
           }
         }
 
         setProg(i,15);
-        if(MODE==='convert'||MODE==='both'){
-          blob = await convertFile(item.file, fileExt, toExt);
-          if(!blob) throw new Error('Conversion returned no output');
-        } else {
-          blob = item.file;
-        }
-
+        if(MODE==='convert'||MODE==='both') blob=await convertFile(item.file,fileExt,toExt);
+        else blob=item.file;
         setProg(i,60);
-
-        const tb=getSizeBytes(MODE==='both');
+        const tb=getSizeBytes();
         if((MODE==='compress'||MODE==='both')&&tb>0&&blob){
           const q=MODE==='both'?QUALITY_B:QUALITY;
-          blob=await compressBlob(blob, outExt, tb, q);
+          blob=await compressBlob(blob,outExt,tb,q);
         }
       }
-
       setProg(i,95);
-
-      // Validate output
-      if(!blob || blob.size===0){
-        throw new Error('Output file is empty — conversion may have failed');
-      }
-
+      if(!blob) throw new Error('Empty result');
       item.url=URL.createObjectURL(blob);
-      item.outName=buildOutName(item.file.name, outExt);
-      item.outSize=blob.size;
-      item.status='done';
-      item.progress=100;
-      ok++;
-
-    } catch(err){
-      item.status='error';
-      item.err=(err.message||String(err)).substring(0,100);
-      item.progress=100;
-      fail++;
-      console.error('Conversion error for',item.file.name,':',err);
-    }
-
-    renderFiles();
-    setGlobalProgress(i+1, total);
+      item.outName=item.file.name.replace(/\.[^.]+$/,'')+'.'+outExt;
+      item.outSize=blob.size; item.status='done'; ok++;
+    }catch(err){item.status='error';item.err=err.message||'Unknown';fail++;}
+    setProg(i,100); renderFiles();
   }
 
-  if(FILES.filter(f=>f.status==='done').length>1){
-    document.getElementById('btn-dl-all').style.display='';
-  }
-  if(ok){
-    document.getElementById('result-info').innerHTML=`<b>${ok}</b> file${ok!==1?'s':''} ready — click ↓ Download${fail?` · ${fail} failed`:''}`;
-    toast(`${ok} file${ok!==1?'s':''} ready!`,'success');
-  }
-  if(fail&&!ok) toast(`${fail} file${fail!==1?'s':''} failed — see errors below.`,'error');
-
-  doneProcessing();
-}
-
-function doneProcessing(){
-  IS_PROCESSING=false;
-  document.getElementById('btn-spinner').style.display='none';
-  const dot = document.getElementById('state-dot');
-  dot.classList.add('live'); dot.classList.remove('processing');
-  checkReady();
-}
-
-function buildOutName(originalName, outExt){
-  const base = originalName.replace(/\.[^.]+$/,'');
-  return base + '.' + outExt;
+  document.getElementById('btn-go').disabled=false;
+  if(FILES.filter(f=>f.status==='done').length>1) document.getElementById('btn-dl-all').style.display='';
+  if(ok) {document.getElementById('result-info').innerHTML=`<b>${ok}</b> file(s) done. Click ↓ Download.`;toast(`${ok} file(s) ready!`,'success');}
+  if(fail) toast(`${fail} failed — see individual items.`,'error');
 }
 
 async function downloadAllZip(){
-  const done=FILES.filter(f=>f.status==='done');
-  if(!done.length) return;
+  const done=FILES.filter(f=>f.status==='done'); if(!done.length) return;
   toast('Building ZIP…','info');
   try{
     const zip=new JSZip();
-    for(const f of done){
-      const resp = await fetch(f.url);
-      const ab = await resp.arrayBuffer();
-      zip.file(f.outName, ab);
-    }
+    for(const f of done){zip.file(f.outName,await(await fetch(f.url)).arrayBuffer());}
     const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='fileforge-output.zip';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(a.href);},1000);
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fileforge-output.zip';a.click();
     toast('ZIP downloaded!','success');
-  }catch(e){toast('ZIP failed: '+(e.message||e),'error');}
+  }catch(e){toast('ZIP failed: '+e.message,'error');}
 }
 
 /* ================================================================
-   MAIN CONVERT DISPATCHER
-================================================================ */
-async function convertFile(file, fromExt, toExt){
+   CONVERT FILE DISPATCHER (BASE VERSION)
+   ================================================================ */
+async function convertFileBase(file, fromExt, toExt) {
   const fc=getCat(fromExt), tc=getCat(toExt);
 
-  // HEIC
-  if(fromExt==='heic') return heicToImage(file, toExt);
-
-  // Office
+  // Office → ...
   if(fromExt==='docx') return docxConvert(file, toExt);
   if(fromExt==='pptx') return pptxConvert(file, toExt);
   if(fromExt==='xlsx') return xlsxConvert(file, toExt);
 
-  // MOV → video or audio
-  if(fromExt==='mov'){
-    if(tc==='audio'||['mp3','wav','ogg','aac'].includes(toExt)) return extractAudio(file, toExt);
-    if(toExt==='mp4'||toExt==='webm') return videoReencode(file, toExt);
-  }
-
-  // Image → PDF
-  if(fc==='image' && toExt==='pdf') return imageToPdf(file, fromExt);
-
-  // Image → Image
-  if(fc==='image' && tc==='image') return imgToImg(file, toExt);
-
-  // Video/Audio → Audio
-  if(fc==='video' && tc==='audio') return extractAudio(file, toExt);
-  if((fc==='audio'||fc==='video') && tc==='audio') return audioToAudio(file, toExt);
-
-  // PDF → ...
-  if(fromExt==='pdf' && toExt==='txt')  return pdfToTxtBlob(file);
-  if(fromExt==='pdf' && toExt==='html') return pdfToHtml(file);
-  if(fromExt==='pdf' && toExt==='png')  { const [b]=await pdfToImages(file); return b; }
-
-  // Any text → PDF
+  // ... → PDF
   if(toExt==='pdf') return anyToPdf(file, fromExt);
 
+  // Image → Image
+  if(fc==='image'&&tc==='image') return imgToImg(file, toExt);
+
+  // Video/Audio → Audio
+  if(fc==='video'&&tc==='audio') return extractAudio(file, toExt);
+  if((fc==='audio'||fc==='video')&&tc==='audio') return audioToAudio(file, toExt);
+
+  // PDF → text/html/images
+  if(fromExt==='pdf'&&toExt==='txt')  {
+    const [blob]=await pdfExtractText(file);
+    return blob;
+  }
+  if(fromExt==='pdf'&&toExt==='html') return pdfToHtml(file);
+  if(fromExt==='pdf'&&toExt==='png')  {const [b,e]=await pdfToImages(file);return b;}
+
   // Data ↔ Data
-  if(fc==='data' && tc==='data') return dataToData(file, fromExt, toExt);
-  if(fc==='data' && tc==='doc')  return new Blob([await file.text()],{type:getMime(toExt)});
+  if(fc==='data'&&tc==='data') return dataToData(file, fromExt, toExt);
+  if(fc==='data'&&tc==='doc')  return new Blob([await file.text()],{type:getMime(toExt)});
 
   // Doc ↔ Doc
-  if(fc==='doc' && tc==='doc')   return docToDoc(file, fromExt, toExt);
+  if(fc==='doc'&&tc==='doc')   return docToDoc(file, fromExt, toExt);
 
-  // Fallback: treat as text
-  const text = await file.text().catch(()=>null);
-  if(text) return new Blob([text],{type:getMime(toExt)});
+  // Fallback
   return new Blob([await file.arrayBuffer()],{type:getMime(toExt)});
-}
-
-/* ================================================================
-   HEIC CONVERSION — uses canvas with image element
-   Safari natively supports HEIC; other browsers may not.
-================================================================ */
-async function heicToImage(file, toExt){
-  return new Promise((resolve, reject)=>{
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload=()=>{
-      URL.revokeObjectURL(url);
-      const canvas=document.createElement('canvas');
-      canvas.width=img.naturalWidth||img.width;
-      canvas.height=img.naturalHeight||img.height;
-      if(canvas.width===0||canvas.height===0){
-        reject(new Error('HEIC image has zero dimensions — browser may not support HEIC. Try Safari on macOS/iOS.'));
-        return;
-      }
-      const ctx=canvas.getContext('2d');
-      if(['jpg','jpeg'].includes(toExt)){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
-      ctx.drawImage(img,0,0);
-      canvas.toBlob(blob=>{
-        if(blob && blob.size>0) resolve(blob);
-        else reject(new Error('HEIC canvas export failed — browser may not support HEIC decoding'));
-      }, getMime(toExt), 0.92);
-    };
-    img.onerror=()=>{
-      URL.revokeObjectURL(url);
-      reject(new Error('Cannot load HEIC file — this browser may not support HEIC. Try Safari on macOS/iOS, or convert with a dedicated app first.'));
-    };
-    img.src=url;
-  });
-}
-
-/* ================================================================
-   VIDEO RE-ENCODE (MOV → MP4/WEBM) using MediaRecorder
-   Note: Full video re-encoding is not reliably possible in-browser.
-   We attempt a passthrough via object URL + MediaRecorder.
-================================================================ */
-async function videoReencode(file, toExt){
-  // Best-effort: return the file with new mime type
-  // True re-encoding would require FFmpeg WASM
-  const mime=getMime(toExt);
-  const ab=await file.arrayBuffer();
-  const blob=new Blob([ab],{type:mime});
-  // Test if video can be played
-  return blob;
-}
-
-/* ================================================================
-   IMAGE → PDF  (fixed, reliable)
-================================================================ */
-async function imageToPdf(file, fromExt){
-  const doc = await PDFLib.PDFDocument.create();
-  const ab = await file.arrayBuffer();
-  let img;
-  try{
-    if(['jpg','jpeg'].includes(fromExt)){
-      img = await doc.embedJpg(new Uint8Array(ab));
-    } else {
-      // Convert to PNG first via canvas
-      const pngBlob = await imgToImg(file, 'png');
-      const pngAb = await pngBlob.arrayBuffer();
-      img = await doc.embedPng(new Uint8Array(pngAb));
-    }
-  } catch(e){
-    // Fallback: try converting via canvas
-    const jpegBlob = await imgToImg(file, 'jpg');
-    const jpegAb = await jpegBlob.arrayBuffer();
-    img = await doc.embedJpg(new Uint8Array(jpegAb));
-  }
-  const page = doc.addPage([img.width, img.height]);
-  page.drawImage(img, {x:0,y:0,width:img.width,height:img.height});
-  const bytes = await doc.save();
-  return new Blob([bytes],{type:'application/pdf'});
-}
-
-/* ================================================================
-   IMAGE → IMAGE  (fixed BMP, GIF support)
-================================================================ */
-async function imgToImg(file, toExt){
-  return new Promise((resolve,reject)=>{
-    const img=new Image();
-    const url=URL.createObjectURL(file);
-    const cleanup=()=>URL.revokeObjectURL(url);
-
-    img.onload=()=>{
-      cleanup();
-      const w=img.naturalWidth||img.width;
-      const h=img.naturalHeight||img.height;
-      if(w===0||h===0){reject(new Error('Image has zero dimensions'));return;}
-
-      const canvas=document.createElement('canvas');
-      canvas.width=w; canvas.height=h;
-      const ctx=canvas.getContext('2d');
-
-      // White background for formats that don't support transparency
-      if(['jpg','jpeg','bmp','gif'].includes(toExt)){
-        ctx.fillStyle='#ffffff';
-        ctx.fillRect(0,0,w,h);
-      }
-      ctx.drawImage(img,0,0);
-
-      // GIF: canvas doesn't natively export GIF — use PNG internally, rename
-      // BMP: use image/bmp if supported, else fall back
-      let mimeOut = getMime(toExt);
-      let qualityOut = 0.92;
-
-      // Check browser BMP support
-      if(toExt==='bmp'){
-        // Try bmp first, fall back to PNG-based BMP
-        const testCanvas = document.createElement('canvas');
-        testCanvas.width=1; testCanvas.height=1;
-        testCanvas.getContext('2d').fillStyle='red';
-        testCanvas.getContext('2d').fillRect(0,0,1,1);
-        const testData = testCanvas.toDataURL('image/bmp');
-        if(!testData.startsWith('data:image/bmp')){
-          // Create BMP manually
-          const imageData = ctx.getImageData(0,0,w,h);
-          const bmpBlob = createBmpBlob(imageData, w, h);
-          if(bmpBlob){ resolve(bmpBlob); return; }
-          mimeOut = 'image/png'; // fallback
-        }
-      }
-
-      // GIF: browsers don't support encoding GIF, use PNG with .gif extension
-      if(toExt==='gif') mimeOut='image/png';
-
-      canvas.toBlob(blob=>{
-        if(blob && blob.size>0){
-          // For GIF output, just use the PNG blob (no true GIF encoding in browsers)
-          resolve(blob);
-        } else {
-          reject(new Error('Canvas export failed for '+toExt));
-        }
-      }, mimeOut, qualityOut);
-    };
-
-    img.onerror=()=>{cleanup();reject(new Error('Failed to load image: '+file.name));};
-    img.src=url;
-  });
-}
-
-/* Create a proper 24-bit BMP blob from ImageData */
-function createBmpBlob(imageData, width, height){
-  try{
-    const rowSize=Math.ceil(width*3/4)*4; // row padded to 4 bytes
-    const pixelDataSize=rowSize*height;
-    const fileSize=54+pixelDataSize;
-    const buf=new ArrayBuffer(fileSize);
-    const view=new DataView(buf);
-    const u8=new Uint8Array(buf);
-
-    // BMP Header
-    u8[0]=0x42;u8[1]=0x4D; // 'BM'
-    view.setUint32(2,fileSize,true);   // file size
-    view.setUint32(6,0,true);          // reserved
-    view.setUint32(10,54,true);        // pixel data offset
-
-    // DIB Header (BITMAPINFOHEADER)
-    view.setUint32(14,40,true);        // header size
-    view.setInt32(18,width,true);
-    view.setInt32(22,-height,true);    // negative = top-down
-    view.setUint16(26,1,true);         // color planes
-    view.setUint16(28,24,true);        // bits per pixel
-    view.setUint32(30,0,true);         // no compression
-    view.setUint32(34,pixelDataSize,true);
-    view.setInt32(38,2835,true);       // pixels per meter X
-    view.setInt32(42,2835,true);       // pixels per meter Y
-    view.setUint32(46,0,true);         // colors in table
-    view.setUint32(50,0,true);         // important colors
-
-    // Pixel data (BGR)
-    const src=imageData.data;
-    let offset=54;
-    for(let y=0;y<height;y++){
-      let rowBytes=0;
-      for(let x=0;x<width;x++){
-        const si=(y*width+x)*4;
-        u8[offset++]=src[si+2]; // B
-        u8[offset++]=src[si+1]; // G
-        u8[offset++]=src[si+0]; // R
-        rowBytes+=3;
-      }
-      // Padding
-      const pad=rowSize-(width*3);
-      for(let p=0;p<pad;p++){u8[offset++]=0;}
-    }
-    return new Blob([buf],{type:'image/bmp'});
-  }catch(e){
-    console.warn('BMP creation failed:',e);
-    return null;
-  }
-}
-
-/* ================================================================
-   COMPRESS BLOB — smart dispatcher
-================================================================ */
-async function compressBlob(blob, ext, targetBytes, quality='max'){
-  if(!blob||blob.size===0) return blob;
-
-  const cat=getCat(ext);
-
-  // Already small enough
-  if(blob.size<=targetBytes) return blob;
-
-  // Images
-  if(cat==='image'||['jpg','jpeg','png','webp','gif','bmp'].includes(ext)){
-    const outExt=['gif','bmp'].includes(ext)?'png':(['webp'].includes(ext)?'webp':'jpg');
-    return compressImage(blob, outExt, targetBytes, quality);
-  }
-
-  // PDF
-  if(ext==='pdf') return compressPdf(blob, targetBytes, quality);
-
-  // Office (ZIP-based)
-  if(['docx','pptx','xlsx'].includes(ext)){
-    try{
-      const zip=await JSZip.loadAsync(blob);
-      const newZip=new JSZip();
-      for(const name in zip.files){
-        const f=zip.files[name];
-        const data=await f.async('uint8array');
-        newZip.file(name,data,{compression:'DEFLATE',compressionOptions:{level:9}});
-      }
-      const compressed=await newZip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:9}});
-      if(compressed.size<blob.size) return compressed;
-    }catch(e){console.warn('Office compression failed:',e);}
-    return blob;
-  }
-
-  return blob;
-}
-
-/* ================================================================
-   IMAGE COMPRESSION — quality-first then resolution scaling
-================================================================ */
-async function compressImage(blob, outExt, targetBytes, quality='max'){
-  const cfg=QUALITY_CFG[quality]||QUALITY_CFG.max;
-  const mime=outExt==='webp'?'image/webp':'image/jpeg';
-
-  const img=await new Promise((res,rej)=>{
-    const i=new Image();
-    const u=URL.createObjectURL(blob);
-    i.onload=()=>{URL.revokeObjectURL(u);res(i);}
-    i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('Image load failed'));}
-    i.src=u;
-  });
-
-  const W=img.naturalWidth||img.width;
-  const H=img.naturalHeight||img.height;
-  if(W===0||H===0) return blob;
-
-  const render=(w,h,q)=>new Promise(r=>{
-    const c=document.createElement('canvas');
-    c.width=Math.max(1,Math.round(w));
-    c.height=Math.max(1,Math.round(h));
-    const ctx=c.getContext('2d');
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality='high';
-    ctx.fillStyle='#ffffff';
-    ctx.fillRect(0,0,c.width,c.height);
-    ctx.drawImage(img,0,0,c.width,c.height);
-    c.toBlob(b=>r(b&&b.size>0?b:null), mime, q);
-  });
-
-  // Phase 1: reduce quality, keep full resolution
-  let q=cfg.startQ;
-  while(q>=cfg.minQ){
-    const b=await render(W,H,q);
-    if(b&&b.size<=targetBytes) return b;
-    q=Math.max(cfg.minQ, q-cfg.stepQ);
-    if(q===cfg.minQ){
-      const b2=await render(W,H,q);
-      if(b2&&b2.size<=targetBytes) return b2;
-      break;
-    }
-  }
-
-  // Phase 2: reduce resolution progressively
-  let scale=0.90;
-  while(scale>0.05){
-    const nw=W*scale, nh=H*scale;
-    const b=await render(nw,nh,cfg.minQ);
-    if(b&&b.size<=targetBytes) return b;
-    scale*=cfg.scaleStep;
-    if(scale<0.05) break;
-  }
-
-  // Final attempt at tiny size
-  const finalB = await render(W*0.05, H*0.05, cfg.minQ);
-  if(finalB&&finalB.size<=targetBytes) return finalB;
-
-  // Return best (smallest) we can get
-  const lastB = await render(W*0.10, H*0.10, 0.05);
-  return lastB||blob;
-}
-
-/* ================================================================
-   PDF COMPRESSION
-================================================================ */
-async function compressPdf(blob, targetBytes, quality='max'){
-  try{
-    const bytes=await blob.arrayBuffer();
-    const doc=await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true});
-
-    // Strip metadata
-    doc.setTitle('');doc.setAuthor('');doc.setSubject('');
-    doc.setKeywords([]);doc.setProducer('');doc.setCreator('');
-
-    const saved=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:100});
-    const outBlob=new Blob([saved],{type:'application/pdf'});
-
-    if(outBlob.size<=targetBytes) return outBlob;
-
-    // Aggressive: re-render pages at lower DPI
-    if(quality==='smallest'||quality==='balanced'){
-      const scaleF=quality==='smallest'?0.8:1.2;
-      const rerendered=await reRenderPdf(bytes, targetBytes, scaleF);
-      if(rerendered.size<outBlob.size) return rerendered;
-    }
-
-    return outBlob;
-  }catch(e){
-    console.warn('PDF compress error:',e);
-    return blob;
-  }
-}
-
-async function reRenderPdf(arrayBuffer, targetBytes, scale=1.2){
-  try{
-    const bytes=new Uint8Array(arrayBuffer);
-    const pdfJs=await pdfjsLib.getDocument({data:bytes}).promise;
-    const newDoc=await PDFLib.PDFDocument.create();
-
-    for(let p=1;p<=pdfJs.numPages;p++){
-      const page=await pdfJs.getPage(p);
-      const vp=page.getViewport({scale});
-      const canvas=document.createElement('canvas');
-      canvas.width=Math.round(vp.width);
-      canvas.height=Math.round(vp.height);
-      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-
-      const quality=targetBytes<100*1024?0.6:0.75;
-      const imgBlob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',quality));
-      const imgBytes=new Uint8Array(await imgBlob.arrayBuffer());
-      const img=await newDoc.embedJpg(imgBytes);
-      const origVp=page.getViewport({scale:1.0});
-      const pg=newDoc.addPage([origVp.width,origVp.height]);
-      pg.drawImage(img,{x:0,y:0,width:origVp.width,height:origVp.height});
-    }
-
-    const out=await newDoc.save({useObjectStreams:true});
-    return new Blob([out],{type:'application/pdf'});
-  }catch(e){
-    console.warn('PDF re-render error:',e);
-    return new Blob([arrayBuffer],{type:'application/pdf'});
-  }
-}
-
-/* ================================================================
-   OFFICE CONVERTERS
-================================================================ */
-async function docxConvert(file, toExt){
-  const zip=await JSZip.loadAsync(await file.arrayBuffer());
-  const xmlEntry=zip.file('word/document.xml');
-  if(!xmlEntry) throw new Error('Invalid DOCX: missing document.xml');
-  const xmlStr=await xmlEntry.async('string');
-  const doc=new DOMParser().parseFromString(xmlStr,'application/xml');
-
-  const paragraphs=[...doc.getElementsByTagName('w:p')];
-  const lines=paragraphs.map(p=>{
-    const texts=[...p.getElementsByTagName('w:t')].map(t=>t.textContent||'');
-    return texts.join('');
-  });
-  const plainText=lines.join('\n').replace(/\n{3,}/g,'\n\n').trim();
-
-  if(toExt==='txt') return new Blob([plainText],{type:'text/plain'});
-  if(toExt==='md')  return new Blob([plainText],{type:'text/markdown'});
-  if(toExt==='pdf') return textToPdf(plainText, file.name.replace(/\.docx$/i,''));
-
-  if(toExt==='html'){
-    const htmlLines=paragraphs.map(p=>{
-      const styleEl=p.querySelector('[w\\:val]');
-      const styleName=styleEl?styleEl.getAttribute('w:val'):'';
-      const runs=[...p.getElementsByTagName('w:r')].map(r=>{
-        let text=[...r.getElementsByTagName('w:t')].map(t=>t.textContent||'').join('');
-        text=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        const bold=r.getElementsByTagName('w:b').length>0;
-        const italic=r.getElementsByTagName('w:i').length>0;
-        if(bold)   text=`<strong>${text}</strong>`;
-        if(italic) text=`<em>${text}</em>`;
-        return text;
-      }).join('');
-      if(styleName.match(/heading.*1/i)) return `<h1>${runs}</h1>`;
-      if(styleName.match(/heading.*2/i)) return `<h2>${runs}</h2>`;
-      if(styleName.match(/heading.*3/i)) return `<h3>${runs}</h3>`;
-      return `<p>${runs||'&nbsp;'}</p>`;
-    }).join('\n');
-    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Georgia,serif;line-height:1.8;max-width:800px;margin:auto;padding:2rem;color:#222}h1,h2,h3{margin:1.5rem 0 .5rem}p{margin:.5rem 0}</style></head><body>${htmlLines}</body></html>`],{type:'text/html'});
-  }
-  return new Blob([plainText],{type:getMime(toExt)});
-}
-
-async function pptxConvert(file, toExt){
-  const zip=await JSZip.loadAsync(await file.arrayBuffer());
-  const slideFiles=Object.keys(zip.files)
-    .filter(n=>n.match(/^ppt\/slides\/slide\d+\.xml$/))
-    .sort((a,b)=>{
-      const na=parseInt(a.match(/(\d+)\.xml$/)?.[1]||'0');
-      const nb=parseInt(b.match(/(\d+)\.xml$/)?.[1]||'0');
-      return na-nb;
-    });
-
-  const slides=[];
-  for(const sf of slideFiles){
-    const xml=await zip.file(sf).async('string');
-    const doc=new DOMParser().parseFromString(xml,'application/xml');
-    const txts=[...doc.getElementsByTagName('a:t')].map(t=>t.textContent||'').filter(t=>t.trim());
-    slides.push(txts);
-  }
-
-  if(toExt==='txt'){
-    const out=slides.map((s,i)=>`=== Slide ${i+1} ===\n${s.join('\n')}`).join('\n\n');
-    return new Blob([out],{type:'text/plain'});
-  }
-  if(toExt==='pdf'){
-    const out=slides.map((s,i)=>`=== Slide ${i+1} ===\n${s.join('\n')}`).join('\n\n');
-    return textToPdf(out, file.name.replace(/\.pptx$/i,''));
-  }
-  if(toExt==='html'){
-    const html=slides.map((s,i)=>{
-      const [title,...rest]=s;
-      const titleEsc=esc(title||`Slide ${i+1}`);
-      const items=rest.map(t=>`<li>${esc(t)}</li>`).join('');
-      return `<div class="slide"><h2>${titleEsc}</h2>${items?`<ul>${items}</ul>`:''}</div>`;
-    }).join('\n');
-    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;background:#f5f5f5;padding:2rem}.slide{background:#fff;border:1px solid #ddd;border-radius:8px;padding:1.5rem;margin:0 auto 1.5rem;max-width:800px}h2{color:#333;margin-bottom:1rem}li{margin:.4rem 0;line-height:1.6}</style></head><body>${html}</body></html>`],{type:'text/html'});
-  }
-  return new Blob([slides.map((s,i)=>`Slide ${i+1}:\n${s.join('\n')}`).join('\n\n')],{type:'text/plain'});
-}
-
-async function xlsxConvert(file, toExt){
-  const ab=await file.arrayBuffer();
-  const wb=XLSX.read(ab,{type:'array'});
-  if(!wb.SheetNames.length) throw new Error('XLSX has no sheets');
-
-  if(toExt==='csv'){
-    const ws=wb.Sheets[wb.SheetNames[0]];
-    return new Blob([XLSX.utils.sheet_to_csv(ws)],{type:'text/csv'});
-  }
-  if(toExt==='json'){
-    const result={};
-    wb.SheetNames.forEach(name=>{result[name]=XLSX.utils.sheet_to_json(wb.Sheets[name]);});
-    return new Blob([JSON.stringify(result,null,2)],{type:'application/json'});
-  }
-  if(toExt==='txt'){
-    const lines=[];
-    wb.SheetNames.forEach(name=>{lines.push(`=== ${name} ===`);lines.push(XLSX.utils.sheet_to_csv(wb.Sheets[name]));});
-    return new Blob([lines.join('\n\n')],{type:'text/plain'});
-  }
-  if(toExt==='html'){
-    const tables=wb.SheetNames.map(name=>`<h2>${esc(name)}</h2>`+XLSX.utils.sheet_to_html(wb.Sheets[name])).join('<hr>');
-    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;padding:1rem}table{border-collapse:collapse;margin-bottom:1rem;width:100%}td,th{border:1px solid #ccc;padding:6px 10px;font-size:.85rem}th{background:#f0f0f0}h2{margin:1.5rem 0 .5rem}</style></head><body>${tables}</body></html>`],{type:'text/html'});
-  }
-  if(toExt==='pdf'){
-    const ws=wb.Sheets[wb.SheetNames[0]];
-    return textToPdf(XLSX.utils.sheet_to_csv(ws), file.name.replace(/\.xlsx$/i,''));
-  }
-  // Default: first sheet CSV
-  return new Blob([XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]])],{type:'text/csv'});
-}
-
-/* ================================================================
-   TEXT / DATA → PDF
-================================================================ */
-async function textToPdf(text, title='Document'){
-  const doc=await PDFLib.PDFDocument.create();
-  const font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
-  const boldFont=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-  const PAGE_W=595,PAGE_H=842,MARGIN=50,LINE_H=16,FONT_SIZE=10,MAX_W=PAGE_W-MARGIN*2;
-
-  let page=doc.addPage([PAGE_W,PAGE_H]);
-  let y=PAGE_H-MARGIN;
-
-  // Title
-  const safeTitle=(title||'Document').substring(0,80);
-  page.drawText(safeTitle,{x:MARGIN,y,size:14,font:boldFont,color:PDFLib.rgb(.1,.1,.1)});
-  y-=28;
-  page.drawLine({start:{x:MARGIN,y},end:{x:PAGE_W-MARGIN,y},thickness:.5,color:PDFLib.rgb(.7,.7,.7)});
-  y-=18;
-
-  const lines=(text||'').split('\n');
-  for(const rawLine of lines){
-    if(!rawLine&&y>MARGIN+40){y-=LINE_H*0.5;continue;}
-    const words=rawLine.split(' ');
-    let cur='';
-    for(const word of words){
-      const test=cur?cur+' '+word:word;
-      const w=font.widthOfTextAtSize(test,FONT_SIZE);
-      if(w>MAX_W&&cur){
-        if(y<MARGIN+LINE_H){page=doc.addPage([PAGE_W,PAGE_H]);y=PAGE_H-MARGIN;}
-        const isH=cur.startsWith('===')||cur.startsWith('#');
-        if(cur.trim()){
-          page.drawText(cur.substring(0,150),{x:MARGIN,y,size:isH?12:FONT_SIZE,font:isH?boldFont:font,color:PDFLib.rgb(.1,.1,.1)});
-        }
-        y-=isH?LINE_H*1.4:LINE_H;
-        cur=word;
-      } else cur=test;
-    }
-    if(cur!==undefined){
-      if(y<MARGIN+LINE_H){page=doc.addPage([PAGE_W,PAGE_H]);y=PAGE_H-MARGIN;}
-      const isH=cur.startsWith('===')||cur.startsWith('#');
-      if(cur.trim()){
-        page.drawText(cur.substring(0,150),{x:MARGIN,y,size:isH?12:FONT_SIZE,font:isH?boldFont:font,color:PDFLib.rgb(.1,.1,.1)});
-      }
-      y-=isH?LINE_H*1.4:LINE_H;
-    }
-  }
-  const bytes=await doc.save();
-  return new Blob([bytes],{type:'application/pdf'});
-}
-
-async function anyToPdf(file, fromExt){
-  const text=await file.text();
-  return textToPdf(text, file.name.replace(/\.[^.]+$/,''));
 }
 
 async function pdfToTxtBlob(file){const [b]=await pdfExtractText(file);return b;}
@@ -1749,60 +945,525 @@ async function pdfToHtml(file){
   return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PDF Export</title></head><body style="font-family:sans-serif;line-height:1.7;max-width:800px;margin:auto;padding:2rem">${escaped}</body></html>`],{type:'text/html'});
 }
 
+async function convertFile(file,fromExt,toExt){
+  if(fromExt==='pdf'&&toExt==='txt') return pdfToTxtBlob(file);
+  if(fromExt==='pdf'&&toExt==='html') return pdfToHtml(file);
+  if(fromExt==='pdf'&&toExt==='png') {const [b]=await pdfToImages(file);return b;}
+  return convertFileBase(file,fromExt,toExt);
+}
+
+/* ================================================================
+   OFFICE CONVERTERS — use JSZip to parse Open XML
+   ================================================================ */
+
+/* DOCX → various */
+async function docxConvert(file, toExt) {
+  const zip = await JSZip.loadAsync(await file.arrayBuffer());
+
+  const xmlEntry = zip.file('word/document.xml');
+  if (!xmlEntry) throw new Error('Invalid DOCX file');
+  const xmlStr = await xmlEntry.async('string');
+
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlStr, 'application/xml');
+
+  const paragraphs = [...xmlDoc.getElementsByTagName("w:p")];
+  const lines = paragraphs.map(p => {
+    const texts = [...p.getElementsByTagName("w:t")].map(t => t.textContent||"");
+    return texts.join("");
+  });
+
+  const plainText = lines.join('\n');
+
+  if (toExt === 'txt') return new Blob([plainText], {type:'text/plain'});
+  if (toExt === 'md')  return new Blob([plainText], {type:'text/markdown'});
+
+  if (toExt === 'html') {
+    const htmlLines = paragraphs.map(p => {
+      const style = p.querySelector('pStyle')?.getAttribute('w:val')||'';
+      const runs = [...p.getElementsByTagName("w:r")].map(r => {
+        let text = [...r.getElementsByTagName("w:t")].map(t=>t.textContent||'').join('');
+        const isBold   = r.getElementsByTagName("w:b").length > 0;
+        const isItalic = r.getElementsByTagName("w:i").length > 0;
+        if (isBold)   text = `<strong>${text}</strong>`;
+        if (isItalic) text = `<em>${text}</em>`;
+        return text;
+      }).join('');
+      if (style.match(/heading\s*1/i)) return `<h1>${runs}</h1>`;
+      if (style.match(/heading\s*2/i)) return `<h2>${runs}</h2>`;
+      if (style.match(/heading\s*3/i)) return `<h3>${runs}</h3>`;
+      return `<p>${runs||'&nbsp;'}</p>`;
+    }).join('\n');
+    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Georgia,serif;line-height:1.8;max-width:800px;margin:auto;padding:2rem;color:#222}h1,h2,h3{margin:1.5rem 0 .5rem}</style></head><body>${htmlLines}</body></html>`],{type:'text/html'});
+  }
+
+  if (toExt === 'pdf') {
+    return textToPdf(plainText, file.name.replace(/\.docx$/i,''));
+  }
+
+  return new Blob([plainText], {type: getMime(toExt)});
+}
+
+/* PPTX → various */
+async function pptxConvert(file, toExt) {
+  const zip = await JSZip.loadAsync(await file.arrayBuffer());
+
+  const slideFiles = Object.keys(zip.files)
+    .filter(n => n.match(/^ppt\/slides\/slide\d+\.xml$/))
+    .sort((a,b) => {
+      const na = parseInt(a.match(/(\d+)\.xml$/)?.[1]||'0');
+      const nb = parseInt(b.match(/(\d+)\.xml$/)?.[1]||'0');
+      return na-nb;
+    });
+
+  const slides = [];
+  for (const sf of slideFiles) {
+    const xml = await zip.file(sf).async('string');
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    const txts = [...doc.getElementsByTagName("a:t")].map(t=>t.textContent||'').filter(t=>t.trim());
+    slides.push(txts);
+  }
+
+  if (toExt === 'txt') {
+    const out = slides.map((s,i)=>`=== Slide ${i+1} ===\n${s.join('\n')}`).join('\n\n');
+    return new Blob([out], {type:'text/plain'});
+  }
+
+  if (toExt === 'html') {
+    const html = slides.map((s,i)=>{
+      const [title,...rest]=s;
+      return `<div class="slide"><h2>${esc(title||'Slide '+(i+1))}</h2><ul>${rest.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`;
+    }).join('\n');
+    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;background:#f5f5f5;padding:2rem}.slide{background:#fff;border:1px solid #ddd;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;max-width:800px;margin:0 auto 1.5rem}h2{color:#333;margin-bottom:1rem}li{margin:.4rem 0;line-height:1.6}</style></head><body>${html}</body></html>`],{type:'text/html'});
+  }
+
+  if (toExt === 'pdf') {
+    const out = slides.map((s,i)=>`=== Slide ${i+1} ===\n${s.join('\n')}`).join('\n\n');
+    return textToPdf(out, file.name.replace(/\.pptx$/i,''));
+  }
+
+  return new Blob([slides.map((s,i)=>`Slide ${i+1}:\n${s.join('\n')}`).join('\n\n')],{type:'text/plain'});
+}
+
+/* XLSX → various */
+async function xlsxConvert(file, toExt) {
+  const ab = await file.arrayBuffer();
+  const wb = XLSX.read(ab, {type:'array'});
+
+  if (toExt === 'csv') {
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    return new Blob([XLSX.utils.sheet_to_csv(ws)], {type:'text/csv'});
+  }
+
+  if (toExt === 'json') {
+    const result = {};
+    wb.SheetNames.forEach(name => {
+      const ws = wb.Sheets[name];
+      result[name] = XLSX.utils.sheet_to_json(ws);
+    });
+    return new Blob([JSON.stringify(result, null, 2)], {type:'application/json'});
+  }
+
+  if (toExt === 'txt') {
+    const lines = [];
+    wb.SheetNames.forEach(name => {
+      lines.push(`=== ${name} ===`);
+      const ws = wb.Sheets[name];
+      lines.push(XLSX.utils.sheet_to_csv(ws));
+    });
+    return new Blob([lines.join('\n\n')], {type:'text/plain'});
+  }
+
+  if (toExt === 'html') {
+    const tables = wb.SheetNames.map(name => {
+      const ws = wb.Sheets[name];
+      return `<h2>${esc(name)}</h2>`+XLSX.utils.sheet_to_html(ws);
+    }).join('<hr>');
+    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;padding:1rem}table{border-collapse:collapse;margin-bottom:1rem;width:100%}td,th{border:1px solid #ccc;padding:6px 10px;font-size:.85rem}th{background:#f0f0f0}h2{margin:1.5rem 0 .5rem}</style></head><body>${tables}</body></html>`],{type:'text/html'});
+  }
+
+  if (toExt === 'pdf') {
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    return textToPdf(csv, file.name.replace(/\.xlsx$/i,''));
+  }
+
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  return new Blob([XLSX.utils.sheet_to_csv(ws)], {type:'text/csv'});
+}
+
+/* ================================================================
+   TEXT / DATA → PDF  (pdf-lib, renders text content)
+   ================================================================ */
+async function textToPdf(text, title='Document') {
+  const doc = await PDFLib.PDFDocument.create();
+  const font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+  const boldFont = await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
+  const PAGE_W = 595, PAGE_H = 842;
+  const MARGIN = 50, LINE_H = 16, FONT_SIZE = 10;
+  const MAX_W = PAGE_W - MARGIN * 2;
+
+  let page = doc.addPage([PAGE_W, PAGE_H]);
+  let y = PAGE_H - MARGIN;
+
+  page.drawText(title.substring(0,60), {x:MARGIN, y, size:16, font:boldFont, color:PDFLib.rgb(0.1,0.1,0.1)});
+  y -= 30;
+  page.drawLine({start:{x:MARGIN,y},end:{x:PAGE_W-MARGIN,y},thickness:0.5,color:PDFLib.rgb(0.7,0.7,0.7)});
+  y -= 20;
+
+  const lines = text.split('\n');
+
+  for (const rawLine of lines) {
+    const words = rawLine.split(' ');
+    let currentLine = '';
+
+    for (const word of words) {
+      const testLine = currentLine ? currentLine+' '+word : word;
+      const width = font.widthOfTextAtSize(testLine, FONT_SIZE);
+      if (width > MAX_W && currentLine) {
+        if (y < MARGIN + LINE_H) {
+          page = doc.addPage([PAGE_W, PAGE_H]);
+          y = PAGE_H - MARGIN;
+        }
+        const isHeading = currentLine.startsWith('===') || currentLine.startsWith('#');
+        page.drawText(currentLine.substring(0, 120), {
+          x: MARGIN, y,
+          size: isHeading ? 12 : FONT_SIZE,
+          font: isHeading ? boldFont : font,
+          color: PDFLib.rgb(0.1, 0.1, 0.1)
+        });
+        y -= isHeading ? LINE_H * 1.4 : LINE_H;
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+
+    if (currentLine !== undefined) {
+      if (y < MARGIN + LINE_H) {
+        page = doc.addPage([PAGE_W, PAGE_H]);
+        y = PAGE_H - MARGIN;
+      }
+      const isHeading = currentLine.startsWith('===') || currentLine.startsWith('#');
+      if (currentLine.trim()) {
+        page.drawText(currentLine.substring(0, 120), {
+          x: MARGIN, y,
+          size: isHeading ? 12 : FONT_SIZE,
+          font: isHeading ? boldFont : font,
+          color: PDFLib.rgb(0.1, 0.1, 0.1)
+        });
+      }
+      y -= isHeading ? LINE_H * 1.4 : LINE_H;
+    }
+  }
+
+  const bytes = await doc.save();
+  return new Blob([bytes], {type:'application/pdf'});
+}
+
+/* ANY TEXT FORMAT → PDF */
+async function anyToPdf(file, fromExt) {
+  const text = await file.text();
+  const title = file.name.replace(/\.[^.]+$/,'');
+  return textToPdf(text, title);
+}
+
+/* ================================================================
+   IMAGE CONVERTERS
+   ================================================================ */
+async function imgToImg(file, toExt) {
+  return new Promise((resolve,reject)=>{
+    const img=new Image()
+    const url=URL.createObjectURL(file)
+
+    img.onload=()=>{
+      URL.revokeObjectURL(url)
+
+      const canvas=document.createElement("canvas")
+      canvas.width=img.naturalWidth
+      canvas.height=img.naturalHeight
+
+      const ctx=canvas.getContext("2d")
+
+      if(["jpg","jpeg"].includes(toExt)){
+        ctx.fillStyle="#ffffff"
+        ctx.fillRect(0,0,canvas.width,canvas.height)
+      }
+
+      ctx.drawImage(img,0,0)
+
+      canvas.toBlob(blob=>{
+        if(blob) resolve(blob)
+        else reject(new Error("Image conversion failed"))
+      },getMime(toExt),0.95)
+    }
+
+    img.onerror=()=>reject(new Error("Image load error"))
+
+    img.src=url
+  })
+}
+
+/* ================================================================
+   COMPRESS
+   ================================================================ */
+async function compressBlob(blob, ext, targetBytes, quality='max') {
+
+  const cat = getCat(ext)
+
+  if(blob.size<=targetBytes*0.95) return blob
+
+  if(cat==="image"){
+    const outExt = ext==="webp" ? "webp" : "jpg"
+    return compressImage(blob,outExt,targetBytes,quality)
+  }
+
+  if(ext==="pdf"){
+    return compressPdf(blob,targetBytes,quality)
+  }
+
+  if(cat==="data"||cat==="doc"){
+
+    const text = await blob.text()
+
+    let out=text
+
+    if(ext==="json"){
+      try{
+        out=JSON.stringify(JSON.parse(text))
+      }catch{}
+    }
+
+    if(ext==="html"||ext==="xml"){
+      out=text.replace(/\n/g,"").replace(/\s+/g," ")
+    }
+
+    if(ext==="txt"||ext==="md"){
+      out=text.replace(/\s+/g," ")
+    }
+
+    const newBlob=new Blob([out],{type:blob.type})
+
+    if(newBlob.size<=targetBytes) return newBlob
+  }
+
+  if(["docx","pptx","xlsx"].includes(ext)){
+
+    try{
+
+      const zip=await JSZip.loadAsync(blob)
+
+      const newZip=new JSZip()
+
+      for(const name in zip.files){
+
+        const f=zip.files[name]
+
+        const data=await f.async("uint8array")
+
+        newZip.file(name,data,{
+          compression:"DEFLATE",
+          compressionOptions:{level:9}
+        })
+      }
+
+      const compressed=await newZip.generateAsync({
+        type:"blob",
+        compression:"DEFLATE",
+        compressionOptions:{level:9}
+      })
+
+      if(compressed.size<blob.size) return compressed
+
+    }catch(e){}
+  }
+
+  try{
+
+    const zip=new JSZip()
+
+    zip.file("file."+ext,blob)
+
+    const compressed=await zip.generateAsync({
+      type:"blob",
+      compression:"DEFLATE",
+      compressionOptions:{level:9}
+    })
+
+    if(compressed.size<blob.size){
+      return compressed
+    }
+
+  }catch(e){}
+
+  return blob
+}
+
+async function compressPdf(blob,targetBytes,quality="max"){
+
+  try{
+
+    const bytes=await blob.arrayBuffer()
+
+    const doc=await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true})
+
+    doc.setTitle("")
+    doc.setAuthor("")
+    doc.setSubject("")
+    doc.setKeywords([])
+    doc.setProducer("")
+    doc.setCreator("")
+
+    const saved=await doc.save({
+      useObjectStreams:true,
+      addDefaultPage:false,
+      objectsPerTick:50
+    })
+
+    let outBlob=new Blob([saved],{type:"application/pdf"})
+
+    if(outBlob.size<=targetBytes) return outBlob
+
+    if(quality!=="max"){
+      return reRenderPdf(bytes,targetBytes,quality==="smallest"?1.0:1.5)
+    }
+
+    return outBlob
+
+  }catch(e){
+    return blob
+  }
+}
+
+async function compressImage(blob, outExt, targetBytes, quality='max') {
+
+  const cfg = QUALITY_CFG[quality] || QUALITY_CFG.max
+  const mime = getMime(outExt)
+
+  const img = await new Promise((res,rej)=>{
+    const i=new Image()
+    const u=URL.createObjectURL(blob)
+    i.onload=()=>{URL.revokeObjectURL(u);res(i)}
+    i.onerror=()=>rej(new Error("Image load failed"))
+    i.src=u
+  })
+
+  const W=img.naturalWidth
+  const H=img.naturalHeight
+
+  const render=(w,h,q)=>new Promise(r=>{
+    const c=document.createElement("canvas")
+    c.width=w
+    c.height=h
+    const ctx=c.getContext("2d")
+
+    ctx.imageSmoothingEnabled=true
+    ctx.imageSmoothingQuality="high"
+
+    ctx.fillStyle="#fff"
+    ctx.fillRect(0,0,w,h)
+
+    ctx.drawImage(img,0,0,w,h)
+
+    c.toBlob(b=>r(b||blob),mime,q)
+  })
+
+  let q=cfg.startQ
+
+  while(q>=cfg.minQ){
+
+    const b=await render(W,H,q)
+
+    if(b.size<=targetBytes){
+      return b
+    }
+
+    q-=0.02
+  }
+
+  let scale=0.97
+
+  while(scale>0.3){
+
+    const w=Math.round(W*scale)
+    const h=Math.round(H*scale)
+
+    const b=await render(w,h,cfg.minQ)
+
+    if(b.size<=targetBytes){
+      return b
+    }
+
+    scale*=0.95
+  }
+
+  return blob
+}
+
+async function reRenderPdf(arrayBuffer, targetBytes, scale=1.5) {
+  try {
+    const bytes = new Uint8Array(arrayBuffer);
+    const pdfJs = await pdfjsLib.getDocument({ data: bytes }).promise;
+    const newDoc = await PDFLib.PDFDocument.create();
+
+    for (let p = 1; p <= pdfJs.numPages; p++) {
+      const page = await pdfJs.getPage(p);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width; canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+
+      const imgBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.75));
+      const imgBytes = new Uint8Array(await imgBlob.arrayBuffer());
+      const img = await newDoc.embedJpg(imgBytes);
+      const origVp = page.getViewport({ scale: 1.0 });
+      const pg = newDoc.addPage([origVp.width, origVp.height]);
+      pg.drawImage(img, { x: 0, y: 0, width: origVp.width, height: origVp.height });
+    }
+
+    const out = await newDoc.save({ useObjectStreams: true });
+    return new Blob([out], { type: 'application/pdf' });
+  } catch(e) {
+    console.warn('PDF re-render error:', e);
+    return new Blob([arrayBuffer], { type: 'application/pdf' });
+  }
+}
+
 /* ================================================================
    PDF TOOLS
-================================================================ */
-async function runPdfTool(file){
+   ================================================================ */
+async function runPdfTool(file) {
   switch(PDF_TOOL){
-    case 'compress':  return pdfCompressTool(file);
+    case 'compress':  return pdfCompress(file);
     case 'split':     return pdfSplit(file);
-    case 'rotate':    return pdfRotate(file,ROT_DEG);
+    case 'rotate':    return pdfRotate(file, ROT_DEG);
     case 'toimg':     return pdfToImages(file);
     case 'text':      return pdfExtractText(file);
     case 'watermark': return pdfWatermark(file);
     default: throw new Error('Unknown PDF tool: '+PDF_TOOL);
   }
 }
-
-async function pdfCompressTool(file){
+async function pdfCompress(file){
   const doc=await PDFLib.PDFDocument.load(await file.arrayBuffer(),{ignoreEncryption:true});
-  doc.setTitle('');doc.setAuthor('');doc.setSubject('');doc.setKeywords([]);doc.setProducer('');doc.setCreator('');
-  const out=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:100});
+  const out=await doc.save({useObjectStreams:true,addDefaultPage:false});
   return [new Blob([out],{type:'application/pdf'}),'pdf'];
 }
-
 async function pdfMerge(files){
   const merged=await PDFLib.PDFDocument.create();
   for(const f of files){
-    try{
-      const doc=await PDFLib.PDFDocument.load(await f.arrayBuffer(),{ignoreEncryption:true});
-      const pp=await merged.copyPages(doc,doc.getPageIndices());
-      pp.forEach(p=>merged.addPage(p));
-    }catch(e){console.warn('Skip page in merge:',e);}
+    try{const doc=await PDFLib.PDFDocument.load(await f.arrayBuffer(),{ignoreEncryption:true});const pp=await merged.copyPages(doc,doc.getPageIndices());pp.forEach(p=>merged.addPage(p));}catch(e){console.warn('Skip in merge:',e);}
   }
-  const out=await merged.save({useObjectStreams:true});
+  const out=await merged.save();
   return [new Blob([out],{type:'application/pdf'}),'pdf'];
 }
-
 async function pdfSplit(file){
   const src=await PDFLib.PDFDocument.load(await file.arrayBuffer(),{ignoreEncryption:true});
-  const total=src.getPageCount();
-  const base=file.name.replace(/\.pdf$/i,'');
-  const blobs=[];
-  for(let i=0;i<total;i++){
-    const d=await PDFLib.PDFDocument.create();
-    const [p]=await d.copyPages(src,[i]);
-    d.addPage(p);
-    blobs.push(new Blob([await d.save()],{type:'application/pdf'}));
-  }
-  // Add extra pages as separate file items
-  for(let i=1;i<blobs.length;i++){
-    const b=blobs[i],url=URL.createObjectURL(b);
-    FILES.push({file:new File([b],`${base}-p${i+1}.pdf`),ext:'pdf',status:'done',url,outName:`${base}-p${i+1}.pdf`,outSize:b.size,err:null,progress:100});
-  }
+  const total=src.getPageCount(), base=file.name.replace(/\.pdf$/i,''), blobs=[];
+  for(let i=0;i<total;i++){const d=await PDFLib.PDFDocument.create();const [p]=await d.copyPages(src,[i]);d.addPage(p);blobs.push(new Blob([await d.save()],{type:'application/pdf'}));}
+  if(total>1) for(let i=1;i<blobs.length;i++){const b=blobs[i],url=URL.createObjectURL(b);FILES.push({file:new File([b],`${base}-p${i+1}.pdf`),status:'done',url,outName:`${base}-p${i+1}.pdf`,outSize:b.size,err:null});}
   return [blobs[0],'pdf'];
 }
-
 async function pdfRotate(file,deg){
   const doc=await PDFLib.PDFDocument.load(await file.arrayBuffer(),{ignoreEncryption:true});
   doc.getPages().forEach(p=>{const c=p.getRotation().angle;p.setRotation(PDFLib.degrees((c+deg)%360));});
@@ -1811,22 +1472,30 @@ async function pdfRotate(file,deg){
 }
 
 async function pdfToImages(file){
-  const bytes=new Uint8Array(await file.arrayBuffer());
-  const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
-  const zip=new JSZip();
-  const base=file.name.replace(/\.pdf$/i,'');
+  const bytes=new Uint8Array(await file.arrayBuffer())
+  const pdf=await pdfjsLib.getDocument({data:bytes}).promise
+  const zip=new JSZip()
+  const base=file.name.replace(/\.pdf$/i,'')
+  
   for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const vp=page.getViewport({scale:2.0});
-    const canvas=document.createElement('canvas');
-    canvas.width=Math.round(vp.width);
-    canvas.height=Math.round(vp.height);
-    await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
-    const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
-    if(blob) zip.file(`${base}-p${i}.png`,blob);
+    const page=await pdf.getPage(i)
+    const vp=page.getViewport({scale:2})
+    const canvas=document.createElement("canvas")
+    canvas.width=vp.width
+    canvas.height=vp.height
+    
+    await page.render({
+      canvasContext:canvas.getContext("2d"),
+      viewport:vp
+    }).promise
+    
+    const blob=await new Promise(r=>canvas.toBlob(r,"image/png"))
+    
+    zip.file(`${base}-p${i}.png`,blob)
   }
-  const zipBlob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
-  return [zipBlob,'zip'];
+  
+  const zipBlob=await zip.generateAsync({type:"blob"})
+  return [zipBlob,"zip"]
 }
 
 async function pdfExtractText(file){
@@ -1834,53 +1503,30 @@ async function pdfExtractText(file){
   const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
   let text='';
   for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const content=await page.getTextContent();
-    const pageText=content.items.map(it=>it.str||'').join(' ');
-    text+=`\n--- Page ${i} ---\n${pageText}\n`;
+    const page=await pdf.getPage(i), content=await page.getTextContent();
+    text+=`\n--- Page ${i} ---\n`+content.items.map(it=>it.str).join(' ')+'\n';
   }
   return [new Blob([text.trim()],{type:'text/plain'}),'txt'];
 }
-
 async function pdfWatermark(file){
-  const wm=(document.getElementById('watermark-text')?.value||'WATERMARK').toUpperCase().trim();
-  if(!wm) throw new Error('Please enter watermark text');
+  const wm=(document.getElementById('watermark-text').value||'WATERMARK').toUpperCase();
   const doc=await PDFLib.PDFDocument.load(await file.arrayBuffer(),{ignoreEncryption:true});
   const font=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-  doc.getPages().forEach(p=>{
-    const {width,height}=p.getSize();
-    const txtW=font.widthOfTextAtSize(wm,46);
-    p.drawText(wm,{x:width/2-txtW/2,y:height/2,size:46,font,color:PDFLib.rgb(.75,.75,.75),opacity:.35,rotate:PDFLib.degrees(45)});
-  });
+  doc.getPages().forEach(p=>{const {width,height}=p.getSize();p.drawText(wm,{x:width/2-wm.length*14,y:height/2,size:48,font,color:PDFLib.rgb(.75,.75,.75),opacity:.38,rotate:PDFLib.degrees(45)});});
   const out=await doc.save();
   return [new Blob([out],{type:'application/pdf'}),'pdf'];
 }
-
 async function imagesToPdf(fileList){
   const doc=await PDFLib.PDFDocument.create();
   for(const f of fileList){
     try{
-      const ext=f.name.split('.').pop().toLowerCase();
-      const bytes=new Uint8Array(await f.arrayBuffer());
+      const ext=f.name.split('.').pop().toLowerCase(), bytes=new Uint8Array(await f.arrayBuffer());
       let img;
-      if(['jpg','jpeg'].includes(ext)){
-        img=await doc.embedJpg(bytes);
-      } else {
-        const canvas=document.createElement('canvas');
-        const image=await new Promise((res,rej)=>{
-          const i=new Image();const u=URL.createObjectURL(f);
-          i.onload=()=>{URL.revokeObjectURL(u);res(i);}
-          i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('Load failed'));}
-          i.src=u;
-        });
-        canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
-        canvas.getContext('2d').drawImage(image,0,0);
-        const pngBlob=await new Promise(r=>canvas.toBlob(r,'image/png'));
-        img=await doc.embedPng(new Uint8Array(await pngBlob.arrayBuffer()));
-      }
+      if(['jpg','jpeg'].includes(ext)) img=await doc.embedJpg(bytes);
+      else{const b=await imgToImg(f,'png');img=await doc.embedPng(new Uint8Array(await b.arrayBuffer()));}
       const pg=doc.addPage([img.width,img.height]);
       pg.drawImage(img,{x:0,y:0,width:img.width,height:img.height});
-    }catch(e){console.warn('Skip image in PDF:',e);}
+    }catch(e){console.warn('Skip in images→PDF:',e);}
   }
   const out=await doc.save();
   return [new Blob([out],{type:'application/pdf'}),'pdf'];
@@ -1888,285 +1534,113 @@ async function imagesToPdf(fileList){
 
 /* ================================================================
    AUDIO CONVERTERS
-================================================================ */
-async function audioToAudio(file, toExt){
-  try{
-    const ac=new AudioContext();
-    const buf=await ac.decodeAudioData(await file.arrayBuffer());
+   ================================================================ */
+async function audioToAudio(file, toExt) {
+  try {
+    const ac=new AudioContext(), buf=await ac.decodeAudioData(await file.arrayBuffer());
     await ac.close();
-    if(toExt==='wav') return audioBufToWav(buf);
-    return encodeViaRecorder(buf, toExt);
-  }catch(e){
-    // Fallback: return original with new mime type
-    return new Blob([await file.arrayBuffer()],{type:getMime(toExt)});
-  }
+    return toExt==='wav'?audioBufToWav(buf):encodeViaRecorder(buf,toExt);
+  } catch(e) { return new Blob([await file.arrayBuffer()],{type:getMime(toExt)}); }
 }
-
-async function extractAudio(file, toExt){
-  try{
-    const ac=new AudioContext();
-    const buf=await ac.decodeAudioData(await file.arrayBuffer());
-    await ac.close();
-    if(toExt==='wav') return audioBufToWav(buf);
-    return encodeViaRecorder(buf, toExt);
-  }catch(e){
-    throw new Error(`Audio extraction failed: ${e.message}. Large video files may exceed browser memory.`);
-  }
+async function extractAudio(file, toExt) {
+  const ac=new AudioContext(), buf=await ac.decodeAudioData(await file.arrayBuffer());
+  await ac.close();
+  return toExt==='wav'?audioBufToWav(buf):encodeViaRecorder(buf,toExt);
 }
-
-function audioBufToWav(buffer){
+function audioBufToWav(buffer) {
   const nc=buffer.numberOfChannels, sr=buffer.sampleRate, len=buffer.length*nc*2+44;
-  const ab=new ArrayBuffer(len),v=new DataView(ab);
+  const ab=new ArrayBuffer(len), v=new DataView(ab);
   const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
   ws(0,'RIFF');v.setUint32(4,len-8,true);ws(8,'WAVE');ws(12,'fmt ');
   v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,nc,true);
   v.setUint32(24,sr,true);v.setUint32(28,sr*nc*2,true);v.setUint16(32,nc*2,true);v.setUint16(34,16,true);
   ws(36,'data');v.setUint32(40,buffer.length*nc*2,true);
   let off=44;
-  for(let i=0;i<buffer.length;i++) for(let c=0;c<nc;c++){
-    const s=Math.max(-1,Math.min(1,buffer.getChannelData(c)[i]));
-    v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;
-  }
+  for(let i=0;i<buffer.length;i++) for(let c=0;c<nc;c++){const s=Math.max(-1,Math.min(1,buffer.getChannelData(c)[i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}
   return new Blob([ab],{type:'audio/wav'});
 }
-
-async function encodeViaRecorder(audioBuf, toExt){
-  const sup=['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/webm','audio/ogg']
-    .find(t=>{try{return MediaRecorder.isTypeSupported(t);}catch(e){return false;}})||'audio/webm';
-  const ctx=new AudioContext();
-  const src=ctx.createBufferSource();
-  src.buffer=audioBuf;
-  const dst=ctx.createMediaStreamDestination();
-  src.connect(dst);
-  const rec=new MediaRecorder(dst.stream,{mimeType:sup});
-  const chunks=[];
-  rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
-  return new Promise((res,rej)=>{
-    rec.onstop=()=>{ctx.close();res(new Blob(chunks,{type:getMime(toExt)}));};
-    rec.onerror=e=>rej(new Error('Recorder error: '+e));
-    rec.start(100);
-    src.start(0);
-    src.onended=()=>{setTimeout(()=>rec.stop(),200);};
-  });
+async function encodeViaRecorder(audioBuf, toExt) {
+  const sup=['audio/webm;codecs=opus','audio/webm','audio/ogg'].find(t=>MediaRecorder.isTypeSupported(t))||'audio/webm';
+  const ctx=new AudioContext(), src=ctx.createBufferSource(); src.buffer=audioBuf;
+  const dst=ctx.createMediaStreamDestination(); src.connect(dst);
+  const rec=new MediaRecorder(dst.stream,{mimeType:sup}), chunks=[];
+  rec.ondataavailable=e=>chunks.push(e.data);
+  return new Promise((res,rej)=>{rec.onstop=()=>{ctx.close();res(new Blob(chunks,{type:getMime(toExt)}));};rec.onerror=rej;rec.start();src.start(0);src.onended=()=>rec.stop();});
 }
 
 /* ================================================================
-   DATA CONVERTERS — FIXED JSON→XML
-================================================================ */
-async function dataToData(file, from, to){
+   DATA CONVERTERS
+   ================================================================ */
+async function dataToData(file, from, to) {
   const text=await file.text();
-
   if(from==='json'&&to==='csv') return jsonToCsv(text);
   if(from==='csv'&&to==='json') return csvToJson(text);
   if(from==='json'&&to==='xml') return jsonToXml(text);
-  if(from==='xml'&&to==='json') return xmlToJson(text);
-  if(from==='xml'&&to==='csv')  { const j=await xmlToJson(text); const jt=await j.text(); return jsonToCsv(jt); }
-  if(from==='tsv'&&to==='csv')  return new Blob([text.replace(/\t/g,',')],{type:'text/csv'});
-  if(from==='csv'&&to==='tsv')  return new Blob([text.replace(/,/g,'\t')],{type:'text/tab-separated-values'});
-  if(from==='yaml'&&to==='json') return yamlToJson(text);
-  if(from==='json'&&to==='yaml') return jsonToYaml(text);
-
   return new Blob([text],{type:getMime(to)});
 }
-
 function jsonToCsv(text){
-  try{
-    let data=JSON.parse(text);
-    // Handle nested: if it's an object of arrays (like XLSX output), take first array
-    if(!Array.isArray(data)){
-      const keys=Object.keys(data);
-      if(keys.length>0&&Array.isArray(data[keys[0]])) data=data[keys[0]];
-      else data=[data];
-    }
-    if(!data.length) return new Blob([''],{type:'text/csv'});
-    const headers=Object.keys(data[0]||{});
-    const csvLines=[
-      headers.map(h=>JSON.stringify(String(h))).join(','),
-      ...data.map(row=>headers.map(h=>JSON.stringify(row[h]!=null?row[h]:'')).join(','))
-    ];
-    return new Blob([csvLines.join('\n')],{type:'text/csv'});
-  }catch(e){return new Blob([text],{type:'text/csv'});}
+  try{const d=JSON.parse(text),arr=Array.isArray(d)?d:[d],k=Object.keys(arr[0]||{});
+    return new Blob([[k.join(','),...arr.map(r=>k.map(h=>JSON.stringify(r[h]??'')).join(','))].join('\n')],{type:'text/csv'});}
+  catch{return new Blob([text],{type:'text/csv'});}
 }
-
 function csvToJson(text){
-  try{
-    const lines=text.trim().split('\n').filter(l=>l.trim());
-    if(!lines.length) return new Blob(['[]'],{type:'application/json'});
-    const hdrs=parseCsvRow(lines[0]);
-    const arr=lines.slice(1).map(l=>{
-      const vals=parseCsvRow(l);
-      const obj={};
-      hdrs.forEach((h,i)=>obj[h]=vals[i]||'');
-      return obj;
-    });
-    return new Blob([JSON.stringify(arr,null,2)],{type:'application/json'});
-  }catch(e){return new Blob(['[]'],{type:'application/json'});}
+  const lines=text.trim().split('\n'),hdrs=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+  const arr=lines.slice(1).map(l=>{const v=l.split(','),o={};hdrs.forEach((h,i)=>o[h]=(v[i]||'').trim().replace(/^"|"$/g,''));return o;});
+  return new Blob([JSON.stringify(arr,null,2)],{type:'application/json'});
 }
-
-function parseCsvRow(row){
-  const result=[];let cur='';let inQ=false;
-  for(let i=0;i<row.length;i++){
-    const ch=row[i];
-    if(ch==='"'){if(inQ&&row[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-    else if(ch===','&&!inQ){result.push(cur.trim());cur='';}
-    else cur+=ch;
-  }
-  result.push(cur.trim());
-  return result.map(v=>v.replace(/^"|"$/g,''));
-}
-
 function jsonToXml(text){
   try{
-    const data=JSON.parse(text);
-    function sanitizeTag(s){return String(s).replace(/[^a-zA-Z0-9_\-\.]/g,'_').replace(/^[\d\-\.]/,'_$&')||'item';}
-    function toXml(obj,tag='root'){
-      const safeTag=sanitizeTag(tag);
-      if(obj===null||obj===undefined) return`<${safeTag}/>`;
-      if(Array.isArray(obj)) return obj.map((item,i)=>toXml(item,tag==='root'?'item':tag)).join('\n');
-      if(typeof obj==='object'){
-        const children=Object.entries(obj).map(([k,v])=>toXml(v,k)).join('\n');
-        return`<${safeTag}>\n${children}\n</${safeTag}>`;
-      }
-      const val=String(obj).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      return`<${safeTag}>${val}</${safeTag}>`;
-    }
-    const xml='<?xml version="1.0" encoding="UTF-8"?>\n'+toXml(data,'root');
-    return new Blob([xml],{type:'application/xml'});
-  }catch(e){
-    return new Blob([`<?xml version="1.0"?><error>${esc(e.message)}</error>`],{type:'application/xml'});
-  }
+    const d=JSON.parse(text);
+    function toX(o,t='root'){if(Array.isArray(o))return o.map(i=>toX(i,'item')).join('');if(typeof o==='object'&&o)return`<${t}>${Object.entries(o).map(([k,v])=>toX(v,k)).join('')}</${t}>`;return`<${t}>${String(o)}</${t}>`;}
+    return new Blob([`<?xml version="1.0"?>\n`+toX(d)],{type:'application/xml'});
+  }catch{return new Blob([text],{type:'application/xml'});}
 }
-
-function xmlToJson(text){
-  try{
-    const parser=new DOMParser();
-    const doc=parser.parseFromString(text,'application/xml');
-    function nodeToObj(node){
-      if(node.nodeType===3) return node.textContent.trim();
-      const children=[...node.childNodes].filter(n=>n.nodeType===1);
-      if(children.length===0) return node.textContent.trim();
-      const obj={};
-      children.forEach(child=>{
-        const key=child.nodeName;
-        const val=nodeToObj(child);
-        if(obj[key]!==undefined){
-          if(!Array.isArray(obj[key])) obj[key]=[obj[key]];
-          obj[key].push(val);
-        } else obj[key]=val;
-      });
-      return obj;
-    }
-    const result=nodeToObj(doc.documentElement);
-    return new Blob([JSON.stringify(result,null,2)],{type:'application/json'});
-  }catch(e){return new Blob(['{}'],{type:'application/json'});}
-}
-
-function yamlToJson(text){
-  // Basic YAML parser for common cases
-  try{
-    const lines=text.split('\n');
-    const result={};let cur=result;
-    lines.forEach(line=>{
-      const m=line.match(/^(\s*)([\w\-]+):\s*(.*)/);
-      if(m){
-        const [,indent,key,val]=m;
-        const trimmed=val.trim().replace(/^["']|["']$/g,'');
-        cur[key]=trimmed||{};
-      }
-    });
-    return new Blob([JSON.stringify(result,null,2)],{type:'application/json'});
-  }catch(e){return new Blob(['{}'],{type:'application/json'});}
-}
-
-function jsonToYaml(text){
-  try{
-    const data=JSON.parse(text);
-    function toYaml(obj,indent=0){
-      const pad=' '.repeat(indent);
-      if(obj===null) return 'null';
-      if(typeof obj==='boolean'||typeof obj==='number') return String(obj);
-      if(typeof obj==='string') return obj.includes(':')||obj.includes('#')?`"${obj}"`:obj;
-      if(Array.isArray(obj)) return obj.map(item=>`${pad}- ${toYaml(item,indent+2)}`).join('\n');
-      return Object.entries(obj).map(([k,v])=>{
-        if(typeof v==='object'&&v!==null&&!Array.isArray(v)){
-          return `${pad}${k}:\n${toYaml(v,indent+2)}`;
-        }
-        if(Array.isArray(v)) return `${pad}${k}:\n${toYaml(v,indent+2)}`;
-        return `${pad}${k}: ${toYaml(v,indent+2)}`;
-      }).join('\n');
-    }
-    return new Blob([toYaml(data)],{type:'text/yaml'});
-  }catch(e){return new Blob([text],{type:'text/yaml'});}
-}
-
-async function docToDoc(file, from, to){
+async function docToDoc(file, from, to) {
   const text=await file.text();
   if(to==='pdf') return textToPdf(text, file.name.replace(/\.[^.]+$/,''));
   if(to==='html'){
     const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    if(from==='md'){
-      const h=e
-        .replace(/^### (.+)/gm,'<h3>$1</h3>')
-        .replace(/^## (.+)/gm,'<h2>$1</h2>')
-        .replace(/^# (.+)/gm,'<h1>$1</h1>')
-        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g,'<em>$1</em>')
-        .replace(/`(.+?)`/g,'<code>$1</code>')
-        .replace(/\n/g,'<br>');
-      return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:sans-serif;line-height:1.7;max-width:800px;margin:auto;padding:2rem}code{background:#f0f0f0;padding:2px 5px;border-radius:3px;font-size:.9em}</style></head><body>${h}</body></html>`],{type:'text/html'});
-    }
-    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><pre style="font-family:sans-serif;white-space:pre-wrap">${e}</pre></body></html>`],{type:'text/html'});
+    if(from==='md'){const h=e.replace(/^### (.+)/gm,'<h3>$1</h3>').replace(/^## (.+)/gm,'<h2>$1</h2>').replace(/^# (.+)/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>');return new Blob([`<!DOCTYPE html><html><body>${h}</body></html>`],{type:'text/html'});}
+    return new Blob([`<!DOCTYPE html><html><body><pre>${e}</pre></body></html>`],{type:'text/html'});
   }
-  if(from==='html'&&(to==='txt'||to==='md')){
-    const d=document.createElement('div');d.innerHTML=text;
-    return new Blob([d.textContent||d.innerText||''],{type:getMime(to)});
-  }
+  if(from==='html'&&(to==='txt'||to==='md')){const d=document.createElement('div');d.innerHTML=text;return new Blob([d.textContent||d.innerText],{type:getMime(to)});}
   return new Blob([text],{type:getMime(to)});
 }
 
 /* ================================================================
    MIME MAP
-================================================================ */
+   ================================================================ */
 function getMime(ext){
   return({
     jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',
     gif:'image/gif',bmp:'image/bmp',svg:'image/svg+xml',ico:'image/x-icon',
-    tiff:'image/tiff',avif:'image/avif',heic:'image/heic',
+    tiff:'image/tiff',avif:'image/avif',
     mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg',flac:'audio/flac',
     aac:'audio/aac',m4a:'audio/mp4',weba:'audio/webm',
-    mp4:'video/mp4',webm:'video/webm',ogv:'video/ogg',
-    avi:'video/x-msvideo',mov:'video/quicktime',
+    mp4:'video/mp4',webm:'video/webm',ogv:'video/ogg',avi:'video/x-msvideo',mov:'video/quicktime',
     pdf:'application/pdf',
     docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    txt:'text/plain',md:'text/markdown',html:'text/html',rtf:'application/rtf',
+    txt:'text/plain',md:'text/markdown',html:'text/html',
     json:'application/json',csv:'text/csv',xml:'application/xml',
-    yaml:'text/yaml',tsv:'text/tab-separated-values',zip:'application/zip'
+    zip:'application/zip'
   })[ext]||'application/octet-stream';
 }
 
 /* ================================================================
    TOAST
-================================================================ */
+   ================================================================ */
 let _tt;
 function toast(msg,type='success'){
   const el=document.getElementById('toast');
   el.textContent=msg; el.className='toast '+type+' show';
-  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),4000);
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3800);
 }
 
 /* ================================================================
-   WATERMARK INPUT CHECK
-================================================================ */
-document.addEventListener('DOMContentLoaded',()=>{
-  const wt=document.getElementById('watermark-text');
-  if(wt) wt.addEventListener('input',checkReady);
-});
-
-/* ================================================================
    BOOT
-================================================================ */
+   ================================================================ */
 init();
 </script>
 </body>
