@@ -440,11 +440,11 @@ footer{border-top:1px solid var(--border);padding:18px 0;display:flex;justify-co
 <footer>
   <div class="footer-left">© FileForge · 100% local · No server · No tracking · No data collection</div>
   <div class="supported-list">
-    <span class="fmt-tag">JPG</span><span class="fmt-tag">PNG</span><span class="fmt-tag">WEBP</span><span class="fmt-tag">SVG</span>
+    <span class="fmt-tag">JPG</span><span class="fmt-tag">PNG</span><span class="fmt-tag">WEBP</span><span class="fmt-tag">SVG</span><span class="fmt-tag">HEIC</span>
     <span class="fmt-tag">MP3</span><span class="fmt-tag">WAV</span><span class="fmt-tag">OGG</span>
-    <span class="fmt-tag">MP4</span><span class="fmt-tag">WEBM</span>
+    <span class="fmt-tag">MP4</span><span class="fmt-tag">WEBM</span><span class="fmt-tag">MOV</span>
     <span class="fmt-tag">PDF</span><span class="fmt-tag">DOCX</span><span class="fmt-tag">PPTX</span><span class="fmt-tag">XLSX</span>
-    <span class="fmt-tag">TXT</span><span class="fmt-tag">MD</span><span class="fmt-tag">HTML</span>
+    <span class="fmt-tag">TXT</span><span class="fmt-tag">HTML</span>
     <span class="fmt-tag">JSON</span><span class="fmt-tag">CSV</span><span class="fmt-tag">XML</span>
     <span class="fmt-tag">ZIP</span>
   </div>
@@ -463,36 +463,39 @@ try { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/aja
    FORMAT DEFINITIONS
    ================================================================ */
 const FORMATS = {
-  image:  { label:'🖼 Image',    fmts:['jpg','jpeg','png','webp','svg'] },
+  image:  { label:'🖼 Image',    fmts:['jpg','jpeg','png','webp','svg','heic'] },
   audio:  { label:'🎵 Audio',    fmts:['mp3','wav','ogg','aac','m4a','weba'] },
   video:  { label:'🎬 Video',    fmts:['mp4','webm','ogv','avi','mov'] },
   office: { label:'📑 Office',   fmts:['docx','pptx','xlsx'] },
-  doc:    { label:'📝 Document', fmts:['pdf','txt','md','html'] },
+  doc:    { label:'📝 Document', fmts:['pdf','txt','html'] },
   data:   { label:'⚙ Data',     fmts:['json','csv','xml'] }
 };
+// heic mime helper (not in browser getMime natively)
+const HEIC_MIME = 'image/heic';
 
 // Valid client-side conversion paths
 const CONV = {
-  // Images
+  // Images — jpg/png/webp all support →pdf via imageToPdf
   jpg:['png','webp','jpeg','pdf'], jpeg:['png','webp','jpg','pdf'],
-  png:['jpg','jpeg','webp','pdf'], webp:['png','jpg','jpeg'],
-  svg:['png','jpg','jpeg','webp'],
+  png:['jpg','jpeg','webp','pdf'], webp:['png','jpg','jpeg','pdf'],
+  svg:['png','jpg','jpeg','webp','pdf'],
+  heic:['jpg','jpeg','png','webp'],
   // Audio
   mp3:['wav','ogg','weba'], wav:['mp3','ogg','weba'],
   ogg:['mp3','wav','weba'], weba:['mp3','wav','ogg'],
   aac:['wav','mp3','ogg'], m4a:['wav','mp3','ogg'],
-  // Video → audio only (browsers cannot encode video containers)
+  // Video → audio + mp4 where possible
   mp4:['mp3','wav','ogg'], webm:['mp3','wav','ogg'],
-  ogv:['mp3','wav','ogg'], avi:['mp3','wav'], mov:['mp3','wav'],
-  // Office
-  docx:['pdf','txt','html','md'],
+  ogv:['mp3','wav','ogg'], avi:['mp3','wav'],
+  mov:['mp4','mp3','wav'],
+  // Office — md removed
+  docx:['pdf','txt','html'],
   pptx:['pdf','txt','html'],
   xlsx:['csv','json','txt','html','pdf'],
-  // Document
-  pdf: ['txt','html','png'],  // pdf→png means pdf→images
-  txt: ['pdf','html','md','json'],
-  md:  ['html','txt','pdf'],
-  html:['txt','md','pdf'],
+  // Document — md removed
+  pdf: ['txt','html','png','csv'],
+  txt: ['pdf','html','json'],
+  html:['txt','pdf'],
   // Data
   json:['csv','txt','xml','pdf'],
   csv: ['json','txt','pdf','xlsx'],
@@ -740,33 +743,34 @@ function onDragLeave(){document.getElementById('dropzone').classList.remove('dra
 function onDrop(e){e.preventDefault();document.getElementById('dropzone').classList.remove('dragover');addFiles(e.dataTransfer.files);}
 
 function addFiles(list){
-  const accept=document.getElementById("file-input").accept
-  let allowed=[]
-  
-  if(accept){
-    allowed=accept.split(",").map(a=>a.replace(".","").trim())
+  const accept = document.getElementById("file-input").accept;
+  let allowed = [];
+  if (accept && accept !== 'image/*') {
+    allowed = accept.split(",").map(a => a.replace(/^\./,"").trim().toLowerCase());
   }
-  
-  for(const f of list){
-    const ext=f.name.split(".").pop().toLowerCase()
-    
-    if(allowed.length && accept!=="image/*" && !allowed.includes(ext)){
-      toast("Invalid file type: "+ext,"error")
-      continue
+
+  for (const f of list) {
+    let ext = f.name.split(".").pop().toLowerCase();
+    // Normalize heif → heic (same format, different extension)
+    if (ext === 'heif') ext = 'heic';
+
+    if (allowed.length && !allowed.includes(ext)) {
+      toast("Unsupported file type: ." + ext + " — expected: " + allowed.join(', '), "error");
+      continue;
     }
-    
+
     FILES.push({
-      file:f,
-      status:"ready",
-      url:null,
-      outName:null,
-      outSize:null,
-      err:null
-    })
+      file: f,
+      status: "ready",
+      url: null,
+      outName: null,
+      outSize: null,
+      err: null
+    });
   }
-  
-  renderFiles()
-  checkReady()
+
+  renderFiles();
+  checkReady();
 }
 
 function removeFile(i){FILES.splice(i,1);renderFiles();checkReady();}
@@ -781,7 +785,7 @@ function renderFiles(){
     if(f.status==='ready')   st=`<span class="file-status">READY</span>`;
     if(f.status==='working') st=`<span class="file-status working">WORKING…</span>`;
     if(f.status==='done')    st=`<a class="btn-dl" href="${f.url}" download="${f.outName}">↓ Download</a>`;
-    if(f.status==='error')   st=`<span class="file-status error" title="${esc(f.err||'')}">✕ FAILED</span>`;
+    if(f.status==='error')   st=`<span class="file-status error" title="${esc(f.err||'')}">✕ ${esc((f.err||'Failed').substring(0,40))}</span>`;
     const div=document.createElement('div'); div.className='file-item'; div.id='fi-'+i;
     div.innerHTML=`<div class="file-ext">${ext}</div><div class="file-info"><div class="file-name">${esc(f.file.name)}</div><div class="file-size">${sz}</div><div class="progress-wrap"><div class="progress-bar" id="pb-${i}"></div></div></div>${st}<button class="file-remove" onclick="removeFile(${i})">✕</button>`;
     list.appendChild(div);
@@ -794,29 +798,29 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
    CHECKREADY
    ================================================================ */
 function checkReady(){
-  const fi=document.getElementById("file-input")
+  const fi = document.getElementById("file-input");
 
-  if(MODE==="convert"||MODE==="both"){
-    const from=getFrom()
-    if(from){
-      fi.accept="."+from
+  if (MODE === "convert" || MODE === "both") {
+    const from = getFrom();
+    if (from) {
+      // heic files sometimes have .heif extension too
+      fi.accept = from === 'heic' ? '.heic,.heif' : '.' + from;
     }
   }
 
-  if(MODE==="compress"){
-    fi.accept=".jpg,.jpeg,.png,.webp,.pdf,.txt,.json,.csv,.html,.xml,.docx,.pptx,.xlsx"
+  if (MODE === "compress") {
+    fi.accept = ".jpg,.jpeg,.png,.webp,.heic,.pdf,.txt,.json,.csv,.html,.xml,.docx,.pptx,.xlsx";
   }
 
-  if(MODE==="pdf"){
-    if(PDF_TOOL==="topdf")
-      fi.accept="image/*"
+  if (MODE === "pdf") {
+    if (PDF_TOOL === "topdf")
+      fi.accept = "image/*";
     else
-      fi.accept=".pdf"
+      fi.accept = ".pdf";
   }
 
-  const ok=FILES.length>0&&((MODE==="convert"||MODE==="pdf")||getSizeBytes()>0||MODE==="both")
-
-  document.getElementById("btn-go").disabled=!ok
+  const ok = FILES.length > 0 && ((MODE === "convert" || MODE === "pdf") || getSizeBytes() > 0 || MODE === "both");
+  document.getElementById("btn-go").disabled = !ok;
 }
 
 function fmtSize(b){if(b==null||isNaN(b))return'?';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
@@ -846,7 +850,11 @@ async function startConversion(){
     const item=FILES[i]; item.status='working'; renderFiles(); setProg(i,8);
     try{
       let blob=null, outExt='';
-      const fileExt=item.file.name.split('.').pop().toLowerCase();
+      const fileExt = (() => {
+        let e = item.file.name.split('.').pop().toLowerCase();
+        if (e === 'heif') e = 'heic'; // heif and heic are the same format
+        return e;
+      })();
 
       if(MODE==='pdf'){
         setProg(i,25); [blob,outExt]=await runPdfTool(item.file);
@@ -908,7 +916,16 @@ async function convertFileBase(file, fromExt, toExt) {
   if(fromExt==='pptx') return pptxConvert(file, toExt);
   if(fromExt==='xlsx') return xlsxConvert(file, toExt);
 
-  // ... → PDF
+  // HEIC → image
+  if(fromExt==='heic') return heicToImage(file, toExt);
+
+  // Image → PDF (binary-safe; must be before anyToPdf)
+  if(fc==='image' && toExt==='pdf') return imageToPdf(file, fromExt);
+
+  // MOV → MP4
+  if(fromExt==='mov' && toExt==='mp4') return movToMp4(file);
+
+  // Any remaining text-based format → PDF
   if(toExt==='pdf') return anyToPdf(file, fromExt);
 
   // Image → Image
@@ -918,13 +935,11 @@ async function convertFileBase(file, fromExt, toExt) {
   if(fc==='video'&&tc==='audio') return extractAudio(file, toExt);
   if((fc==='audio'||fc==='video')&&tc==='audio') return audioToAudio(file, toExt);
 
-  // PDF → text/html/images
-  if(fromExt==='pdf'&&toExt==='txt')  {
-    const [blob]=await pdfExtractText(file);
-    return blob;
-  }
+  // PDF → text/html/images/csv
+  if(fromExt==='pdf'&&toExt==='txt')  { const [blob]=await pdfExtractText(file); return blob; }
   if(fromExt==='pdf'&&toExt==='html') return pdfToHtml(file);
-  if(fromExt==='pdf'&&toExt==='png')  {const [b,e]=await pdfToImages(file);return b;}
+  if(fromExt==='pdf'&&toExt==='png')  { const [b]=await pdfToImages(file); return b; }
+  if(fromExt==='pdf'&&toExt==='csv')  return pdfToCsv(file);
 
   // Data ↔ Data
   if(fc==='data'&&tc==='data') return dataToData(file, fromExt, toExt);
@@ -945,11 +960,74 @@ async function pdfToHtml(file){
   return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PDF Export</title></head><body style="font-family:sans-serif;line-height:1.7;max-width:800px;margin:auto;padding:2rem">${escaped}</body></html>`],{type:'text/html'});
 }
 
-async function convertFile(file,fromExt,toExt){
-  if(fromExt==='pdf'&&toExt==='txt') return pdfToTxtBlob(file);
-  if(fromExt==='pdf'&&toExt==='html') return pdfToHtml(file);
-  if(fromExt==='pdf'&&toExt==='png') {const [b]=await pdfToImages(file);return b;}
-  return convertFileBase(file,fromExt,toExt);
+// RFC 4180 CSV quoting helper — wraps value in quotes if it contains comma, quote, or newline
+function csvQuote(val) {
+  const s = String(val == null ? '' : val);
+  if (s.includes('"') || s.includes(',') || s.includes('\n') || s.includes('\r')) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+// PDF → CSV: extract text page by page, detect tabular rows (2+ cols), emit RFC 4180 CSV
+async function pdfToCsv(file) {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const pdf   = await pdfjsLib.getDocument({ data: bytes }).promise;
+  const allRows = [];
+
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page    = await pdf.getPage(p);
+    const content = await page.getTextContent();
+
+    // Group text items into lines by their Y position (rounded to 2px)
+    const lineMap = new Map();
+    for (const item of content.items) {
+      const y = Math.round(item.transform[5] / 2) * 2;
+      if (!lineMap.has(y)) lineMap.set(y, []);
+      lineMap.get(y).push({ x: item.transform[4], text: item.str });
+    }
+
+    // Sort lines top→bottom, sort items within each line left→right
+    const sortedYs = [...lineMap.keys()].sort((a, b) => b - a);
+    for (const y of sortedYs) {
+      const items = lineMap.get(y).sort((a, b) => a.x - b.x);
+      const row   = items.map(i => i.text.trim()).filter(t => t.length > 0);
+      if (row.length > 0) allRows.push(row);
+    }
+  }
+
+  if (allRows.length === 0) {
+    return new Blob([''], { type: 'text/csv' });
+  }
+
+  // Normalize all rows to the same column count (max columns found)
+  const maxCols = Math.max(...allRows.map(r => r.length));
+  const csvLines = allRows.map(row => {
+    while (row.length < maxCols) row.push('');
+    return row.map(csvQuote).join(',');
+  });
+
+  return new Blob([csvLines.join('\r\n')], { type: 'text/csv' });
+}
+
+async function convertFile(file, fromExt, toExt) {
+  // --- PDF extractions (fast path) ---
+  if (fromExt === 'pdf' && toExt === 'txt')  return pdfToTxtBlob(file);
+  if (fromExt === 'pdf' && toExt === 'html') return pdfToHtml(file);
+  if (fromExt === 'pdf' && toExt === 'png')  { const [b] = await pdfToImages(file); return b; }
+  if (fromExt === 'pdf' && toExt === 'csv')  return pdfToCsv(file);
+
+  // --- Image → PDF (must be before anyToPdf to avoid treating binary as text) ---
+  const imgExts = ['jpg','jpeg','png','webp','svg','heic'];
+  if (imgExts.includes(fromExt) && toExt === 'pdf') return imageToPdf(file, fromExt);
+
+  // --- HEIC → image ---
+  if (fromExt === 'heic') return heicToImage(file, toExt);
+
+  // --- MOV → MP4 ---
+  if (fromExt === 'mov' && toExt === 'mp4') return movToMp4(file);
+
+  return convertFileBase(file, fromExt, toExt);
 }
 
 /* ================================================================
@@ -976,7 +1054,6 @@ async function docxConvert(file, toExt) {
   const plainText = lines.join('\n');
 
   if (toExt === 'txt') return new Blob([plainText], {type:'text/plain'});
-  if (toExt === 'md')  return new Blob([plainText], {type:'text/markdown'});
 
   if (toExt === 'html') {
     const htmlLines = paragraphs.map(p => {
@@ -1176,33 +1253,127 @@ async function imgToImg(file, toExt) {
   return new Promise((resolve,reject)=>{
     const img=new Image()
     const url=URL.createObjectURL(file)
-
     img.onload=()=>{
       URL.revokeObjectURL(url)
-
       const canvas=document.createElement("canvas")
       canvas.width=img.naturalWidth
       canvas.height=img.naturalHeight
-
       const ctx=canvas.getContext("2d")
-
       if(["jpg","jpeg"].includes(toExt)){
         ctx.fillStyle="#ffffff"
         ctx.fillRect(0,0,canvas.width,canvas.height)
       }
-
       ctx.drawImage(img,0,0)
-
       canvas.toBlob(blob=>{
         if(blob) resolve(blob)
         else reject(new Error("Image conversion failed"))
       },getMime(toExt),0.95)
     }
-
     img.onerror=()=>reject(new Error("Image load error"))
-
     img.src=url
   })
+}
+
+/* Image (JPG/PNG/WEBP/SVG) → PDF via pdf-lib embed — avoids reading binary as text */
+async function imageToPdf(file, fromExt) {
+  const doc = await PDFLib.PDFDocument.create();
+  const bytes = new Uint8Array(await file.arrayBuffer());
+
+  let img;
+  const isJpeg = ['jpg','jpeg'].includes(fromExt);
+
+  if (isJpeg) {
+    img = await doc.embedJpg(bytes);
+  } else {
+    // For PNG/WebP/SVG/other: render to canvas first, export as PNG, then embed
+    const pngBytes = await new Promise((res, rej) => {
+      const blobUrl = URL.createObjectURL(file);
+      const image = new Image();
+      image.onload = () => {
+        URL.revokeObjectURL(blobUrl);
+        const c = document.createElement('canvas');
+        c.width = image.naturalWidth || 800;
+        c.height = image.naturalHeight || 600;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.drawImage(image, 0, 0);
+        c.toBlob(async b => {
+          if (!b) { rej(new Error('Canvas export failed')); return; }
+          res(new Uint8Array(await b.arrayBuffer()));
+        }, 'image/png');
+      };
+      image.onerror = () => rej(new Error('Image load failed'));
+      image.src = blobUrl;
+    });
+    img = await doc.embedPng(pngBytes);
+  }
+
+  // Use image's natural dimensions as page size (points ≈ pixels at 72dpi)
+  const { width, height } = img;
+  const page = doc.addPage([width, height]);
+  page.drawImage(img, { x: 0, y: 0, width, height });
+
+  const outBytes = await doc.save();
+  return new Blob([outBytes], { type: 'application/pdf' });
+}
+
+/* HEIC → image: use canvas via createImageBitmap (supported in Chrome 90+/Firefox 90+) */
+async function heicToImage(file, toExt) {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d');
+    if (['jpg','jpeg'].includes(toExt)) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(bitmap, 0, 0);
+    bitmap.close();
+    return new Promise((res, rej) => {
+      canvas.toBlob(b => b ? res(b) : rej(new Error('HEIC conversion failed')), getMime(toExt), 0.92);
+    });
+  } catch(e) {
+    throw new Error('HEIC conversion failed — browser may not support this format. Try Chrome 90+ or Safari.');
+  }
+}
+
+/* MOV → MP4: capture via MediaRecorder with video/mp4 mimeType */
+async function movToMp4(file) {
+  // Try to use video element + MediaRecorder to transcode
+  const supported = ['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm']
+    .find(t => MediaRecorder.isTypeSupported(t));
+  if (!supported) throw new Error('MP4 encoding not supported in this browser. Try Chrome.');
+
+  const url = URL.createObjectURL(file);
+  return new Promise((res, rej) => {
+    const video = document.createElement('video');
+    video.src = url;
+    video.muted = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = async () => {
+      const stream = video.captureStream ? video.captureStream() : video.mozCaptureStream();
+      const rec = new MediaRecorder(stream, { mimeType: supported });
+      const chunks = [];
+      rec.ondataavailable = e => chunks.push(e.data);
+      rec.onstop = () => {
+        URL.revokeObjectURL(url);
+        const mime = supported.startsWith('video/mp4') ? 'video/mp4' : 'video/webm';
+        const ext  = supported.startsWith('video/mp4') ? 'mp4' : 'webm';
+        res(new Blob(chunks, { type: mime }));
+      };
+      rec.onerror = e => rej(new Error('Recording error: ' + e.message));
+      rec.start();
+      video.play();
+      video.onended = () => rec.stop();
+      video.onerror = () => { rec.stop(); rej(new Error('Video playback error')); };
+    };
+    video.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not load video file')); };
+    video.load();
+  });
 }
 
 /* ================================================================
@@ -1583,28 +1754,114 @@ function jsonToCsv(text){
     return new Blob([[k.join(','),...arr.map(r=>k.map(h=>JSON.stringify(r[h]??'')).join(','))].join('\n')],{type:'text/csv'});}
   catch{return new Blob([text],{type:'text/csv'});}
 }
+// RFC 4180 CSV parser — handles quoted fields, embedded commas, escaped quotes
+function parseCSV(text) {
+  const rows = [];
+  // Normalize line endings
+  const src = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+  if (!src) return rows;
+
+  let row = [], field = '', inQuote = false, i = 0;
+  while (i < src.length) {
+    const ch = src[i];
+    if (inQuote) {
+      if (ch === '"') {
+        if (src[i + 1] === '"') { field += '"'; i += 2; continue; } // escaped quote
+        inQuote = false; i++; continue;
+      }
+      field += ch; i++; continue;
+    }
+    if (ch === '"') { inQuote = true; i++; continue; }
+    if (ch === ',') { row.push(field.trim()); field = ''; i++; continue; }
+    if (ch === '\n') {
+      row.push(field.trim()); field = '';
+      if (row.some(c => c !== '')) rows.push(row);
+      row = []; i++; continue;
+    }
+    field += ch; i++;
+  }
+  // Last field/row
+  row.push(field.trim());
+  if (row.some(c => c !== '')) rows.push(row);
+  return rows;
+}
+
 function csvToJson(text){
-  const lines=text.trim().split('\n'),hdrs=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
-  const arr=lines.slice(1).map(l=>{const v=l.split(','),o={};hdrs.forEach((h,i)=>o[h]=(v[i]||'').trim().replace(/^"|"$/g,''));return o;});
-  return new Blob([JSON.stringify(arr,null,2)],{type:'application/json'});
+  try {
+    const rows = parseCSV(text);
+    if (rows.length === 0) return new Blob(['[]'], { type: 'application/json' });
+    const headers = rows[0];
+    const arr = rows.slice(1).map(cols => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = cols[i] !== undefined ? cols[i] : ''; });
+      return obj;
+    });
+    return new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' });
+  } catch(e) {
+    throw new Error('CSV→JSON failed: ' + e.message);
+  }
 }
 function jsonToXml(text){
   try{
-    const d=JSON.parse(text);
-    function toX(o,t='root'){if(Array.isArray(o))return o.map(i=>toX(i,'item')).join('');if(typeof o==='object'&&o)return`<${t}>${Object.entries(o).map(([k,v])=>toX(v,k)).join('')}</${t}>`;return`<${t}>${String(o)}</${t}>`;}
-    return new Blob([`<?xml version="1.0"?>\n`+toX(d)],{type:'application/xml'});
-  }catch{return new Blob([text],{type:'application/xml'});}
+    const d = JSON.parse(text);
+
+    // Sanitize a string so it's a valid XML element name
+    function sanitizeTag(k) {
+      // Replace leading digits/invalid chars; spaces→underscores
+      let s = String(k).replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+      if (/^[^a-zA-Z_]/.test(s)) s = '_' + s;
+      return s || '_item';
+    }
+
+    // Escape text content for XML
+    function escXml(v) {
+      return String(v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    function toX(o, tag) {
+      const t = sanitizeTag(tag);
+      if (o === null || o === undefined) {
+        return `<${t}/>`;
+      }
+      if (Array.isArray(o)) {
+        // Each array element wrapped in <item>
+        return `<${t}>${o.map((item, idx) => toX(item, 'item')).join('')}</${t}>`;
+      }
+      if (typeof o === 'object') {
+        const children = Object.entries(o).map(([k, v]) => toX(v, k)).join('');
+        return `<${t}>${children}</${t}>`;
+      }
+      return `<${t}>${escXml(o)}</${t}>`;
+    }
+
+    const rootTag = typeof d === 'object' && d !== null && !Array.isArray(d) ? 'root' : 'root';
+    const body = Array.isArray(d)
+      ? d.map(item => toX(item, 'item')).join('\n')
+      : Object.entries(d).map(([k, v]) => toX(v, k)).join('\n');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<root>\n${body}\n</root>`;
+    return new Blob([xml], { type: 'application/xml' });
+  } catch(e) {
+    throw new Error('JSON→XML failed: invalid JSON — ' + e.message);
+  }
 }
 async function docToDoc(file, from, to) {
-  const text=await file.text();
-  if(to==='pdf') return textToPdf(text, file.name.replace(/\.[^.]+$/,''));
-  if(to==='html'){
-    const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    if(from==='md'){const h=e.replace(/^### (.+)/gm,'<h3>$1</h3>').replace(/^## (.+)/gm,'<h2>$1</h2>').replace(/^# (.+)/gm,'<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>');return new Blob([`<!DOCTYPE html><html><body>${h}</body></html>`],{type:'text/html'});}
-    return new Blob([`<!DOCTYPE html><html><body><pre>${e}</pre></body></html>`],{type:'text/html'});
+  const text = await file.text();
+  if (to === 'pdf') return textToPdf(text, file.name.replace(/\.[^.]+$/, ''));
+  if (to === 'html') {
+    const e = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><pre style="font-family:sans-serif;line-height:1.7;max-width:800px;margin:auto;padding:2rem;white-space:pre-wrap">${e}</pre></body></html>`], {type:'text/html'});
   }
-  if(from==='html'&&(to==='txt'||to==='md')){const d=document.createElement('div');d.innerHTML=text;return new Blob([d.textContent||d.innerText],{type:getMime(to)});}
-  return new Blob([text],{type:getMime(to)});
+  if (from === 'html' && to === 'txt') {
+    const d = document.createElement('div'); d.innerHTML = text;
+    return new Blob([d.textContent || d.innerText], {type: 'text/plain'});
+  }
+  return new Blob([text], {type: getMime(to)});
 }
 
 /* ================================================================
@@ -1614,7 +1871,7 @@ function getMime(ext){
   return({
     jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',
     gif:'image/gif',bmp:'image/bmp',svg:'image/svg+xml',ico:'image/x-icon',
-    tiff:'image/tiff',avif:'image/avif',
+    tiff:'image/tiff',avif:'image/avif',heic:'image/heic',
     mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg',flac:'audio/flac',
     aac:'audio/aac',m4a:'audio/mp4',weba:'audio/webm',
     mp4:'video/mp4',webm:'video/webm',ogv:'video/ogg',avi:'video/x-msvideo',mov:'video/quicktime',
@@ -1622,7 +1879,7 @@ function getMime(ext){
     docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    txt:'text/plain',md:'text/markdown',html:'text/html',
+    txt:'text/plain',html:'text/html',
     json:'application/json',csv:'text/csv',xml:'application/xml',
     zip:'application/zip'
   })[ext]||'application/octet-stream';
