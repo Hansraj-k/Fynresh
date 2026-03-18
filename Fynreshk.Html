@@ -7,8 +7,18 @@
 <meta name="description" content="Convert and compress any file online for free. 100% local, no uploads.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<!-- PDF.js worker must be configured BEFORE the library loads to avoid fake-worker warning -->
+<script>
+window.pdfjsWorkerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+// Set worker immediately after library loads
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = window.pdfjsWorkerSrc;
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -25,16 +35,12 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .wrapper{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 16px}
-
-/* HEADER */
 header{padding:18px 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .logo{font-family:var(--mono);font-size:1rem;font-weight:700;letter-spacing:-.02em;color:var(--accent)}
 .logo span{color:var(--text2);font-weight:400}
 .header-right{display:flex;gap:6px;flex-wrap:wrap}
 .badge-g{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid rgba(109,255,138,.22);padding:3px 8px;border-radius:2px;background:rgba(109,255,138,.04)}
 .badge-r{font-family:var(--mono);font-size:.58rem;color:var(--accent3);border:1px solid rgba(255,107,71,.18);padding:3px 8px;border-radius:2px;background:rgba(255,107,71,.04)}
-
-/* HERO */
 .hero{padding:28px 0 16px}
 .hero-ey{font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .hero-ey::before{content:'';width:18px;height:1px;background:var(--accent)}
@@ -43,35 +49,23 @@ header{padding:18px 0 0;display:flex;align-items:center;justify-content:space-be
 #hero-title .hl2{color:var(--accent2)}
 #hero-title .hl3{color:var(--accent4)}
 .hero-sub{margin-top:10px;color:var(--text2);font-family:var(--mono);font-size:.68rem;max-width:520px;line-height:1.65}
-
-/* PRIVACY BANNER */
 .privacy-banner{display:flex;align-items:flex-start;gap:10px;background:rgba(109,255,138,.04);border:1px solid rgba(109,255,138,.14);border-radius:var(--radius);padding:10px 14px;margin:14px 0 0}
 .privacy-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
 .privacy-text{font-family:var(--mono);font-size:.63rem;color:var(--text2);line-height:1.65}
 .privacy-text strong{color:var(--green)}
-
-/* TABS */
 .tabs{display:flex;gap:2px;margin:20px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);padding:8px 12px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .14s,border-color .14s;white-space:nowrap;flex-shrink:0}
 .tab:hover{color:var(--text2)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-
-/* CARD */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:0}
 .panel{display:none}.panel.active{display:block}
-
-/* STATE ROW */
 .state-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.62rem;color:var(--text3);margin-bottom:14px;padding:7px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
 .dot.live{background:var(--accent);box-shadow:0 0 6px var(--accent)}
-
-/* FORMAT CATS */
 .format-cats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .cat-btn{font-family:var(--mono);font-size:.59rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 8px;border-radius:2px;cursor:pointer;transition:all .12s;white-space:nowrap}
 .cat-btn:hover,.cat-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.05)}
-
-/* CONVERSION ROW */
 .conversion-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:14px}
 @media(max-width:480px){.conversion-row{grid-template-columns:1fr;gap:6px}}
 @media(max-width:480px){.conversion-row .swap-btn{display:none}}
@@ -81,34 +75,24 @@ select:focus{outline:none;border-color:var(--accent)}
 select option,select optgroup{background:#1a1a1a}
 .swap-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;flex-shrink:0;align-self:flex-end}
 .swap-btn:hover{border-color:var(--accent);color:var(--accent);transform:rotate(180deg)}
-
-/* INPUTS */
 input[type="number"],input[type="text"],input[type="range"],textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:8px 10px;border-radius:var(--radius);transition:border-color .13s}
 input[type="number"]:focus,input[type="text"]:focus,textarea:focus{outline:none;border-color:var(--accent2)}
 input[type="range"]{padding:4px 0;cursor:pointer;accent-color:var(--accent)}
 textarea{resize:vertical;min-height:60px}
-
-/* SIZE ROW */
 .size-row{display:flex;gap:8px;align-items:end;margin-bottom:12px;flex-wrap:wrap}
 .size-field{flex:1;min-width:110px}
 .unit-group{display:flex;gap:3px}
 .unit-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.62rem;padding:5px 9px;border-radius:var(--radius);cursor:pointer;transition:all .12s}
 .unit-btn.active,.unit-btn:hover{border-color:var(--accent2);color:var(--accent2)}
-
-/* QUALITY */
 .quality-row{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
 .quality-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
 .q-btn{font-family:var(--mono);font-size:.60rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px;white-space:nowrap}
 .q-btn:hover{border-color:var(--accent2);color:var(--accent2)}
 .q-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.06)}
 .q-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-
-/* PRESETS */
 .presets{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
 .preset-btn{font-family:var(--mono);font-size:.58rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 8px;border-radius:2px;cursor:pointer;transition:all .11s}
 .preset-btn:hover{color:var(--accent2);border-color:var(--accent2)}
-
-/* PDF TOOLS */
 .pdf-note{font-family:var(--mono);font-size:.62rem;color:var(--text2);background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.14);border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;line-height:1.6}
 .pdf-note b{color:var(--accent4)}
 .pdf-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:14px}
@@ -119,16 +103,10 @@ textarea{resize:vertical;min-height:60px}
 .pdf-tool-icon{font-size:1.05rem;margin-bottom:3px}
 .pdf-tool-title{font-size:.73rem;font-weight:700;margin-bottom:2px}
 .pdf-tool-desc{font-family:var(--mono);font-size:.56rem;color:var(--text3);line-height:1.45}
-
-/* COMBINED INFO */
 .combined-info{display:flex;align-items:flex-start;gap:8px;background:rgba(71,200,255,.04);border:1px solid rgba(71,200,255,.11);border-radius:var(--radius);padding:10px 13px;margin-bottom:12px}
 .combined-info p{font-family:var(--mono);font-size:.64rem;color:var(--text2);line-height:1.55}
 .combined-info p b{color:var(--accent2)}
-
-/* DIVIDER */
 .divider{height:1px;background:var(--border);margin:16px 0}
-
-/* DROPZONE */
 .dropzone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:26px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;user-select:none}
 .dropzone::before{content:'';position:absolute;inset:0;background:var(--accent);opacity:0;transition:opacity .18s;pointer-events:none}
 .dropzone.dragover{border-color:var(--accent)}.dropzone.dragover::before{opacity:.04}
@@ -138,8 +116,6 @@ textarea{resize:vertical;min-height:60px}
 .drop-sub{font-family:var(--mono);font-size:.62rem;color:var(--text3)}
 .drop-sub span{color:var(--accent);cursor:pointer;text-decoration:underline}
 #file-input,#img-wm-input{display:none}
-
-/* FILE LIST */
 .file-list{margin-top:10px;display:flex;flex-direction:column;gap:5px}
 .file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;display:flex;align-items:center;gap:8px;animation:slideIn .17s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
@@ -155,8 +131,6 @@ textarea{resize:vertical;min-height:60px}
 .file-status.done{color:var(--green)}.file-status.error{color:var(--accent3)}
 .file-status.working{color:var(--accent2);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-
-/* ACTION ROW */
 .action-row{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap}
 .btn-primary{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--accent);color:#000;border:none;padding:10px 20px;border-radius:var(--radius);cursor:pointer;transition:all .16s;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
 .btn-primary:hover{background:#d4eb2a;transform:translateY(-1px);box-shadow:0 5px 20px rgba(232,255,71,.16)}
@@ -172,47 +146,34 @@ textarea{resize:vertical;min-height:60px}
 .result-info b{color:var(--accent2)}
 .btn-dl{font-family:var(--mono);font-size:.57rem;background:rgba(109,255,138,.06);border:1px solid rgba(109,255,138,.22);color:var(--green);padding:3px 8px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-block}
 .btn-dl:hover{background:rgba(109,255,138,.14)}
-
-/* QUICK LINKS */
 .quick-links{display:flex;gap:4px;flex-wrap:wrap;margin:12px 0 16px}
 .ql-btn{font-family:var(--mono);font-size:.56rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 7px;border-radius:2px;cursor:pointer;transition:all .11s;white-space:nowrap}
 .ql-btn:hover{border-color:var(--accent5);color:var(--accent5)}
-
-/* TWO-COL GRID */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:520px){.two-col{grid-template-columns:1fr}}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 @media(max-width:520px){.three-col{grid-template-columns:1fr 1fr}}
-
-/* SECTION LABEL */
 .sec-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin:12px 0 6px;display:flex;align-items:center;gap:7px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* ROTATE OPTIONS */
 .rot-opts{display:flex;gap:4px;flex-wrap:wrap}
-
-/* ── ADVANCED SPLIT ── */
 .split-mode-btns{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
 .split-mode-btn{font-family:var(--mono);font-size:.60rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .12s;white-space:nowrap}
 .split-mode-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.07)}
 .split-help{font-family:var(--mono);font-size:.60rem;color:var(--text3);line-height:1.6;margin-bottom:8px;background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.1);padding:7px 10px;border-radius:var(--radius)}
 
-/* ── WATERMARK FULL UI ── */
+/* WATERMARK UI */
 .wm-section{margin-bottom:14px}
 .wm-tabs{display:flex;gap:3px;margin-bottom:10px}
 .wm-tab{font-family:var(--mono);font-size:.62rem;color:var(--text3);border:1px solid var(--border);background:none;padding:5px 12px;border-radius:2px;cursor:pointer;transition:all .12s}
 .wm-tab.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.07)}
 .wm-panel{display:none}.wm-panel.active{display:block}
-
 .color-row{display:flex;align-items:center;gap:8px}
 .color-swatch{width:32px;height:32px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;overflow:hidden;flex-shrink:0}
 .color-swatch input[type="color"]{width:200%;height:200%;margin:-25%;border:none;background:none;cursor:pointer;padding:0}
-
 .placement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}
 .place-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:var(--surface2);padding:6px 4px;border-radius:var(--radius);cursor:pointer;transition:all .12s;text-align:center}
 .place-btn:hover,.place-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.05)}
 .place-btn.center-btn{background:var(--surface3)}
-
 .toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .toggle-label{font-family:var(--mono);font-size:.6rem;color:var(--text3);flex:1}
 .toggle{position:relative;width:34px;height:18px;flex-shrink:0}
@@ -221,13 +182,19 @@ textarea{resize:vertical;min-height:60px}
 .toggle-slider::before{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#555;left:3px;top:3px;transition:.2s}
 .toggle input:checked+.toggle-slider{background:rgba(167,139,250,.3)}
 .toggle input:checked+.toggle-slider::before{transform:translateX(16px);background:var(--accent4)}
-
-/* WM PREVIEW */
 .wm-preview-wrap{position:relative;background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;min-height:180px;cursor:crosshair}
 #wm-preview-canvas{display:block;width:100%;height:auto}
 .wm-drag-hint{position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:.54rem;color:var(--text3);pointer-events:none;background:rgba(0,0,0,.5);padding:2px 6px;border-radius:2px}
 
-/* ── MERGE / ORGANIZE ── */
+/* WM page selector */
+.wm-pages-section{background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.12);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
+.wm-pages-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wm-page-mode-btns{display:flex;gap:3px}
+.wm-page-mode-btn{font-family:var(--mono);font-size:.58rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 8px;border-radius:2px;cursor:pointer;transition:all .12s}
+.wm-page-mode-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.07)}
+#wm-pages-input-wrap{margin-top:6px}
+
+/* MERGE / ORGANIZE */
 .merge-files-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
 .merge-file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:grab;user-select:none}
 .merge-file-item.dragging{opacity:.4;cursor:grabbing}
@@ -239,6 +206,8 @@ textarea{resize:vertical;min-height:60px}
 .merge-btn-sm{font-family:var(--mono);font-size:.56rem;color:var(--text3);border:1px solid var(--border);background:none;padding:2px 7px;border-radius:2px;cursor:pointer;transition:all .11s;white-space:nowrap}
 .merge-btn-sm:hover{color:var(--accent4);border-color:var(--accent4)}
 .merge-btn-sm.danger:hover{color:var(--accent3);border-color:var(--accent3)}
+.merge-all-org-btn{font-family:var(--mono);font-size:.62rem;color:var(--accent2);border:1px solid rgba(71,200,255,.28);background:rgba(71,200,255,.05);padding:6px 12px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap;display:flex;align-items:center;gap:5px;margin-bottom:10px}
+.merge-all-org-btn:hover{background:rgba(71,200,255,.11)}
 
 /* PAGE ORGANIZER MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
@@ -249,22 +218,19 @@ textarea{resize:vertical;min-height:60px}
 .modal-close:hover{color:var(--text)}
 .modal-body{flex:1;overflow-y:auto;padding:16px 18px}
 .modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-
 .page-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
 @media(max-width:400px){.page-grid{grid-template-columns:repeat(3,1fr)}}
 .page-thumb{background:var(--surface2);border:1px solid var(--border);border-radius:3px;cursor:grab;user-select:none;text-align:center;overflow:hidden;transition:all .12s;position:relative}
 .page-thumb:hover{border-color:var(--accent4)}
+.page-thumb.selected{border-color:var(--accent);background:rgba(232,255,71,.06)}
 .page-thumb.dragging{opacity:.35;cursor:grabbing}
 .page-thumb.drag-over{border-color:var(--accent);background:rgba(232,255,71,.07)}
 .page-thumb canvas{display:block;width:100%;height:auto}
 .page-thumb-label{font-family:var(--mono);font-size:.52rem;color:var(--text3);padding:3px 4px}
 .page-thumb-del{position:absolute;top:3px;right:3px;background:rgba(255,107,71,.8);border:none;color:#fff;width:16px;height:16px;border-radius:50%;font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
 .page-thumb:hover .page-thumb-del{display:flex}
-
 .org-controls{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
 .org-controls .field-label{margin:0;white-space:nowrap}
-
-/* FEATURES */
 .features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:26px 0}
 @media(max-width:700px){.features{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:380px){.features{grid-template-columns:1fr 1fr}}
@@ -272,37 +238,28 @@ textarea{resize:vertical;min-height:60px}
 .feature-icon{font-size:1.1rem;margin-bottom:6px}
 .feature-title{font-size:.78rem;font-weight:700;margin-bottom:3px}
 .feature-desc{font-family:var(--mono);font-size:.58rem;color:var(--text3);line-height:1.55}
-
-/* FOOTER */
 footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px}
 .footer-left{font-family:var(--mono);font-size:.56rem;color:var(--text3)}
 .supported-list{display:flex;gap:3px;flex-wrap:wrap}
 .fmt-tag{font-family:var(--mono);font-size:.54rem;color:var(--text3);border:1px solid var(--border);padding:2px 5px;border-radius:2px}
-
-/* TOAST */
 .toast{position:fixed;bottom:16px;right:16px;left:16px;max-width:320px;margin-left:auto;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.66rem;padding:10px 14px;border-radius:var(--radius);z-index:9999;transform:translateY(70px);opacity:0;transition:all .26s ease;line-height:1.5}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.success{border-color:rgba(109,255,138,.38);color:var(--green)}
 .toast.error{border-color:rgba(255,107,71,.32);color:var(--accent3)}
 .toast.info{border-color:rgba(71,200,255,.32);color:var(--accent2)}
-
-/* RANGE WITH VALUE */
 .range-row{display:flex;align-items:center;gap:10px}
 .range-val{font-family:var(--mono);font-size:.65rem;color:var(--accent2);min-width:36px;text-align:right;flex-shrink:0}
-
-/* INLINE BADGE */
 .inline-badge{font-family:var(--mono);font-size:.56rem;padding:2px 6px;border-radius:2px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);color:var(--accent4)}
-
-/* FONT STYLE TOGGLES */
 .style-toggles{display:flex;gap:4px}
 .style-btn{font-family:var(--mono);font-size:.68rem;border:1px solid var(--border);background:var(--surface2);color:var(--text3);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
 .style-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.1)}
 .style-btn:hover{border-color:var(--text2);color:var(--text2)}
-
-/* LAYER BTNS */
 .layer-btns{display:flex;gap:4px}
 .layer-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .12s}
 .layer-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.06)}
+
+/* Org mode indicator in modal */
+.org-mode-badge{font-family:var(--mono);font-size:.58rem;padding:2px 8px;border-radius:2px;background:rgba(71,200,255,.1);border:1px solid rgba(71,200,255,.2);color:var(--accent2);margin-left:8px}
 </style>
 </head>
 <body>
@@ -342,7 +299,6 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
     <span id="state-label">Select options then drop your files below</span>
   </div>
 
-  <!-- QUICK LINKS -->
   <div class="quick-links" id="quick-links">
     <span style="font-family:var(--mono);font-size:.56rem;color:var(--text3);padding:3px 0;flex-shrink:0">Popular:</span>
     <button class="ql-btn" onclick="quickSet('mp4','mp3')">MP4→MP3</button>
@@ -475,8 +431,28 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </div>
     </div>
 
-    <!-- WATERMARK OPTIONS — FULL UI -->
+    <!-- WATERMARK OPTIONS -->
     <div id="watermark-opts" style="display:none">
+      <!-- DROPZONE FIRST (moved above settings) -->
+      <div class="sec-label">1. Upload PDF Files First</div>
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-bottom:8px">Drop your PDFs in the upload zone below, then configure watermark settings here.</div>
+
+      <!-- PAGE SELECTION - NEW FEATURE -->
+      <div class="wm-pages-section">
+        <div class="sec-label" style="margin-top:0">Apply Watermark To</div>
+        <div class="wm-pages-row">
+          <div class="wm-page-mode-btns">
+            <button class="wm-page-mode-btn active" id="wm-pages-all" onclick="setWmPageMode('all',this)">All Pages</button>
+            <button class="wm-page-mode-btn" id="wm-pages-specific" onclick="setWmPageMode('specific',this)">Specific Pages</button>
+            <button class="wm-page-mode-btn" id="wm-pages-range" onclick="setWmPageMode('range',this)">Page Range</button>
+          </div>
+        </div>
+        <div id="wm-pages-input-wrap" style="display:none;margin-top:6px">
+          <input type="text" id="wm-pages-input" placeholder="e.g. 1, 3, 5-7" style="max-width:260px">
+          <div style="font-family:var(--mono);font-size:.57rem;color:var(--text3);margin-top:4px">Page numbers start at 1. Use commas and ranges (e.g. 1-3, 5, 7-9)</div>
+        </div>
+      </div>
+
       <div class="wm-tabs">
         <button class="wm-tab active" id="wmt-text" onclick="setWmTab('text',this)">✏ Text</button>
         <button class="wm-tab"        id="wmt-image" onclick="setWmTab('image',this)">🖼 Image</button>
@@ -559,7 +535,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </div>
 
       <!-- PLACEMENT + LAYER (shared) -->
-      <div class="sec-label">Placement</div>
+      <div class="sec-label">Placement <span class="inline-badge">Drag preview to reposition</span></div>
       <div class="placement-grid" id="wm-placement-grid">
         <button class="place-btn" data-pos="tl" onclick="setWmPos('tl',this)">↖ Top Left</button>
         <button class="place-btn" data-pos="tc" onclick="setWmPos('tc',this)">↑ Top</button>
@@ -579,7 +555,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </div>
 
       <!-- LIVE PREVIEW -->
-      <div class="sec-label">Live Preview <span class="inline-badge">Drag to reposition</span></div>
+      <div class="sec-label">Live Preview</div>
       <div class="wm-preview-wrap" id="wm-preview-wrap">
         <canvas id="wm-preview-canvas"></canvas>
         <div class="wm-drag-hint">drag to reposition</div>
@@ -589,6 +565,10 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
     <!-- MERGE OPTIONS -->
     <div id="merge-opts" style="display:none">
       <div class="sec-label">File Order <span class="inline-badge">Drag to reorder</span></div>
+      <!-- "Organize All" button for all files combined -->
+      <button class="merge-all-org-btn" id="merge-org-all-btn" onclick="openOrgModalAll()" style="display:none">
+        ⊞ Organize All Pages Across Files
+      </button>
       <div class="merge-files-list" id="merge-files-list">
         <div style="font-family:var(--mono);font-size:.62rem;color:var(--text3);padding:8px;text-align:center">Drop PDF files below to add them</div>
       </div>
@@ -678,10 +658,10 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
     </div>
     <div class="modal-body">
       <div class="org-controls">
-        <span class="field-label">Pages:</span>
         <button class="preset-btn" onclick="orgSelectAll()">Select All</button>
+        <button class="preset-btn" onclick="orgDeselectAll()">Deselect All</button>
         <button class="preset-btn" onclick="orgReverseOrder()">Reverse Order</button>
-        <button class="preset-btn" onclick="orgDeleteSelected()">Delete Selected</button>
+        <button class="preset-btn" onclick="orgDeleteSelected()" style="color:var(--accent3)">Delete Selected</button>
       </div>
       <div class="page-grid" id="org-page-grid"></div>
     </div>
@@ -696,9 +676,11 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
 <script>
 /* ================================================================
-   PDF.JS WORKER
+   PDF.js worker — ensure it's properly configured
    ================================================================ */
-try { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; } catch(e){}
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 
 /* ================================================================
    FORMAT DEFINITIONS
@@ -712,7 +694,6 @@ const FORMATS = {
   data:   { label:'⚙ Data',     fmts:['json','csv','xml'] }
 };
 
-// JSON→XML removed; xml only gets json→xml removed from CONV
 const CONV = {
   jpg:['png','webp','jpeg','pdf'], jpeg:['png','webp','jpg','pdf'],
   png:['jpg','jpeg','webp','pdf'], webp:['png','jpg','jpeg','pdf'],
@@ -726,9 +707,9 @@ const CONV = {
   xlsx:['csv','json','txt','html','pdf'],
   pdf:['txt','html','png','csv'],
   txt:['pdf','html','json'], html:['txt','pdf'],
-  json:['csv','txt','pdf'],   // xml REMOVED from json targets
+  json:['csv','txt','pdf'],
   csv:['json','txt','pdf','xlsx'],
-  xml:['txt']                 // xml→json kept; xml→xml removed
+  xml:['txt']
 };
 
 const ALL_FMTS = Object.values(FORMATS).flatMap(c=>c.fmts);
@@ -747,14 +728,17 @@ let WM_TAB = 'text';
 let WM_POS = 'center';
 let WM_LAYER = 'above';
 let WM_STYLES = { bold:false, italic:false, underline:false };
-let WM_IMG = null; // ImageBitmap for image watermark
-let WM_CUSTOM_X = null, WM_CUSTOM_Y = null; // drag override
+let WM_IMG = null;
+let WM_CUSTOM_X = null, WM_CUSTOM_Y = null;
 let WM_PREVIEW_PDF_BYTES = null;
+let WM_PAGE_MODE = 'all'; // 'all' | 'specific' | 'range'
 
-// Merge file list (array of {file, pages:[pageIndex,...], pdfDoc})
+// Merge file list
 let MERGE_FILES = [];
-let ORG_TARGET_IDX = -1; // which merge file is being organized
-let ORG_PAGES = []; // array of page indices for organizer
+// Organizer state
+let ORG_TARGET_IDX = -1;  // -1 means "all files combined" mode
+let ORG_PAGES = []; // array of {fileIdx, pageIdx} for combined, or just pageIdx for single
+let ORG_MODE = 'single'; // 'single' | 'all'
 
 const QUALITY_CFG = {
   max:      { startQ:0.95, minQ:0.50, scaleStep:0.97 },
@@ -783,7 +767,6 @@ function init() {
     if(size){const mx=size.match(/^(\d+\.?\d*)\s*(kb|mb)?$/i);if(mx){const v=mx[1],u=(mx[2]||'kb').toUpperCase();document.getElementById('size-val').value=v;document.getElementById('size-val-b').value=v;setUnit(u);setUnitB(u);}}
   } catch(e) {}
   refreshUI(); checkReady();
-  initWmPreview();
   initWmDrag();
 }
 
@@ -892,7 +875,55 @@ function setSplitMode(m,btn){
 }
 
 /* ================================================================
-   WATERMARK UI
+   WATERMARK UI — PAGE MODE (new)
+   ================================================================ */
+function setWmPageMode(mode, btn) {
+  WM_PAGE_MODE = mode;
+  document.querySelectorAll('.wm-page-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const inputWrap = document.getElementById('wm-pages-input-wrap');
+  inputWrap.style.display = (mode === 'specific' || mode === 'range') ? 'block' : 'none';
+  const input = document.getElementById('wm-pages-input');
+  if (mode === 'specific') input.placeholder = 'e.g. 1, 3, 5, 7';
+  if (mode === 'range') input.placeholder = 'e.g. 1-5, 8-12';
+}
+
+// Returns set of 0-indexed page numbers to apply watermark to, given total pages
+function getWmPageSet(totalPages) {
+  if (WM_PAGE_MODE === 'all') {
+    const s = new Set();
+    for (let i = 0; i < totalPages; i++) s.add(i);
+    return s;
+  }
+  const raw = document.getElementById('wm-pages-input').value.trim();
+  if (!raw) {
+    // fallback to all if empty
+    const s = new Set();
+    for (let i = 0; i < totalPages; i++) s.add(i);
+    return s;
+  }
+  return parsePageList(raw, totalPages);
+}
+
+function parsePageList(str, max) {
+  const pages = new Set();
+  const parts = str.split(/[,;]+/);
+  for (const p of parts) {
+    const t = p.trim();
+    const range = t.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (range) {
+      const a = parseInt(range[1]) - 1, b = parseInt(range[2]) - 1;
+      for (let i = Math.max(0, a); i <= Math.min(max - 1, b); i++) pages.add(i);
+    } else {
+      const n = parseInt(t) - 1;
+      if (!isNaN(n) && n >= 0 && n < max) pages.add(n);
+    }
+  }
+  return pages;
+}
+
+/* ================================================================
+   WATERMARK TAB / STYLE / POS / LAYER
    ================================================================ */
 function setWmTab(t,btn){
   WM_TAB=t;
@@ -925,9 +956,10 @@ document.getElementById('wm-color').addEventListener('input',function(){
   updateWmPreview();
 });
 
-/* ── WM Preview ── */
-let WM_PREVIEW_IMG = null; // ImageBitmap of first PDF page
-async function initWmPreview(){/* called on init, no-op until file added */}
+/* ================================================================
+   WM PREVIEW CANVAS
+   ================================================================ */
+let WM_PREVIEW_IMG = null;
 
 async function loadWmPreviewPage(){
   if(WM_PREVIEW_PDF_BYTES===null)return;
@@ -940,26 +972,23 @@ async function loadWmPreviewPage(){
     await page.render({canvasContext:offCanvas.getContext('2d'),viewport:vp}).promise;
     WM_PREVIEW_IMG=await createImageBitmap(offCanvas);
     updateWmPreview();
-  }catch(e){WM_PREVIEW_IMG=null;}
+  }catch(e){WM_PREVIEW_IMG=null;updateWmPreview();}
 }
 
 function updateWmPreview(){
   const wrap=document.getElementById('wm-preview-wrap');
   const canvas=document.getElementById('wm-preview-canvas');
   const ctx=canvas.getContext('2d');
-
   const W=wrap.clientWidth||400;
-  const H=Math.round(W*1.414); // A4 aspect
+  const H=Math.round(W*1.414);
   canvas.width=W;canvas.height=H;
 
-  // Background
   ctx.fillStyle='#f5f5f0';
   ctx.fillRect(0,0,W,H);
 
   if(WM_PREVIEW_IMG){
     ctx.drawImage(WM_PREVIEW_IMG,0,0,W,H);
   } else {
-    // Placeholder page lines
     ctx.fillStyle='#e8e8e0';
     for(let y=40;y<H-20;y+=22){ctx.fillRect(30,y,W-60,2);}
     ctx.fillStyle='#999';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
@@ -968,25 +997,25 @@ function updateWmPreview(){
     ctx.textAlign='left';
   }
 
-  if(WM_LAYER==='above'){
-    // draw behind = draw page on top of wm; above = draw wm on top
+  if(WM_LAYER==='behind'){
     drawWmOnCanvas(ctx,W,H);
+    if(WM_PREVIEW_IMG){
+      ctx.save();ctx.globalAlpha=0.85;
+      ctx.drawImage(WM_PREVIEW_IMG,0,0,W,H);
+      ctx.restore();
+    }
   } else {
-    // "behind" — wm already drawn, now draw page content on top
-    // For preview we just show semi-transparent page on top of wm
-    const savedAlpha=ctx.globalAlpha;
-    ctx.globalAlpha=1;
-    if(WM_PREVIEW_IMG){ctx.drawImage(WM_PREVIEW_IMG,0,0,W,H);}
-    ctx.globalAlpha=savedAlpha;
     drawWmOnCanvas(ctx,W,H);
   }
 }
 
 function drawWmOnCanvas(ctx,W,H){
-  const pos=WM_CUSTOM_X!==null?{x:WM_CUSTOM_X*W,y:WM_CUSTOM_Y*H}:getWmXY(WM_POS,W,H,0,0);
+  const pos=getWmXY(WM_CUSTOM_X!==null?null:WM_POS,W,H);
+  const px = WM_CUSTOM_X!==null ? WM_CUSTOM_X*W : pos.x;
+  const py = WM_CUSTOM_Y!==null ? WM_CUSTOM_Y*H : pos.y;
 
   ctx.save();
-  ctx.translate(pos.x,pos.y);
+  ctx.translate(px,py);
 
   if(WM_TAB==='image'&&WM_IMG){
     const scale=parseFloat(document.getElementById('wm-img-scale').value)/100;
@@ -1004,7 +1033,7 @@ function drawWmOnCanvas(ctx,W,H){
     const color=document.getElementById('wm-color').value;
     const opacity=parseFloat(document.getElementById('wm-opacity').value)/100;
     const rot=parseFloat(document.getElementById('wm-rotation').value)*Math.PI/180;
-    let fontStr=(WM_STYLES.italic?'italic ':'')+(WM_STYLES.bold?'bold ':'')+fontSize+'px '+font;
+    const fontStr=(WM_STYLES.italic?'italic ':'')+(WM_STYLES.bold?'bold ':'')+fontSize+'px '+font;
     ctx.font=fontStr;
     ctx.globalAlpha=opacity;
     ctx.fillStyle=color;
@@ -1014,27 +1043,44 @@ function drawWmOnCanvas(ctx,W,H){
     ctx.fillText(txt,0,0);
     if(WM_STYLES.underline){
       const tw=ctx.measureText(txt).width;
-      ctx.globalAlpha=opacity;
       ctx.strokeStyle=color;
       ctx.lineWidth=fontSize*0.05;
-      ctx.beginPath();ctx.moveTo(-tw/2,fontSize*0.6);ctx.lineTo(tw/2,fontSize*0.6);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-tw/2,fontSize*0.55);ctx.lineTo(tw/2,fontSize*0.55);ctx.stroke();
     }
   }
   ctx.restore();
   ctx.globalAlpha=1;
 }
 
-function getWmXY(pos,W,H,wmW,wmH){
-  const pad=30;
+// Returns canvas-space coordinates (y increases downward) for named positions
+function getWmXY(pos,W,H){
+  const pad=40;
   const m={
     tl:{x:pad,y:pad}, tc:{x:W/2,y:pad}, tr:{x:W-pad,y:pad},
     ml:{x:pad,y:H/2}, center:{x:W/2,y:H/2}, mr:{x:W-pad,y:H/2},
     bl:{x:pad,y:H-pad}, bc:{x:W/2,y:H-pad}, br:{x:W-pad,y:H-pad}
   };
-  return m[pos]||{x:W/2,y:H/2};
+  return (pos&&m[pos])||{x:W/2,y:H/2};
 }
 
-/* ── WM Drag on preview ── */
+// Returns PDF-lib coordinates (y increases upward, origin bottom-left) for named positions
+// pdfW/pdfH are the page dimensions in PDF points
+function getWmXYPdf(pos,pdfW,pdfH,customX,customY){
+  const pad=40;
+  if(customX!==null){
+    return { x: customX*pdfW, y: (1-customY)*pdfH };
+  }
+  const m={
+    tl:{x:pad,y:pdfH-pad}, tc:{x:pdfW/2,y:pdfH-pad}, tr:{x:pdfW-pad,y:pdfH-pad},
+    ml:{x:pad,y:pdfH/2},   center:{x:pdfW/2,y:pdfH/2}, mr:{x:pdfW-pad,y:pdfH/2},
+    bl:{x:pad,y:pad},       bc:{x:pdfW/2,y:pad},         br:{x:pdfW-pad,y:pad}
+  };
+  return m[pos]||{x:pdfW/2,y:pdfH/2};
+}
+
+/* ================================================================
+   WM DRAG ON PREVIEW
+   ================================================================ */
 function initWmDrag(){
   const canvas=document.getElementById('wm-preview-canvas');
   let dragging=false;
@@ -1042,9 +1088,9 @@ function initWmDrag(){
     const r=canvas.getBoundingClientRect();
     const cx=e.touches?e.touches[0].clientX:e.clientX;
     const cy=e.touches?e.touches[0].clientY:e.clientY;
-    return{x:(cx-r.left)/r.width,y:(cy-r.top)/r.height};
+    return{x:Math.max(0,Math.min(1,(cx-r.left)/r.width)),y:Math.max(0,Math.min(1,(cy-r.top)/r.height))};
   }
-  const onDown=e=>{dragging=true;const p=getPos(e);WM_CUSTOM_X=p.x;WM_CUSTOM_Y=p.y;e.preventDefault();};
+  const onDown=e=>{dragging=true;const p=getPos(e);WM_CUSTOM_X=p.x;WM_CUSTOM_Y=p.y;updateWmPreview();e.preventDefault();};
   const onMove=e=>{if(!dragging)return;const p=getPos(e);WM_CUSTOM_X=p.x;WM_CUSTOM_Y=p.y;updateWmPreview();e.preventDefault();};
   const onUp=()=>{dragging=false;};
   canvas.addEventListener('mousedown',onDown);
@@ -1061,10 +1107,16 @@ function initWmDrag(){
 function rebuildMergeList(){
   const list=document.getElementById('merge-files-list');
   list.innerHTML='';
+  const orgAllBtn = document.getElementById('merge-org-all-btn');
+
   if(MERGE_FILES.length===0){
     list.innerHTML='<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3);padding:8px;text-align:center">Drop PDF files below to add them</div>';
+    if(orgAllBtn) orgAllBtn.style.display='none';
     return;
   }
+
+  if(orgAllBtn) orgAllBtn.style.display = MERGE_FILES.length > 0 ? 'flex' : 'none';
+
   MERGE_FILES.forEach((mf,idx)=>{
     const div=document.createElement('div');
     div.className='merge-file-item';
@@ -1081,8 +1133,7 @@ function rebuildMergeList(){
         <button class="merge-btn-sm" onclick="moveMergeFile(${idx},1)" title="Move down">↓</button>
         <button class="merge-btn-sm danger" onclick="removeMergeFile(${idx})" title="Remove">✕</button>
       </div>`;
-    // Drag reorder
-    div.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',idx);div.classList.add('dragging');});
+    div.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',String(idx));div.classList.add('dragging');});
     div.addEventListener('dragend',()=>div.classList.remove('dragging'));
     div.addEventListener('dragover',e=>{e.preventDefault();div.classList.add('drag-over');});
     div.addEventListener('dragleave',()=>div.classList.remove('drag-over'));
@@ -1111,89 +1162,253 @@ function removeMergeFile(idx){
 }
 
 /* ================================================================
-   PAGE ORGANIZER MODAL
+   PAGE ORGANIZER MODAL — FIXED
    ================================================================ */
-async function openOrgModal(idx){
-  ORG_TARGET_IDX=idx;
-  const mf=MERGE_FILES[idx];
-  document.getElementById('org-modal-title').textContent='Organize: '+mf.file.name;
-  document.getElementById('org-modal').style.display='flex';
 
-  // Render page thumbnails
-  const grid=document.getElementById('org-page-grid');
-  grid.innerHTML='<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">Loading pages…</div>';
+// Open organizer for a single file in merge list
+async function openOrgModal(idx){
+  ORG_TARGET_IDX = idx;
+  ORG_MODE = 'single';
+  const mf = MERGE_FILES[idx];
+  document.getElementById('org-modal-title').textContent = 'Organize: ' + mf.file.name;
+  document.getElementById('org-modal').style.display = 'flex';
+
+  const grid = document.getElementById('org-page-grid');
+  grid.innerHTML = '<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">Loading pages…</div>';
 
   try {
-    const bytes=new Uint8Array(await mf.file.arrayBuffer());
-    const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
-    const total=pdf.numPages;
-    ORG_PAGES=mf.pages||(()=>{const a=[];for(let i=0;i<total;i++)a.push(i);return a;})();
-    mf.pages=[...ORG_PAGES];
+    const bytes = new Uint8Array(await mf.file.arrayBuffer());
+    const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+    const total = pdf.numPages;
 
-    grid.innerHTML='';
-    for(let pi=0;pi<ORG_PAGES.length;pi++){
-      const pageIdx=ORG_PAGES[pi];
-      const thumb=document.createElement('div');
-      thumb.className='page-thumb';
-      thumb.dataset.pi=pi;
-      thumb.draggable=true;
-
-      const c=document.createElement('canvas');
-      const lbl=document.createElement('div');lbl.className='page-thumb-label';lbl.textContent='p.'+(pageIdx+1);
-      const del=document.createElement('button');del.className='page-thumb-del';del.textContent='✕';
-      del.addEventListener('click',e=>{e.stopPropagation();orgDeletePage(pi);});
-      thumb.appendChild(c);thumb.appendChild(lbl);thumb.appendChild(del);
-      grid.appendChild(thumb);
-
-      // Render async
-      (async()=>{
-        try{
-          const page=await pdf.getPage(pageIdx+1);
-          const vp=page.getViewport({scale:0.35});
-          c.width=vp.width;c.height=vp.height;
-          await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
-        }catch(e){c.style.background='#222';c.height=80;}
-      })();
-
-      // Drag reorder
-      thumb.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',pi);thumb.classList.add('dragging');});
-      thumb.addEventListener('dragend',()=>thumb.classList.remove('dragging'));
-      thumb.addEventListener('dragover',e=>{e.preventDefault();thumb.classList.add('drag-over');});
-      thumb.addEventListener('dragleave',()=>thumb.classList.remove('drag-over'));
-      thumb.addEventListener('drop',e=>{
-        e.preventDefault();thumb.classList.remove('drag-over');
-        const from=parseInt(e.dataTransfer.getData('text/plain'));
-        const to=pi;
-        if(from===to)return;
-        const [item]=ORG_PAGES.splice(from,1);
-        ORG_PAGES.splice(to,0,item);
-        openOrgModal(ORG_TARGET_IDX); // re-render
-      });
+    // Initialize or preserve existing page order
+    if (!mf.pages || mf.pages.length === 0) {
+      mf.pages = Array.from({length: total}, (_, i) => i);
     }
+    // ORG_PAGES is a copy we work on, committed on "Apply"
+    ORG_PAGES = [...mf.pages];
+
+    await renderOrgGrid(pdf, ORG_PAGES, null);
   } catch(e) {
-    grid.innerHTML='<div style="color:var(--accent3);font-family:var(--mono);font-size:.65rem">Failed to load PDF: '+esc(e.message)+'</div>';
+    document.getElementById('org-page-grid').innerHTML =
+      '<div style="color:var(--accent3);font-family:var(--mono);font-size:.65rem">Failed to load PDF: ' + esc(e.message) + '</div>';
   }
 }
 
-function orgDeletePage(pi){ORG_PAGES.splice(pi,1);openOrgModal(ORG_TARGET_IDX);}
-function orgSelectAll(){document.querySelectorAll('.page-thumb').forEach(t=>t.classList.add('selected'));}
-function orgReverseOrder(){ORG_PAGES.reverse();openOrgModal(ORG_TARGET_IDX);}
-function orgDeleteSelected(){
-  const sel=[...document.querySelectorAll('.page-thumb.selected')].map(t=>parseInt(t.dataset.pi)).sort((a,b)=>b-a);
-  sel.forEach(i=>ORG_PAGES.splice(i,1));
-  openOrgModal(ORG_TARGET_IDX);
+// Open organizer for ALL files combined
+async function openOrgModalAll(){
+  if(MERGE_FILES.length === 0){toast('No files added yet','error');return;}
+  ORG_TARGET_IDX = -1;
+  ORG_MODE = 'all';
+  document.getElementById('org-modal-title').textContent = 'Organize All Pages';
+  document.getElementById('org-modal').style.display = 'flex';
+
+  const grid = document.getElementById('org-page-grid');
+  grid.innerHTML = '<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">Loading all pages…</div>';
+
+  try {
+    // Build combined page list: [{fileIdx, pageIdx, pdf}]
+    const combined = [];
+    const pdfDocs = [];
+    for (let fi = 0; fi < MERGE_FILES.length; fi++) {
+      const mf = MERGE_FILES[fi];
+      const bytes = new Uint8Array(await mf.file.arrayBuffer());
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      pdfDocs.push(pdf);
+      const total = pdf.numPages;
+      const pages = mf.pages && mf.pages.length > 0 ? mf.pages : Array.from({length: total}, (_, i) => i);
+      for (const pi of pages) {
+        combined.push({fileIdx: fi, pageIdx: pi, fileName: mf.file.name});
+      }
+    }
+    // ORG_PAGES stores combined entries
+    ORG_PAGES = combined;
+    await renderOrgGridCombined(pdfDocs, combined);
+  } catch(e) {
+    document.getElementById('org-page-grid').innerHTML =
+      '<div style="color:var(--accent3);font-family:var(--mono);font-size:.65rem">Failed: ' + esc(e.message) + '</div>';
+  }
 }
+
+// Render grid for single-file mode
+async function renderOrgGrid(pdf, pages, _unused){
+  const grid = document.getElementById('org-page-grid');
+  grid.innerHTML = '';
+
+  for(let pi = 0; pi < pages.length; pi++){
+    const pageIdx = pages[pi];
+    const thumb = createPageThumb(pi, 'p.' + (pageIdx + 1));
+    grid.appendChild(thumb);
+
+    // Render async
+    (async(t, pIdx)=>{
+      try{
+        const page = await pdf.getPage(pIdx + 1);
+        const vp = page.getViewport({scale: 0.35});
+        const c = t.querySelector('canvas');
+        c.width = vp.width; c.height = vp.height;
+        await page.render({canvasContext: c.getContext('2d'), viewport: vp}).promise;
+      }catch(e){}
+    })(thumb, pageIdx);
+
+    attachThumbDrag(thumb, pi);
+  }
+}
+
+// Render grid for all-files combined mode
+async function renderOrgGridCombined(pdfDocs, combined){
+  const grid = document.getElementById('org-page-grid');
+  grid.innerHTML = '';
+
+  for(let pi = 0; pi < combined.length; pi++){
+    const entry = combined[pi];
+    const shortName = entry.fileName.replace(/\.pdf$/i,'').substring(0,8);
+    const label = shortName + ' p.' + (entry.pageIdx + 1);
+    const thumb = createPageThumb(pi, label);
+    grid.appendChild(thumb);
+
+    (async(t, e)=>{
+      try{
+        const pdf = pdfDocs[e.fileIdx];
+        const page = await pdf.getPage(e.pageIdx + 1);
+        const vp = page.getViewport({scale: 0.35});
+        const c = t.querySelector('canvas');
+        c.width = vp.width; c.height = vp.height;
+        await page.render({canvasContext: c.getContext('2d'), viewport: vp}).promise;
+      }catch(e){}
+    })(thumb, entry);
+
+    attachThumbDrag(thumb, pi);
+  }
+}
+
+function createPageThumb(pi, label){
+  const thumb = document.createElement('div');
+  thumb.className = 'page-thumb';
+  thumb.dataset.pi = String(pi);
+  thumb.draggable = true;
+
+  const c = document.createElement('canvas');
+  const lbl = document.createElement('div');
+  lbl.className = 'page-thumb-label';
+  lbl.textContent = label;
+
+  const del = document.createElement('button');
+  del.className = 'page-thumb-del';
+  del.textContent = '✕';
+  del.title = 'Remove page';
+  del.addEventListener('click', e => {
+    e.stopPropagation();
+    // Get current position from DOM
+    const currentPi = parseInt(thumb.dataset.pi);
+    orgDeletePageAt(currentPi);
+  });
+
+  // Click = toggle select
+  thumb.addEventListener('click', e => {
+    if (e.target === del) return;
+    thumb.classList.toggle('selected');
+  });
+
+  thumb.appendChild(c);
+  thumb.appendChild(lbl);
+  thumb.appendChild(del);
+  return thumb;
+}
+
+function attachThumbDrag(thumb, pi){
+  thumb.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', String(parseInt(thumb.dataset.pi)));
+    thumb.classList.add('dragging');
+  });
+  thumb.addEventListener('dragend', () => thumb.classList.remove('dragging'));
+  thumb.addEventListener('dragover', e => { e.preventDefault(); thumb.classList.add('drag-over'); });
+  thumb.addEventListener('dragleave', () => thumb.classList.remove('drag-over'));
+  thumb.addEventListener('drop', e => {
+    e.preventDefault();
+    thumb.classList.remove('drag-over');
+    const from = parseInt(e.dataTransfer.getData('text/plain'));
+    const to = parseInt(thumb.dataset.pi);
+    if(from === to || isNaN(from) || isNaN(to)) return;
+    // Splice in ORG_PAGES
+    const [item] = ORG_PAGES.splice(from, 1);
+    ORG_PAGES.splice(to, 0, item);
+    // Re-render: re-open modal for proper re-render
+    _reRenderOrgAfterMove();
+  });
+}
+
+// Lightweight re-render after drag (no async PDF reload)
+function _reRenderOrgAfterMove(){
+  if(ORG_MODE === 'single'){
+    const mf = MERGE_FILES[ORG_TARGET_IDX];
+    mf.file.arrayBuffer().then(ab => {
+      pdfjsLib.getDocument({data: new Uint8Array(ab)}).promise.then(pdf => {
+        renderOrgGrid(pdf, ORG_PAGES, null);
+      });
+    });
+  } else {
+    // Re-render combined - reload all PDFs
+    openOrgModalAll();
+  }
+}
+
+function orgDeletePageAt(pi){
+  ORG_PAGES.splice(pi, 1);
+  // Re-render
+  _reRenderOrgAfterMove();
+}
+
+// FIX: orgSelectAll now correctly adds 'selected' class to all thumbs
+function orgSelectAll(){
+  document.querySelectorAll('#org-page-grid .page-thumb').forEach(t => t.classList.add('selected'));
+}
+function orgDeselectAll(){
+  document.querySelectorAll('#org-page-grid .page-thumb').forEach(t => t.classList.remove('selected'));
+}
+
+function orgReverseOrder(){
+  ORG_PAGES.reverse();
+  _reRenderOrgAfterMove();
+}
+
+// FIX: delete selected by collecting indices from DOM first (sorted descending), then splice
+function orgDeleteSelected(){
+  const selected = [...document.querySelectorAll('#org-page-grid .page-thumb.selected')]
+    .map(t => parseInt(t.dataset.pi))
+    .filter(n => !isNaN(n))
+    .sort((a, b) => b - a); // descending so earlier splices don't shift later indices
+
+  if(selected.length === 0){ toast('No pages selected', 'info'); return; }
+
+  for(const idx of selected){
+    if(idx >= 0 && idx < ORG_PAGES.length) ORG_PAGES.splice(idx, 1);
+  }
+  _reRenderOrgAfterMove();
+}
+
 function applyOrgModal(){
-  if(ORG_TARGET_IDX>=0) MERGE_FILES[ORG_TARGET_IDX].pages=[...ORG_PAGES];
+  if(ORG_MODE === 'single' && ORG_TARGET_IDX >= 0){
+    MERGE_FILES[ORG_TARGET_IDX].pages = [...ORG_PAGES];
+    toast('Page order applied for ' + MERGE_FILES[ORG_TARGET_IDX].file.name, 'success');
+  } else if(ORG_MODE === 'all'){
+    // Distribute ORG_PAGES back to individual files
+    // Clear existing pages
+    MERGE_FILES.forEach(mf => mf.pages = []);
+    for(const entry of ORG_PAGES){
+      MERGE_FILES[entry.fileIdx].pages.push(entry.pageIdx);
+    }
+    toast('Page order applied across all files', 'success');
+  }
   closeOrgModal();
   rebuildMergeList();
-  toast('Page order updated','success');
 }
-function closeOrgModal(){document.getElementById('org-modal').style.display='none';}
-document.getElementById('org-page-grid').addEventListener('click',function(e){
-  const thumb=e.target.closest('.page-thumb');
-  if(thumb&&!e.target.classList.contains('page-thumb-del')) thumb.classList.toggle('selected');
-});
+
+function closeOrgModal(){
+  document.getElementById('org-modal').style.display = 'none';
+  ORG_PAGES = [];
+  ORG_TARGET_IDX = -1;
+}
 
 /* ================================================================
    REFRESH UI
@@ -1256,22 +1471,12 @@ function onDrop(e){
 }
 
 function addFiles(list){
-  const accept=document.getElementById('file-input').accept;
-  let allowed=[];
-  if(accept&&accept!=='image/*') allowed=accept.split(',').map(a=>a.replace(/^\./,'').trim().toLowerCase());
-
   for(const f of list){
     let ext=f.name.split('.').pop().toLowerCase();
     if(ext==='heif') ext='heic';
 
-    if(allowed.length&&!allowed.includes(ext)){
-      toast('Unsupported: .'+ext,'error');continue;
-    }
-
-    // For merge mode: add to MERGE_FILES too
     if(MODE==='pdf'&&PDF_TOOL==='merge'){
       MERGE_FILES.push({file:f,pages:null});
-      // Count pages asynchronously
       (async()=>{
         try{
           const ab=await f.arrayBuffer();
@@ -1291,7 +1496,7 @@ function addFiles(list){
   }
   renderFiles();checkReady();
 
-  // If watermark tool is active, load preview from first PDF
+  // Load watermark preview
   if(MODE==='pdf'&&PDF_TOOL==='watermark'&&FILES.length>0){
     const pdfFile=FILES.find(f=>f.file.name.toLowerCase().endsWith('.pdf'));
     if(pdfFile){
@@ -1310,6 +1515,7 @@ function clearAll(){
   document.getElementById('result-info').textContent='';
   document.getElementById('btn-dl-all').style.display='none';
   if(MODE==='pdf'&&PDF_TOOL==='merge') rebuildMergeList();
+  WM_PREVIEW_PDF_BYTES=null;WM_PREVIEW_IMG=null;
   checkReady();
 }
 
@@ -1353,7 +1559,6 @@ async function startConversion(){
   document.getElementById('btn-dl-all').style.display='none';
   document.getElementById('result-info').textContent='';
 
-  // Batch PDF merge / images→pdf
   if(MODE==='pdf'&&(PDF_TOOL==='merge'||PDF_TOOL==='topdf')){
     FILES.forEach(f=>{f.status='working';});renderFiles();
     try{
@@ -1427,17 +1632,13 @@ async function downloadAllZip(){
    CONVERT FILE DISPATCHER
    ================================================================ */
 async function convertFile(file,fromExt,toExt){
-  // PDF extractions (fast path)
   if(fromExt==='pdf'&&toExt==='txt')  return pdfToTxtBlob(file);
   if(fromExt==='pdf'&&toExt==='html') return pdfToHtml(file);
   if(fromExt==='pdf'&&toExt==='png')  {const[b]=await pdfToImages(file);return b;}
   if(fromExt==='pdf'&&toExt==='csv')  return pdfToCsv(file);
-  // Image → PDF (binary-safe; must be before anyToPdf)
   const imgExts=['jpg','jpeg','png','webp','svg','heic'];
   if(imgExts.includes(fromExt)&&toExt==='pdf') return imageToPdf(file,fromExt);
-  // HEIC → image
   if(fromExt==='heic') return heicToImage(file,toExt);
-  // MOV → MP4
   if(fromExt==='mov'&&toExt==='mp4') return movToMp4(file);
   return convertFileBase(file,fromExt,toExt);
 }
@@ -1479,40 +1680,28 @@ async function runPdfTool(file){
 }
 
 /* ================================================================
-   PDF COMPRESS — FIXED (image re-render for aggressive compression)
+   PDF COMPRESS
    ================================================================ */
 async function pdfCompress(file){
   try{
     const bytes=await file.arrayBuffer();
     const doc=await PDFLib.PDFDocument.load(new Uint8Array(bytes),{ignoreEncryption:true});
-
-    // Strip metadata
     try{doc.setTitle('');doc.setAuthor('');doc.setSubject('');doc.setKeywords([]);doc.setProducer('');doc.setCreator('');}catch(e){}
-
-    // Save with object streams (primary compression)
     const saved=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:100});
     const compressed=new Blob([saved],{type:'application/pdf'});
-
-    // If compressed well, return it
     if(compressed.size<file.size*0.98){
       toast(`Compressed: ${fmtSize(file.size)} → ${fmtSize(compressed.size)}`,'success');
       return[compressed,'pdf'];
     }
-
-    // Otherwise try re-rendering pages as images (lossy but effective)
     const reRendered=await reRenderPdf(bytes,1.2);
     if(reRendered.size<file.size*0.98){
       toast(`Re-rendered: ${fmtSize(file.size)} → ${fmtSize(reRendered.size)}`,'success');
       return[reRendered,'pdf'];
     }
-
-    // Return whichever is smaller
     const out=reRendered.size<compressed.size?reRendered:compressed;
     toast(`Result: ${fmtSize(file.size)} → ${fmtSize(out.size)}`,'info');
     return[out,'pdf'];
-  }catch(err){
-    throw new Error('PDF compress failed: '+err.message);
-  }
+  }catch(err){throw new Error('PDF compress failed: '+err.message);}
 }
 
 async function reRenderPdf(arrayBuffer,scale=1.2){
@@ -1537,14 +1726,13 @@ async function reRenderPdf(arrayBuffer,scale=1.2){
 }
 
 /* ================================================================
-   PDF SPLIT — ADVANCED
+   PDF SPLIT
    ================================================================ */
 async function pdfSplitAdvanced(file){
   const src=await PDFLib.PDFDocument.load(new Uint8Array(await file.arrayBuffer()),{ignoreEncryption:true});
   const total=src.getPageCount();
   const base=file.name.replace(/\.pdf$/i,'');
 
-  // Parse page selection into 0-indexed arrays
   function parseRanges(str,max){
     const pages=new Set();
     const parts=str.split(/[,;]+/);
@@ -1557,19 +1745,14 @@ async function pdfSplitAdvanced(file){
     return [...pages].sort((a,b)=>a-b);
   }
 
-  let chunks=[];// each chunk: array of 0-indexed page numbers
-
+  let chunks=[];
   if(SPLIT_MODE==='each'){
     for(let i=0;i<total;i++) chunks.push([i]);
   } else if(SPLIT_MODE==='range'){
     const raw=document.getElementById('split-range-input').value.trim();
     if(!raw) throw new Error('Enter page ranges');
-    // Each comma-separated range → separate PDF
     const parts=raw.split(/[;|]+/);
-    for(const p of parts){
-      const pages=parseRanges(p,total);
-      if(pages.length) chunks.push(pages);
-    }
+    for(const p of parts){const pages=parseRanges(p,total);if(pages.length) chunks.push(pages);}
     if(!chunks.length) throw new Error('No valid ranges');
   } else if(SPLIT_MODE==='every'){
     const n=parseInt(document.getElementById('split-every-n').value)||2;
@@ -1579,10 +1762,9 @@ async function pdfSplitAdvanced(file){
     if(!raw) throw new Error('Enter page numbers');
     const pages=parseRanges(raw,total);
     if(!pages.length) throw new Error('No valid pages');
-    chunks=[pages];// all specified pages into one PDF
+    chunks=[pages];
   }
 
-  // Build first chunk, push rest as extra files
   const blobs=[];
   for(const chunk of chunks){
     const d=await PDFLib.PDFDocument.create();
@@ -1591,7 +1773,6 @@ async function pdfSplitAdvanced(file){
     blobs.push(new Blob([await d.save()],{type:'application/pdf'}));
   }
 
-  // Add extra chunks as individual downloadable files
   for(let i=1;i<blobs.length;i++){
     const b=blobs[i],url=URL.createObjectURL(b);
     const suffix=SPLIT_MODE==='each'?`-p${chunks[i][0]+1}`:`-part${i+1}`;
@@ -1602,30 +1783,34 @@ async function pdfSplitAdvanced(file){
 }
 
 /* ================================================================
-   PDF WATERMARK — ADVANCED (uses canvas for rendering)
+   PDF WATERMARK — FIXED (consistent preview/output)
    ================================================================ */
 async function pdfWatermarkAdvanced(file){
   const bytes=new Uint8Array(await file.arrayBuffer());
   const doc=await PDFLib.PDFDocument.load(bytes,{ignoreEncryption:true});
   const font=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
   const pages=doc.getPages();
+  const totalPages=pages.length;
 
-  for(const page of pages){
+  // Determine which pages to watermark
+  const pageSet = getWmPageSet(totalPages);
+
+  for(let pi=0;pi<pages.length;pi++){
+    if(!pageSet.has(pi)) continue; // Skip pages not in selection
+
+    const page=pages[pi];
     const {width,height}=page.getSize();
 
-    const posXY=getWmXY(WM_CUSTOM_X!==null?'custom':WM_POS,width,height,0,0);
-    const finalX=WM_CUSTOM_X!==null?WM_CUSTOM_X*width:posXY.x;
-    const finalY=WM_CUSTOM_X!==null?(1-WM_CUSTOM_Y)*height:height-posXY.y;
-
+    // Use PDF coordinate system (origin bottom-left, y up)
+    const pos = getWmXYPdf(WM_POS, width, height, WM_CUSTOM_X, WM_CUSTOM_Y);
     const opacity=parseFloat(document.getElementById(WM_TAB==='text'?'wm-opacity':'wm-img-opacity').value)/100;
     const rotDeg=parseFloat(document.getElementById(WM_TAB==='text'?'wm-rotation':'wm-img-rotation').value);
 
     if(WM_TAB==='image'&&WM_IMG){
-      // Render watermark image to canvas, embed as PNG
       const scale=parseFloat(document.getElementById('wm-img-scale').value)/100;
       const iw=WM_IMG.width*scale;
       const ih=WM_IMG.height*scale;
-      const offC=document.createElement('canvas');offC.width=iw;offC.height=ih;
+      const offC=document.createElement('canvas');offC.width=Math.max(1,iw);offC.height=Math.max(1,ih);
       const ctx=offC.getContext('2d');
       ctx.globalAlpha=opacity;
       ctx.drawImage(WM_IMG,0,0,iw,ih);
@@ -1633,11 +1818,13 @@ async function pdfWatermarkAdvanced(file){
       const img=await doc.embedPng(pngBytes);
       const pdfScale=Math.min(width,height)/800;
       const dw=iw*pdfScale,dh=ih*pdfScale;
-      const drawOpts={x:finalX-dw/2,y:finalY-dh/2,width:dw,height:dh,opacity,rotate:PDFLib.degrees(rotDeg)};
-      if(WM_LAYER==='behind') page.drawImage(img,drawOpts);
-      else page.drawImage(img,drawOpts);
+      // Center the image at pos
+      page.drawImage(img,{
+        x:pos.x-dw/2,y:pos.y-dh/2,
+        width:dw,height:dh,
+        opacity,rotate:PDFLib.degrees(rotDeg)
+      });
     } else {
-      // Text watermark
       const txt=(document.getElementById('wm-text').value||'WATERMARK').toUpperCase();
       const fontSize=parseFloat(document.getElementById('wm-fontsize').value);
       const colorHex=document.getElementById('wm-color').value;
@@ -1645,9 +1832,20 @@ async function pdfWatermarkAdvanced(file){
       const g=parseInt(colorHex.slice(3,5),16)/255;
       const b=parseInt(colorHex.slice(5,7),16)/255;
 
-      const drawOpts={x:finalX,y:finalY,size:fontSize,font,color:PDFLib.rgb(r,g,b),opacity,rotate:PDFLib.degrees(rotDeg)};
-      if(WM_LAYER==='behind') page.drawText(txt,drawOpts);
-      else page.drawText(txt,drawOpts);
+      // Estimate text dimensions to center it (PDF-lib draws from bottom-left of text baseline)
+      const textWidth = font.widthOfTextAtSize(txt, fontSize);
+      const textHeight = fontSize; // approximate
+      // Adjust so text is visually centered at pos (matching canvas textAlign=center, textBaseline=middle)
+      const drawX = pos.x - textWidth / 2;
+      const drawY = pos.y - textHeight / 2;
+
+      page.drawText(txt,{
+        x:drawX,y:drawY,
+        size:fontSize,font,
+        color:PDFLib.rgb(r,g,b),
+        opacity,
+        rotate:PDFLib.degrees(rotDeg)
+      });
     }
   }
 
@@ -1722,7 +1920,6 @@ async function pdfToHtml(file){
   return new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PDF Export</title></head><body style="font-family:sans-serif;line-height:1.7;max-width:800px;margin:auto;padding:2rem">${escaped}</body></html>`],{type:'text/html'});
 }
 
-/* RFC 4180 CSV quoting helper */
 function csvQuote(val){
   const s=String(val==null?'':val);
   if(s.includes('"')||s.includes(',')||s.includes('\n')||s.includes('\r'))
@@ -1977,7 +2174,7 @@ async function encodeViaRecorder(audioBuf,toExt){
 }
 
 /* ================================================================
-   DATA CONVERTERS — JSON→XML removed
+   DATA CONVERTERS
    ================================================================ */
 async function dataToData(file,from,to){
   const text=await file.text();
@@ -1997,7 +2194,6 @@ function jsonToCsv(text){
   }catch{return new Blob([text],{type:'text/csv'});}
 }
 
-// RFC 4180 CSV parser
 function parseCSV(text){
   const rows=[];const src=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim();
   if(!src)return rows;
