@@ -7,16 +7,13 @@
 <meta name="description" content="Convert and compress any file online for free. 100% local, no uploads.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<!-- PDF.js worker must be configured BEFORE the library loads to avoid fake-worker warning -->
-<script>
-window.pdfjsWorkerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-</script>
+<!-- Load PDF.js then immediately configure worker before any document calls -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-// Set worker immediately after library loads
-if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = window.pdfjsWorkerSrc;
-}
+/* Configure worker SYNCHRONOUSLY right after PDF.js loads.
+   This is the only correct place — before any getDocument() call. */
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -370,6 +367,10 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
         <div class="pdf-tool-icon">⊕</div><div class="pdf-tool-title">Merge</div>
         <div class="pdf-tool-desc">Combine PDFs</div>
       </button>
+      <button class="pdf-tool-btn" id="pt-organize" onclick="setPdfTool('organize',this)">
+        <div class="pdf-tool-icon">⊞</div><div class="pdf-tool-title">Organize</div>
+        <div class="pdf-tool-desc">Reorder &amp; delete pages</div>
+      </button>
       <button class="pdf-tool-btn" id="pt-split" onclick="setPdfTool('split',this)">
         <div class="pdf-tool-icon">⊘</div><div class="pdf-tool-title">Split</div>
         <div class="pdf-tool-desc">Extract pages</div>
@@ -433,133 +434,152 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
     <!-- WATERMARK OPTIONS -->
     <div id="watermark-opts" style="display:none">
-      <!-- DROPZONE FIRST (moved above settings) -->
-      <div class="sec-label">1. Upload PDF Files First</div>
-      <div style="font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-bottom:8px">Drop your PDFs in the upload zone below, then configure watermark settings here.</div>
 
-      <!-- PAGE SELECTION - NEW FEATURE -->
-      <div class="wm-pages-section">
-        <div class="sec-label" style="margin-top:0">Apply Watermark To</div>
-        <div class="wm-pages-row">
-          <div class="wm-page-mode-btns">
-            <button class="wm-page-mode-btn active" id="wm-pages-all" onclick="setWmPageMode('all',this)">All Pages</button>
-            <button class="wm-page-mode-btn" id="wm-pages-specific" onclick="setWmPageMode('specific',this)">Specific Pages</button>
-            <button class="wm-page-mode-btn" id="wm-pages-range" onclick="setWmPageMode('range',this)">Page Range</button>
-          </div>
-        </div>
-        <div id="wm-pages-input-wrap" style="display:none;margin-top:6px">
-          <input type="text" id="wm-pages-input" placeholder="e.g. 1, 3, 5-7" style="max-width:260px">
-          <div style="font-family:var(--mono);font-size:.57rem;color:var(--text3);margin-top:4px">Page numbers start at 1. Use commas and ranges (e.g. 1-3, 5, 7-9)</div>
-        </div>
+      <!-- STEP 1: UPLOAD FIRST (above all settings) -->
+      <div style="background:rgba(232,255,71,.04);border:1px solid rgba(232,255,71,.14);border-radius:var(--radius);padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:1rem">⬆</span>
+        <span style="font-family:var(--mono);font-size:.62rem;color:var(--text2);line-height:1.55"><b style="color:var(--accent)">Step 1:</b> Drop your PDF files in the upload zone below first. A live preview will appear here once a PDF is loaded.</span>
       </div>
 
-      <div class="wm-tabs">
-        <button class="wm-tab active" id="wmt-text" onclick="setWmTab('text',this)">✏ Text</button>
-        <button class="wm-tab"        id="wmt-image" onclick="setWmTab('image',this)">🖼 Image</button>
-      </div>
-
-      <!-- TEXT WM -->
-      <div class="wm-panel active" id="wmp-text">
-        <div class="two-col" style="margin-bottom:8px">
-          <div>
-            <div class="field-label">Watermark Text</div>
-            <input type="text" id="wm-text" placeholder="CONFIDENTIAL" oninput="updateWmPreview()">
-          </div>
-          <div>
-            <div class="field-label">Font</div>
-            <select id="wm-font" onchange="updateWmPreview()">
-              <option value="Helvetica">Helvetica</option>
-              <option value="Arial">Arial</option>
-              <option value="Georgia">Georgia</option>
-              <option value="Times New Roman">Times New Roman</option>
-              <option value="Courier New">Courier New</option>
-              <option value="Impact">Impact</option>
-              <option value="Verdana">Verdana</option>
-            </select>
-          </div>
-        </div>
-        <div class="two-col" style="margin-bottom:8px">
-          <div>
-            <div class="field-label">Font Size</div>
-            <input type="number" id="wm-fontsize" value="48" min="8" max="200" oninput="updateWmPreview()">
-          </div>
-          <div>
-            <div class="field-label">Style</div>
-            <div class="style-toggles">
-              <button class="style-btn" id="wm-bold" onclick="toggleWmStyle('bold',this)" title="Bold"><b>B</b></button>
-              <button class="style-btn" id="wm-italic" onclick="toggleWmStyle('italic',this)" title="Italic"><i>I</i></button>
-              <button class="style-btn" id="wm-underline" onclick="toggleWmStyle('underline',this)" title="Underline"><u>U</u></button>
-            </div>
-          </div>
-        </div>
-        <div class="two-col" style="margin-bottom:8px">
-          <div>
-            <div class="field-label">Color</div>
-            <div class="color-row">
-              <div class="color-swatch"><input type="color" id="wm-color" value="#cccccc" oninput="updateWmPreview()"></div>
-              <span id="wm-color-val" style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">#cccccc</span>
-            </div>
-          </div>
-          <div>
-            <div class="field-label">Opacity <span id="wm-opacity-val" class="range-val">40%</span></div>
-            <input type="range" id="wm-opacity" min="5" max="100" value="40" oninput="updateWmPreview();document.getElementById('wm-opacity-val').textContent=this.value+'%'">
-          </div>
-        </div>
-        <div>
-          <div class="field-label">Rotation <span id="wm-rot-val" class="range-val">45°</span></div>
-          <input type="range" id="wm-rotation" min="-180" max="180" value="45" oninput="updateWmPreview();document.getElementById('wm-rot-val').textContent=this.value+'°'" style="margin-bottom:10px">
-        </div>
-      </div>
-
-      <!-- IMAGE WM -->
-      <div class="wm-panel" id="wmp-image">
-        <div style="margin-bottom:8px">
-          <button class="btn-secondary" onclick="document.getElementById('img-wm-input').click()">📁 Choose Watermark Image</button>
-          <input type="file" id="img-wm-input" accept="image/*" onchange="loadWmImage(this)">
-          <span id="wm-img-name" style="font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-left:8px">No image selected</span>
-        </div>
-        <div class="two-col" style="margin-bottom:8px">
-          <div>
-            <div class="field-label">Scale <span id="wm-img-scale-val" class="range-val">50%</span></div>
-            <input type="range" id="wm-img-scale" min="5" max="150" value="50" oninput="updateWmPreview();document.getElementById('wm-img-scale-val').textContent=this.value+'%'">
-          </div>
-          <div>
-            <div class="field-label">Opacity <span id="wm-img-opacity-val" class="range-val">50%</span></div>
-            <input type="range" id="wm-img-opacity" min="5" max="100" value="50" oninput="updateWmPreview();document.getElementById('wm-img-opacity-val').textContent=this.value+'%'">
-          </div>
-        </div>
-        <div>
-          <div class="field-label">Rotation <span id="wm-img-rot-val" class="range-val">0°</span></div>
-          <input type="range" id="wm-img-rotation" min="-180" max="180" value="0" oninput="updateWmPreview();document.getElementById('wm-img-rot-val').textContent=this.value+'°'" style="margin-bottom:10px">
-        </div>
-      </div>
-
-      <!-- PLACEMENT + LAYER (shared) -->
-      <div class="sec-label">Placement <span class="inline-badge">Drag preview to reposition</span></div>
-      <div class="placement-grid" id="wm-placement-grid">
-        <button class="place-btn" data-pos="tl" onclick="setWmPos('tl',this)">↖ Top Left</button>
-        <button class="place-btn" data-pos="tc" onclick="setWmPos('tc',this)">↑ Top</button>
-        <button class="place-btn" data-pos="tr" onclick="setWmPos('tr',this)">↗ Top Right</button>
-        <button class="place-btn" data-pos="ml" onclick="setWmPos('ml',this)">← Middle Left</button>
-        <button class="place-btn center-btn active" data-pos="center" onclick="setWmPos('center',this)">✦ Center</button>
-        <button class="place-btn" data-pos="mr" onclick="setWmPos('mr',this)">→ Middle Right</button>
-        <button class="place-btn" data-pos="bl" onclick="setWmPos('bl',this)">↙ Bottom Left</button>
-        <button class="place-btn" data-pos="bc" onclick="setWmPos('bc',this)">↓ Bottom</button>
-        <button class="place-btn" data-pos="br" onclick="setWmPos('br',this)">↘ Bottom Right</button>
-      </div>
-
-      <div class="sec-label" style="margin-top:10px">Layer</div>
-      <div class="layer-btns" style="margin-bottom:10px">
-        <button class="layer-btn" id="layer-behind" onclick="setWmLayer('behind',this)">Behind Content</button>
-        <button class="layer-btn active" id="layer-above" onclick="setWmLayer('above',this)">Above Content</button>
-      </div>
-
-      <!-- LIVE PREVIEW -->
-      <div class="sec-label">Live Preview</div>
+      <!-- LIVE PREVIEW (shown early so user sees it update as they configure) -->
+      <div class="sec-label">Preview <span class="inline-badge">Drag to reposition</span></div>
       <div class="wm-preview-wrap" id="wm-preview-wrap">
         <canvas id="wm-preview-canvas"></canvas>
         <div class="wm-drag-hint">drag to reposition</div>
       </div>
+
+      <!-- STEP 2: ENABLE SETTINGS -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
+          <span style="font-family:var(--mono);font-size:.62rem;color:var(--text2);flex:1"><b style="color:var(--accent2)">Step 2:</b> Enable watermark settings to configure</span>
+          <span class="toggle">
+            <input type="checkbox" id="wm-enable-cb" onchange="toggleWmSettings(this.checked)">
+            <span class="toggle-slider"></span>
+          </span>
+        </label>
+      </div>
+
+      <!-- SETTINGS BODY (disabled/enabled by checkbox) -->
+      <div id="wm-settings-body" style="opacity:.35;pointer-events:none;transition:opacity .2s">
+
+        <!-- PAGE SELECTION -->
+        <div class="wm-pages-section">
+          <div class="sec-label" style="margin-top:0">Apply Watermark To</div>
+          <div class="wm-pages-row">
+            <div class="wm-page-mode-btns">
+              <button class="wm-page-mode-btn active" id="wm-pages-all" onclick="setWmPageMode('all',this)">All Pages</button>
+              <button class="wm-page-mode-btn" id="wm-pages-specific" onclick="setWmPageMode('specific',this)">Specific Pages</button>
+              <button class="wm-page-mode-btn" id="wm-pages-range" onclick="setWmPageMode('range',this)">Page Range</button>
+            </div>
+          </div>
+          <div id="wm-pages-input-wrap" style="display:none;margin-top:6px">
+            <input type="text" id="wm-pages-input" placeholder="e.g. 1, 3, 5-7" style="max-width:260px">
+            <div style="font-family:var(--mono);font-size:.57rem;color:var(--text3);margin-top:4px">Page numbers start at 1. Use commas and ranges (e.g. 1-3, 5, 7-9)</div>
+          </div>
+        </div>
+
+        <div class="wm-tabs">
+          <button class="wm-tab active" id="wmt-text" onclick="setWmTab('text',this)">✏ Text</button>
+          <button class="wm-tab"        id="wmt-image" onclick="setWmTab('image',this)">🖼 Image</button>
+        </div>
+
+        <!-- TEXT WM -->
+        <div class="wm-panel active" id="wmp-text">
+          <div class="two-col" style="margin-bottom:8px">
+            <div>
+              <div class="field-label">Watermark Text</div>
+              <input type="text" id="wm-text" placeholder="CONFIDENTIAL" oninput="updateWmPreview()">
+            </div>
+            <div>
+              <div class="field-label">Font</div>
+              <select id="wm-font" onchange="updateWmPreview()">
+                <option value="Helvetica">Helvetica</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Impact">Impact</option>
+                <option value="Verdana">Verdana</option>
+              </select>
+            </div>
+          </div>
+          <div class="two-col" style="margin-bottom:8px">
+            <div>
+              <div class="field-label">Font Size</div>
+              <input type="number" id="wm-fontsize" value="48" min="8" max="200" oninput="updateWmPreview()">
+            </div>
+            <div>
+              <div class="field-label">Style</div>
+              <div class="style-toggles">
+                <button class="style-btn" id="wm-bold" onclick="toggleWmStyle('bold',this)" title="Bold"><b>B</b></button>
+                <button class="style-btn" id="wm-italic" onclick="toggleWmStyle('italic',this)" title="Italic"><i>I</i></button>
+                <button class="style-btn" id="wm-underline" onclick="toggleWmStyle('underline',this)" title="Underline"><u>U</u></button>
+              </div>
+            </div>
+          </div>
+          <div class="two-col" style="margin-bottom:8px">
+            <div>
+              <div class="field-label">Color</div>
+              <div class="color-row">
+                <div class="color-swatch"><input type="color" id="wm-color" value="#cccccc" oninput="updateWmPreview()"></div>
+                <span id="wm-color-val" style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">#cccccc</span>
+              </div>
+            </div>
+            <div>
+              <div class="field-label">Opacity <span id="wm-opacity-val" class="range-val">40%</span></div>
+              <input type="range" id="wm-opacity" min="5" max="100" value="40" oninput="updateWmPreview();document.getElementById('wm-opacity-val').textContent=this.value+'%'">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Rotation <span id="wm-rot-val" class="range-val">45°</span></div>
+            <input type="range" id="wm-rotation" min="-180" max="180" value="45" oninput="updateWmPreview();document.getElementById('wm-rot-val').textContent=this.value+'°'" style="margin-bottom:10px">
+          </div>
+        </div>
+
+        <!-- IMAGE WM -->
+        <div class="wm-panel" id="wmp-image">
+          <div style="margin-bottom:8px">
+            <button class="btn-secondary" onclick="document.getElementById('img-wm-input').click()">📁 Choose Watermark Image</button>
+            <input type="file" id="img-wm-input" accept="image/*" onchange="loadWmImage(this)">
+            <span id="wm-img-name" style="font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-left:8px">No image selected</span>
+          </div>
+          <div class="two-col" style="margin-bottom:8px">
+            <div>
+              <div class="field-label">Scale <span id="wm-img-scale-val" class="range-val">50%</span></div>
+              <input type="range" id="wm-img-scale" min="5" max="150" value="50" oninput="updateWmPreview();document.getElementById('wm-img-scale-val').textContent=this.value+'%'">
+            </div>
+            <div>
+              <div class="field-label">Opacity <span id="wm-img-opacity-val" class="range-val">50%</span></div>
+              <input type="range" id="wm-img-opacity" min="5" max="100" value="50" oninput="updateWmPreview();document.getElementById('wm-img-opacity-val').textContent=this.value+'%'">
+            </div>
+          </div>
+          <div>
+            <div class="field-label">Rotation <span id="wm-img-rot-val" class="range-val">0°</span></div>
+            <input type="range" id="wm-img-rotation" min="-180" max="180" value="0" oninput="updateWmPreview();document.getElementById('wm-img-rot-val').textContent=this.value+'°'" style="margin-bottom:10px">
+          </div>
+        </div>
+
+        <!-- PLACEMENT + LAYER -->
+        <div class="sec-label">Placement</div>
+        <div class="placement-grid" id="wm-placement-grid">
+          <button class="place-btn" data-pos="tl" onclick="setWmPos('tl',this)">↖ Top Left</button>
+          <button class="place-btn" data-pos="tc" onclick="setWmPos('tc',this)">↑ Top</button>
+          <button class="place-btn" data-pos="tr" onclick="setWmPos('tr',this)">↗ Top Right</button>
+          <button class="place-btn" data-pos="ml" onclick="setWmPos('ml',this)">← Mid Left</button>
+          <button class="place-btn center-btn active" data-pos="center" onclick="setWmPos('center',this)">✦ Center</button>
+          <button class="place-btn" data-pos="mr" onclick="setWmPos('mr',this)">→ Mid Right</button>
+          <button class="place-btn" data-pos="bl" onclick="setWmPos('bl',this)">↙ Bot Left</button>
+          <button class="place-btn" data-pos="bc" onclick="setWmPos('bc',this)">↓ Bottom</button>
+          <button class="place-btn" data-pos="br" onclick="setWmPos('br',this)">↘ Bot Right</button>
+        </div>
+
+        <div class="sec-label" style="margin-top:10px">Layer</div>
+        <div class="layer-btns" style="margin-bottom:10px">
+          <button class="layer-btn" id="layer-behind" onclick="setWmLayer('behind',this)">Behind Content</button>
+          <button class="layer-btn active" id="layer-above" onclick="setWmLayer('above',this)">Above Content</button>
+        </div>
+
+      </div><!-- /wm-settings-body -->
     </div>
 
     <!-- MERGE OPTIONS -->
@@ -571,6 +591,14 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
       </button>
       <div class="merge-files-list" id="merge-files-list">
         <div style="font-family:var(--mono);font-size:.62rem;color:var(--text3);padding:8px;text-align:center">Drop PDF files below to add them</div>
+      </div>
+    </div>
+
+    <!-- ORGANIZE OPTIONS (standalone tool) -->
+    <div id="organize-opts" style="display:none">
+      <div class="pdf-note"><b>Organize Pages</b> — Drag pages to reorder, delete unwanted pages, then download the result.</div>
+      <div class="merge-files-list" id="org-single-files-list">
+        <div style="font-family:var(--mono);font-size:.62rem;color:var(--text3);padding:8px;text-align:center">Drop PDF files below — each file can be organized separately</div>
       </div>
     </div>
   </div>
@@ -675,13 +703,6 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 <div class="toast" id="toast"></div>
 
 <script>
-/* ================================================================
-   PDF.js worker — ensure it's properly configured
-   ================================================================ */
-if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-}
-
 /* ================================================================
    FORMAT DEFINITIONS
    ================================================================ */
@@ -862,7 +883,9 @@ function setPdfTool(t,btn){
   document.getElementById('rotate-opts').style.display=t==='rotate'?'block':'none';
   document.getElementById('watermark-opts').style.display=t==='watermark'?'block':'none';
   document.getElementById('merge-opts').style.display=t==='merge'?'block':'none';
+  document.getElementById('organize-opts').style.display=t==='organize'?'block':'none';
   if(t==='merge') rebuildMergeList();
+  if(t==='organize') rebuildOrgSingleList();
   refreshUI();checkReady();
 }
 function setRot(d){ROT_DEG=d;[90,180,270].forEach(r=>document.getElementById('rot-'+r).classList.toggle('active',r===d));}
@@ -945,6 +968,12 @@ function setWmLayer(l,btn){
   WM_LAYER=l;
   document.querySelectorAll('.layer-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
   updateWmPreview();
+}
+function toggleWmSettings(enabled){
+  const body = document.getElementById('wm-settings-body');
+  body.style.opacity = enabled ? '1' : '.35';
+  body.style.pointerEvents = enabled ? 'all' : 'none';
+  if(enabled) updateWmPreview();
 }
 function loadWmImage(input){
   const f=input.files[0];if(!f)return;
@@ -1102,6 +1131,66 @@ function initWmDrag(){
 }
 
 /* ================================================================
+   STANDALONE ORGANIZE TOOL
+   ================================================================ */
+// FILES used by standalone organize tool — separate from MERGE_FILES
+let ORG_STANDALONE_FILES = [];
+
+function rebuildOrgSingleList(){
+  const list = document.getElementById('org-single-files-list');
+  if(!list) return;
+  list.innerHTML = '';
+  if(ORG_STANDALONE_FILES.length === 0){
+    list.innerHTML = '<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3);padding:8px;text-align:center">Drop PDF files below — each file can be organized separately</div>';
+    return;
+  }
+  ORG_STANDALONE_FILES.forEach((sf, idx) => {
+    const div = document.createElement('div');
+    div.className = 'merge-file-item';
+    const pageCount = sf.pages ? sf.pages.length : '?';
+    div.innerHTML = `
+      <span class="merge-file-name">${esc(sf.file.name)}</span>
+      <span class="merge-file-pages">${pageCount}p</span>
+      <div class="merge-file-actions">
+        <button class="merge-btn-sm" onclick="openOrgForStandaloneFile(${idx})" title="Organize pages">⊞ Organize</button>
+        <button class="merge-btn-sm danger" onclick="removeOrgStandaloneFile(${idx})" title="Remove">✕</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+async function openOrgForStandaloneFile(idx){
+  const sf = ORG_STANDALONE_FILES[idx];
+  ORG_MODE = 'single';
+  ORG_TARGET_IDX = -1;       // not a merge-list file
+  ORG_STANDALONE_IDX = idx;
+  document.getElementById('org-modal-title').textContent = 'Organize: ' + sf.file.name;
+  document.getElementById('org-modal').style.display = 'flex';
+  const grid = document.getElementById('org-page-grid');
+  grid.innerHTML = '<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">Loading…</div>';
+  try {
+    const bytes = new Uint8Array(await sf.file.arrayBuffer());
+    const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+    const total = pdf.numPages;
+    if(!sf.pages || sf.pages.length === 0) sf.pages = Array.from({length: total}, (_, i) => i);
+    ORG_PAGES = [...sf.pages];
+    ORG_STANDALONE_PDF = pdf;   // cache for re-renders
+    await renderOrgGrid(pdf, ORG_PAGES, null);
+  } catch(e) {
+    grid.innerHTML = '<div style="color:var(--accent3);font-family:var(--mono);font-size:.65rem">Failed: ' + esc(e.message) + '</div>';
+  }
+}
+
+function removeOrgStandaloneFile(idx){
+  ORG_STANDALONE_FILES.splice(idx, 1);
+  rebuildOrgSingleList();
+  checkReady();
+}
+
+let ORG_STANDALONE_IDX = -1;
+let ORG_STANDALONE_PDF = null;
+
+/* ================================================================
    MERGE FILE LIST UI
    ================================================================ */
 function rebuildMergeList(){
@@ -1195,35 +1284,37 @@ async function openOrgModal(idx){
   }
 }
 
+// Cache for "all" mode — keeps loaded PDFs so re-renders don't need disk re-reads
+let ORG_ALL_PDF_DOCS = [];
+
 // Open organizer for ALL files combined
 async function openOrgModalAll(){
   if(MERGE_FILES.length === 0){toast('No files added yet','error');return;}
   ORG_TARGET_IDX = -1;
   ORG_MODE = 'all';
-  document.getElementById('org-modal-title').textContent = 'Organize All Pages';
+  document.getElementById('org-modal-title').textContent = 'Organize All Pages (' + MERGE_FILES.length + ' files)';
   document.getElementById('org-modal').style.display = 'flex';
 
   const grid = document.getElementById('org-page-grid');
   grid.innerHTML = '<div style="font-family:var(--mono);font-size:.62rem;color:var(--text3)">Loading all pages…</div>';
 
   try {
-    // Build combined page list: [{fileIdx, pageIdx, pdf}]
+    // Load all PDFs fresh, cache them
+    ORG_ALL_PDF_DOCS = [];
     const combined = [];
-    const pdfDocs = [];
     for (let fi = 0; fi < MERGE_FILES.length; fi++) {
       const mf = MERGE_FILES[fi];
       const bytes = new Uint8Array(await mf.file.arrayBuffer());
       const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
-      pdfDocs.push(pdf);
+      ORG_ALL_PDF_DOCS.push(pdf);
       const total = pdf.numPages;
-      const pages = mf.pages && mf.pages.length > 0 ? mf.pages : Array.from({length: total}, (_, i) => i);
+      const pages = (mf.pages && mf.pages.length > 0) ? mf.pages : Array.from({length: total}, (_, i) => i);
       for (const pi of pages) {
         combined.push({fileIdx: fi, pageIdx: pi, fileName: mf.file.name});
       }
     }
-    // ORG_PAGES stores combined entries
     ORG_PAGES = combined;
-    await renderOrgGridCombined(pdfDocs, combined);
+    await renderOrgGridCombined(ORG_ALL_PDF_DOCS, ORG_PAGES);
   } catch(e) {
     document.getElementById('org-page-grid').innerHTML =
       '<div style="color:var(--accent3);font-family:var(--mono);font-size:.65rem">Failed: ' + esc(e.message) + '</div>';
@@ -1338,18 +1429,30 @@ function attachThumbDrag(thumb, pi){
   });
 }
 
-// Lightweight re-render after drag (no async PDF reload)
-function _reRenderOrgAfterMove(){
-  if(ORG_MODE === 'single'){
-    const mf = MERGE_FILES[ORG_TARGET_IDX];
-    mf.file.arrayBuffer().then(ab => {
-      pdfjsLib.getDocument({data: new Uint8Array(ab)}).promise.then(pdf => {
-        renderOrgGrid(pdf, ORG_PAGES, null);
-      });
-    });
-  } else {
-    // Re-render combined - reload all PDFs
-    openOrgModalAll();
+// Re-render organizer grid after drag/delete — uses cached data, no disk reads
+async function _reRenderOrgAfterMove(){
+  if(ORG_MODE === 'all'){
+    // Use cached PDFs — do NOT reload from disk (that would reset ORG_PAGES!)
+    if(ORG_ALL_PDF_DOCS.length > 0){
+      await renderOrgGridCombined(ORG_ALL_PDF_DOCS, ORG_PAGES);
+    } else {
+      openOrgModalAll();
+    }
+    return;
+  }
+
+  // single mode — find the right PDF source
+  if(ORG_STANDALONE_IDX >= 0 && ORG_STANDALONE_PDF){
+    // Standalone organize tool — use cached pdf doc
+    await renderOrgGrid(ORG_STANDALONE_PDF, ORG_PAGES, null);
+  } else if(ORG_TARGET_IDX >= 0 && MERGE_FILES[ORG_TARGET_IDX]){
+    // Merge list single file — re-read from disk (File objects can be re-read)
+    try{
+      const mf = MERGE_FILES[ORG_TARGET_IDX];
+      const bytes = new Uint8Array(await mf.file.arrayBuffer());
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      await renderOrgGrid(pdf, ORG_PAGES, null);
+    }catch(e){ console.warn('Re-render failed', e); }
   }
 }
 
@@ -1388,26 +1491,38 @@ function orgDeleteSelected(){
 }
 
 function applyOrgModal(){
-  if(ORG_MODE === 'single' && ORG_TARGET_IDX >= 0){
-    MERGE_FILES[ORG_TARGET_IDX].pages = [...ORG_PAGES];
-    toast('Page order applied for ' + MERGE_FILES[ORG_TARGET_IDX].file.name, 'success');
-  } else if(ORG_MODE === 'all'){
-    // Distribute ORG_PAGES back to individual files
-    // Clear existing pages
+  if(ORG_MODE === 'all'){
+    // Distribute ORG_PAGES back to individual merge files
     MERGE_FILES.forEach(mf => mf.pages = []);
     for(const entry of ORG_PAGES){
       MERGE_FILES[entry.fileIdx].pages.push(entry.pageIdx);
     }
     toast('Page order applied across all files', 'success');
+    closeOrgModal();
+    rebuildMergeList();
+  } else if(ORG_STANDALONE_IDX >= 0 && ORG_STANDALONE_FILES[ORG_STANDALONE_IDX]){
+    // Standalone organize tool
+    ORG_STANDALONE_FILES[ORG_STANDALONE_IDX].pages = [...ORG_PAGES];
+    toast('Page order applied for ' + ORG_STANDALONE_FILES[ORG_STANDALONE_IDX].file.name, 'success');
+    closeOrgModal();
+    rebuildOrgSingleList();
+  } else if(ORG_TARGET_IDX >= 0 && MERGE_FILES[ORG_TARGET_IDX]){
+    // Single file in merge list
+    MERGE_FILES[ORG_TARGET_IDX].pages = [...ORG_PAGES];
+    toast('Page order applied for ' + MERGE_FILES[ORG_TARGET_IDX].file.name, 'success');
+    closeOrgModal();
+    rebuildMergeList();
+  } else {
+    closeOrgModal();
   }
-  closeOrgModal();
-  rebuildMergeList();
 }
 
 function closeOrgModal(){
   document.getElementById('org-modal').style.display = 'none';
   ORG_PAGES = [];
   ORG_TARGET_IDX = -1;
+  ORG_STANDALONE_IDX = -1;
+  ORG_STANDALONE_PDF = null;
 }
 
 /* ================================================================
@@ -1419,7 +1534,7 @@ function refreshUI(){
   let heroHTML='',heroSub='',stateLbl='',dropTitle='Drop files here';
 
   if(MODE==='pdf'){
-    const lbl={compress:'Compress',merge:'Merge',split:'Split',rotate:'Rotate',toimg:'→Images',topdf:'Images→PDF',text:'Extract Text',watermark:'Watermark'}[PDF_TOOL]||PDF_TOOL;
+    const lbl={compress:'Compress',merge:'Merge',split:'Split',rotate:'Rotate',toimg:'→Images',topdf:'Images→PDF',text:'Extract Text',watermark:'Watermark',organize:'Organize'}[PDF_TOOL]||PDF_TOOL;
     heroHTML=`<span class="hl3">PDF</span> <span class="hl2">${lbl}</span>`;
     heroSub=`PDF ${lbl} — 100% in your browser.`;
     stateLbl=`PDF tool: ${lbl}`;
@@ -1492,15 +1607,33 @@ function addFiles(list){
       rebuildMergeList();
     }
 
+    if(MODE==='pdf'&&PDF_TOOL==='organize'){
+      ORG_STANDALONE_FILES.push({file:f,pages:null});
+      // Count pages async
+      (async()=>{
+        try{
+          const ab=await f.arrayBuffer();
+          const doc=await PDFLib.PDFDocument.load(new Uint8Array(ab),{ignoreEncryption:true});
+          const idx=ORG_STANDALONE_FILES.findIndex(m=>m.file===f);
+          if(idx>=0){
+            const total=doc.getPageCount();
+            ORG_STANDALONE_FILES[idx].pages=Array.from({length:total},(_,i)=>i);
+            rebuildOrgSingleList();
+          }
+        }catch(e){}
+      })();
+      rebuildOrgSingleList();
+    }
+
     FILES.push({file:f,status:'ready',url:null,outName:null,outSize:null,err:null});
   }
   renderFiles();checkReady();
 
-  // Load watermark preview
-  if(MODE==='pdf'&&PDF_TOOL==='watermark'&&FILES.length>0){
-    const pdfFile=FILES.find(f=>f.file.name.toLowerCase().endsWith('.pdf'));
-    if(pdfFile){
-      pdfFile.file.arrayBuffer().then(ab=>{
+  // Load watermark preview — use first PDF found in FILES
+  if(MODE==='pdf'&&PDF_TOOL==='watermark'){
+    const pdfItem=FILES.find(fi=>fi.file.name.toLowerCase().endsWith('.pdf'));
+    if(pdfItem){
+      pdfItem.file.arrayBuffer().then(ab=>{
         WM_PREVIEW_PDF_BYTES=new Uint8Array(ab);
         loadWmPreviewPage();
       });
@@ -1510,12 +1643,14 @@ function addFiles(list){
 
 function removeFile(i){FILES.splice(i,1);renderFiles();checkReady();}
 function clearAll(){
-  FILES=[];MERGE_FILES=[];
+  FILES=[];MERGE_FILES=[];ORG_STANDALONE_FILES=[];
   renderFiles();
   document.getElementById('result-info').textContent='';
   document.getElementById('btn-dl-all').style.display='none';
   if(MODE==='pdf'&&PDF_TOOL==='merge') rebuildMergeList();
+  if(MODE==='pdf'&&PDF_TOOL==='organize') rebuildOrgSingleList();
   WM_PREVIEW_PDF_BYTES=null;WM_PREVIEW_IMG=null;
+  updateWmPreview();
   checkReady();
 }
 
@@ -1545,7 +1680,9 @@ function checkReady(){
   if(MODE==='convert'||MODE==='both'){const from=getFrom();if(from) fi.accept=from==='heic'?'.heic,.heif':'.'+from;}
   if(MODE==='compress') fi.accept='.jpg,.jpeg,.png,.webp,.heic,.pdf,.txt,.json,.csv,.html,.xml,.docx,.pptx,.xlsx';
   if(MODE==='pdf'){if(PDF_TOOL==='topdf') fi.accept='image/*';else fi.accept='.pdf';}
-  const ok=FILES.length>0&&((MODE==='convert'||MODE==='pdf')||getSizeBytes()>0||MODE==='both');
+  // For organize, ready when we have standalone files with applied pages
+  const organizeReady = PDF_TOOL==='organize' && ORG_STANDALONE_FILES.some(sf=>sf.pages&&sf.pages.length>0);
+  const ok=(FILES.length>0&&((MODE==='convert'||MODE==='pdf')||getSizeBytes()>0||MODE==='both'))||organizeReady;
   document.getElementById('btn-go').disabled=!ok;
 }
 
@@ -1572,6 +1709,37 @@ async function startConversion(){
       FILES.forEach(f=>{f.status='error';f.err=err.message;});renderFiles();
       toast('Failed: '+err.message,'error');
     }
+    document.getElementById('btn-go').disabled=false;return;
+  }
+
+  // Standalone Organize tool — output each file with applied page order
+  if(MODE==='pdf'&&PDF_TOOL==='organize'){
+    const eligible = ORG_STANDALONE_FILES.filter(sf=>sf.pages&&sf.pages.length>0);
+    if(!eligible.length){toast('Organize pages using the ⊞ button first','info');document.getElementById('btn-go').disabled=false;return;}
+    let orgOk=0,orgFail=0;
+    for(const sf of eligible){
+      try{
+        const src=await PDFLib.PDFDocument.load(new Uint8Array(await sf.file.arrayBuffer()),{ignoreEncryption:true});
+        const total=src.getPageCount();
+        const validPages=sf.pages.filter(i=>i>=0&&i<total);
+        const out=await PDFLib.PDFDocument.create();
+        const copied=await out.copyPages(src,validPages);
+        copied.forEach(p=>out.addPage(p));
+        const bytes=await out.save({useObjectStreams:true});
+        const blob=new Blob([bytes],{type:'application/pdf'});
+        const url=URL.createObjectURL(blob);
+        const outName=sf.file.name.replace(/\.pdf$/i,'')+'-organized.pdf';
+        FILES.push({file:sf.file,status:'done',url,outName,outSize:blob.size,err:null});
+        orgOk++;
+      }catch(e){
+        FILES.push({file:sf.file,status:'error',url:null,outName:null,outSize:null,err:e.message});
+        orgFail++;
+      }
+    }
+    renderFiles();
+    if(FILES.filter(f=>f.status==='done').length>1) document.getElementById('btn-dl-all').style.display='';
+    if(orgOk) toast(`${orgOk} file(s) organized!`,'success');
+    if(orgFail) toast(`${orgFail} failed.`,'error');
     document.getElementById('btn-go').disabled=false;return;
   }
 
@@ -1675,6 +1843,7 @@ async function runPdfTool(file){
     case 'toimg':     return pdfToImages(file);
     case 'text':      return pdfExtractText(file);
     case 'watermark': return pdfWatermarkAdvanced(file);
+    case 'organize':  return pdfCompress(file); // passthrough — organize uses its own output path
     default: throw new Error('Unknown PDF tool: '+PDF_TOOL);
   }
 }
@@ -1808,21 +1977,32 @@ async function pdfWatermarkAdvanced(file){
 
     if(WM_TAB==='image'&&WM_IMG){
       const scale=parseFloat(document.getElementById('wm-img-scale').value)/100;
-      const iw=WM_IMG.width*scale;
-      const ih=WM_IMG.height*scale;
-      const offC=document.createElement('canvas');offC.width=Math.max(1,iw);offC.height=Math.max(1,ih);
-      const ctx=offC.getContext('2d');
-      ctx.globalAlpha=opacity;
-      ctx.drawImage(WM_IMG,0,0,iw,ih);
-      const pngBytes=new Uint8Array(await(await new Promise(r=>offC.toBlob(r,'image/png'))).arrayBuffer());
+      const rotDeg2=parseFloat(document.getElementById('wm-img-rotation').value);
+
+      // FIX: embed image at FULL original resolution for max clarity
+      // Do NOT bake opacity into canvas — pass it directly to drawImage so it's not applied twice
+      const fullC=document.createElement('canvas');
+      fullC.width=WM_IMG.width;
+      fullC.height=WM_IMG.height;
+      const fCtx=fullC.getContext('2d');
+      // Draw at full opacity — PDF-lib will apply opacity separately
+      fCtx.drawImage(WM_IMG,0,0);
+      const pngBytes=new Uint8Array(await(await new Promise(r=>fullC.toBlob(r,'image/png'))).arrayBuffer());
       const img=await doc.embedPng(pngBytes);
-      const pdfScale=Math.min(width,height)/800;
-      const dw=iw*pdfScale,dh=ih*pdfScale;
-      // Center the image at pos
+
+      // Scale relative to page size
+      const pdfScale=Math.min(width,height)/800*scale;
+      const dw=WM_IMG.width*pdfScale;
+      const dh=WM_IMG.height*pdfScale;
+
+      // Center at pos, apply opacity ONCE (not baked in canvas + drawImage)
       page.drawImage(img,{
-        x:pos.x-dw/2,y:pos.y-dh/2,
-        width:dw,height:dh,
-        opacity,rotate:PDFLib.degrees(rotDeg)
+        x:pos.x-dw/2,
+        y:pos.y-dh/2,
+        width:dw,
+        height:dh,
+        opacity,  // applied here only — not pre-baked in canvas
+        rotate:PDFLib.degrees(rotDeg2)
       });
     } else {
       const txt=(document.getElementById('wm-text').value||'WATERMARK').toUpperCase();
