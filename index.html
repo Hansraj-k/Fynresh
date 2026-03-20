@@ -30,12 +30,12 @@
   s.textContent = '* { -webkit-user-select:none!important; -moz-user-select:none!important; user-select:none!important; }';
   document.head.appendChild(s);
 
-  // ── DevTools detection (multiple methods) ──
+  // ── DevTools detection ──
   var DENIED = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#e8ff47;font-family:monospace;text-align:center;gap:12px"><div style="font-size:2rem">⛔</div><div style="font-size:1.1rem;letter-spacing:.15em">ACCESS DENIED</div><div style="font-size:.65rem;color:#555;letter-spacing:.08em">DevTools detected</div></div>';
 
   function lock(){ document.body.innerHTML = DENIED; }
 
-  // Method 1: window size delta (docked devtools)
+  // Window size delta — only fires when DevTools panel is docked (reliable, no false positives)
   var _threshold = 160;
   var _dtOpen = false;
   function checkSize(){
@@ -43,25 +43,14 @@
     var hDiff = window.outerHeight - window.innerHeight;
     if(wDiff > _threshold || hDiff > _threshold){
       if(!_dtOpen){ _dtOpen = true; lock(); }
-    } else { _dtOpen = false; }
+    } else {
+      _dtOpen = false;
+    }
   }
-  setInterval(checkSize, 300);
+  setInterval(checkSize, 500);
 
-  // Method 2: debugger heartbeat — pauses execution when DevTools is open
-  // Uses a getter trick: toString is called only when object is inspected
-  var _dtCheck = /./;
-  _dtCheck.toString = function(){ lock(); return ''; };
-  setInterval(function(){ console.log(_dtCheck); }, 1000);
-
-  // Method 3: console.clear loop to wipe any output
+  // console.clear loop — wipes any output if DevTools is open
   setInterval(function(){ try{ console.clear(); }catch(e){} }, 500);
-
-  // Method 4: performance timing — debugger slows execution
-  setInterval(function(){
-    var t = performance.now();
-    debugger; // pauses when devtools open
-    if(performance.now() - t > 100){ lock(); }
-  }, 1000);
 
 })();
   (function(){
