@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">Fynresh — Free Online File Converter & Compressor</title>
 <meta name="description" content="Convert and compress any file online for free. 100% local, no uploads.">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <!-- EmailJS -->
@@ -15,41 +17,52 @@
   // Disable right-click context menu
   document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; });
 
-  // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S
+  // Disable F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S
   document.addEventListener('keydown', function(e){
-    // F12
     if(e.keyCode === 123){ e.preventDefault(); return false; }
-    // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
     if(e.ctrlKey && e.shiftKey && [73,74,67].includes(e.keyCode)){ e.preventDefault(); return false; }
-    // Ctrl+U (view source)
     if(e.ctrlKey && e.keyCode === 85){ e.preventDefault(); return false; }
-    // Ctrl+S (save)
     if(e.ctrlKey && e.keyCode === 83){ e.preventDefault(); return false; }
-    // Ctrl+A (select all — optional, remove if not needed)
-    // if(e.ctrlKey && e.keyCode === 65){ e.preventDefault(); return false; }
   });
 
-  // Detect DevTools open via window size difference
-  var devtools = { open: false };
-  var threshold = 160;
-  setInterval(function(){
-    if(
-      window.outerWidth - window.innerWidth > threshold ||
-      window.outerHeight - window.innerHeight > threshold
-    ){
-      if(!devtools.open){
-        devtools.open = true;
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#e8ff47;font-family:monospace;font-size:1.2rem;letter-spacing:.1em">ACCESS DENIED</div>';
-      }
-    } else {
-      devtools.open = false;
-    }
-  }, 500);
+  // Disable text selection
+  var s = document.createElement('style');
+  s.textContent = '* { -webkit-user-select:none!important; -moz-user-select:none!important; user-select:none!important; }';
+  document.head.appendChild(s);
 
-  // Disable text selection via CSS
-  var style = document.createElement('style');
-  style.textContent = '* { -webkit-user-select:none!important; -moz-user-select:none!important; -ms-user-select:none!important; user-select:none!important; }';
-  document.head.appendChild(style);
+  // ── DevTools detection (multiple methods) ──
+  var DENIED = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#e8ff47;font-family:monospace;text-align:center;gap:12px"><div style="font-size:2rem">⛔</div><div style="font-size:1.1rem;letter-spacing:.15em">ACCESS DENIED</div><div style="font-size:.65rem;color:#555;letter-spacing:.08em">DevTools detected</div></div>';
+
+  function lock(){ document.body.innerHTML = DENIED; }
+
+  // Method 1: window size delta (docked devtools)
+  var _threshold = 160;
+  var _dtOpen = false;
+  function checkSize(){
+    var wDiff = window.outerWidth  - window.innerWidth;
+    var hDiff = window.outerHeight - window.innerHeight;
+    if(wDiff > _threshold || hDiff > _threshold){
+      if(!_dtOpen){ _dtOpen = true; lock(); }
+    } else { _dtOpen = false; }
+  }
+  setInterval(checkSize, 300);
+
+  // Method 2: debugger heartbeat — pauses execution when DevTools is open
+  // Uses a getter trick: toString is called only when object is inspected
+  var _dtCheck = /./;
+  _dtCheck.toString = function(){ lock(); return ''; };
+  setInterval(function(){ console.log(_dtCheck); }, 1000);
+
+  // Method 3: console.clear loop to wipe any output
+  setInterval(function(){ try{ console.clear(); }catch(e){} }, 500);
+
+  // Method 4: performance timing — debugger slows execution
+  setInterval(function(){
+    var t = performance.now();
+    debugger; // pauses when devtools open
+    if(performance.now() - t > 100){ lock(); }
+  }, 1000);
+
 })();
   (function(){
     emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // ← Replace with your EmailJS public key
