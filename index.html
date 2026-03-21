@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,95 +10,52 @@
 content="
 default-src 'self';
 script-src 'self' 'unsafe-inline' 'unsafe-eval'
-https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-font-src https://fonts.gstatic.com;
-connect-src 'self' https://api.emailjs.com;
+https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://kit.fontawesome.com;
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://use.fontawesome.com;
+font-src https://fonts.gstatic.com https://ka-f.fontawesome.com https://use.fontawesome.com https://cdnjs.cloudflare.com;
+connect-src 'self' https://api.emailjs.com https://ka-f.fontawesome.com;
 img-src 'self' data: blob:;
 ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
 // ── PROTECT SOURCE ──
 (function(){
-  // Disable right-click context menu
   document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; });
-
-  // Disable F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S
   document.addEventListener('keydown', function(e){
     if(e.keyCode === 123){ e.preventDefault(); return false; }
     if(e.ctrlKey && e.shiftKey && [73,74,67].includes(e.keyCode)){ e.preventDefault(); return false; }
     if(e.ctrlKey && e.keyCode === 85){ e.preventDefault(); return false; }
     if(e.ctrlKey && e.keyCode === 83){ e.preventDefault(); return false; }
   });
-
-  // Disable text selection
   var s = document.createElement('style');
   s.textContent = '* { -webkit-user-select:none!important; -moz-user-select:none!important; user-select:none!important; }';
   document.head.appendChild(s);
-
-  // ── DevTools detection & source obfuscation ──
-  var _DENIED = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#e8ff47;font-family:monospace;text-align:center;gap:12px"><div style="font-size:2rem">⛔</div><div style="font-size:1.1rem;letter-spacing:.15em">ACCESS DENIED</div><div style="font-size:.65rem;color:#555;letter-spacing:.08em">DevTools detected</div></div>';
-
+  var _DENIED = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#e8ff47;font-family:monospace;text-align:center;gap:12px"><div style="font-size:2rem">&#9940;</div><div style="font-size:1.1rem;letter-spacing:.15em">ACCESS DENIED</div><div style="font-size:.65rem;color:#555;letter-spacing:.08em">DevTools detected</div></div>';
   var _locked = false;
   function _lock(){
     if(_locked) return;
     _locked = true;
     document.body.innerHTML = _DENIED;
-    // Keep locking even if someone tries to restore body
     setInterval(function(){ document.body.innerHTML = _DENIED; }, 100);
   }
-
-  // Method 1: window size delta (docked devtools)
   var _threshold = 160;
   setInterval(function(){
     var wDiff = window.outerWidth  - window.innerWidth;
     var hDiff = window.outerHeight - window.innerHeight;
     if(wDiff > _threshold || hDiff > _threshold) _lock();
   }, 500);
-
-  // Method 2: Firebug / undocked devtools via console timing
-  // When devtools is open, console object behaves differently
-  var _c = new Image();
-  Object.defineProperty(_c, 'id', {
-    get: function(){ _lock(); return 'x'; }
-  });
-
-  // Method 3: Override console methods to detect inspection
   var _noop = function(){};
-  var _origLog = console.log;
-  console.log = _noop;
-  console.warn = _noop;
-  console.error = _noop;
-  console.info = _noop;
-  console.debug = _noop;
-  console.table = _noop;
-  console.dir = _noop;
-
-  // Method 4: Continuous console.clear
+  console.log = _noop; console.warn = _noop; console.error = _noop;
+  console.info = _noop; console.debug = _noop; console.table = _noop; console.dir = _noop;
   setInterval(function(){ try{ console.clear(); }catch(e){} }, 300);
-
-  // Method 5: Overwrite document.body outerHTML getter so view-source shows nothing useful
-  try {
-    var _proto = HTMLBodyElement.prototype;
-    Object.defineProperty(_proto, 'innerHTML', {
-      set: function(v){
-        if(_locked){ return; }
-        Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML').set.call(this, v);
-      },
-      get: function(){
-        if(_locked) return _DENIED;
-        return Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML').get.call(this);
-      }
-    });
-  } catch(e){}
-
 })();
-  (function(){
-    emailjs.init("1t10z70Sw2ijT66uf"); // ← Replace with your EmailJS public key
-  })();
+(function(){
+  emailjs.init("1w2ijT66uf");
+})();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -109,188 +66,328 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{
+/* ══════════════════════════════════
+   LIGHT THEME (DEFAULT)
+═══════════════════════════════════ */
+:root, [data-theme="light"] {
+  --bg:#f5f0ea;--surface:#ffffff;--surface2:#fde5d4;--surface3:#ffdcea;
+  --border:#e6a375;--border2:#ff9b91;
+  --accent:#F94601;--accent2:#836dee;--accent3:#Ec5c42;--accent4:#E64e9d;--accent5:#Ff782b;
+  --green:#2d9e6b;
+  --text:#1a0a00;--text2:#5c2a10;--text3:#a0522d;
+  --radius:4px;--mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+  --shadow:0 2px 12px rgba(249,70,1,.10);
+  --badge-local-bg:rgba(45,158,107,.10);--badge-local-border:rgba(45,158,107,.28);--badge-local-color:#2d9e6b;
+  --badge-server-bg:rgba(236,92,66,.08);--badge-server-border:rgba(236,92,66,.22);--badge-server-color:#Ec5c42;
+  --privacy-bg:rgba(45,158,107,.06);--privacy-border:rgba(45,158,107,.18);
+  --tab-active-color:#F94601;--tab-active-border:#F94601;
+  --dot-live:#F94601;
+  --cat-active-border:#836dee;--cat-active-color:#836dee;--cat-active-bg:rgba(131,109,238,.07);
+  --q-active-border:#F94601;--q-active-color:#F94601;--q-active-bg:rgba(249,70,1,.06);
+  --card-shadow:0 4px 24px rgba(249,70,1,.08);
+  --input-bg:#fff;--input-border:#e6a375;--input-focus:#836dee;
+  --select-arrow:"%23a0522d";
+  --btn-primary-bg:#F94601;--btn-primary-hover:#d93d00;
+  --feature-bg:#ffffff;--feature-border:#fde5d4;
+  --footer-border:#fde5d4;
+  --swap-bg:#fde5d4;--swap-border:#e6a375;--swap-color:#5c2a10;
+  --swap-hover-border:#F94601;--swap-hover-color:#F94601;
+  --dl-btn-bg:rgba(45,158,107,.08);--dl-btn-border:rgba(45,158,107,.28);--dl-btn-color:#2d9e6b;
+  --dl-btn-hover:rgba(45,158,107,.16);
+  --result-b-color:#836dee;
+  --pdf-note-bg:rgba(131,109,238,.05);--pdf-note-border:rgba(131,109,238,.18);--pdf-note-color-b:#836dee;
+  --pdf-tool-hover-border:#E64e9d;--pdf-tool-active-border:#E64e9d;--pdf-tool-active-bg:rgba(230,78,157,.07);
+  --combined-bg:rgba(131,109,238,.05);--combined-border:rgba(131,109,238,.14);--combined-b:#836dee;
+  --split-help-bg:rgba(131,109,238,.04);--split-help-border:rgba(131,109,238,.12);
+  --wm-pages-bg:rgba(230,78,157,.04);--wm-pages-border:rgba(230,78,157,.14);
+  --wm-tab-active-border:#E64e9d;--wm-tab-active-color:#E64e9d;--wm-tab-active-bg:rgba(230,78,157,.07);
+  --wm-preview-bg:#f8f3ed;
+  --target-size-bg:rgba(131,109,238,.05);--target-size-border:rgba(131,109,238,.14);--target-size-title:#836dee;
+  --merge-drag-color:#a0522d;
+  --merge-dl-bg:rgba(45,158,107,.05);--merge-dl-border:rgba(45,158,107,.22);
+  --org-all-color:#836dee;--org-all-border:rgba(131,109,238,.28);--org-all-bg:rgba(131,109,238,.05);
+  --file-ext-bg:#fde5d4;--file-ext-color:#F94601;
+  --progress-color:#836dee;
+  --toast-bg:#ffffff;
+  --hero-ey-color:#F94601;--hero-hl:#F94601;--hero-hl2:#836dee;--hero-hl3:#E64e9d;
+  --hero-sub-color:#5c2a10;
+  --theme-btn-bg:#fde5d4;--theme-btn-border:#e6a375;--theme-btn-color:#5c2a10;
+  --theme-btn-hover-bg:#F94601;--theme-btn-hover-color:#fff;
+  --grid-line:rgba(0,0,0,.04);
+}
+
+/* ══════════════════════════════════
+   DARK THEME
+═══════════════════════════════════ */
+[data-theme="dark"] {
   --bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--surface3:#222;
   --border:#2a2a2a;--border2:#333;
   --accent:#e8ff47;--accent2:#47c8ff;--accent3:#ff6b47;--accent4:#a78bfa;--accent5:#fb923c;
   --green:#6dff8a;
   --text:#f0f0f0;--text2:#888;--text3:#555;
-  --radius:4px;--mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+  --badge-local-bg:rgba(109,255,138,.04);--badge-local-border:rgba(109,255,138,.22);--badge-local-color:#6dff8a;
+  --badge-server-bg:rgba(255,107,71,.04);--badge-server-border:rgba(255,107,71,.18);--badge-server-color:#ff6b47;
+  --privacy-bg:rgba(109,255,138,.04);--privacy-border:rgba(109,255,138,.14);
+  --tab-active-color:#e8ff47;--tab-active-border:#e8ff47;
+  --dot-live:#e8ff47;
+  --cat-active-border:#47c8ff;--cat-active-color:#47c8ff;--cat-active-bg:rgba(71,200,255,.05);
+  --q-active-border:#e8ff47;--q-active-color:#e8ff47;--q-active-bg:rgba(232,255,71,.06);
+  --card-shadow:none;
+  --input-bg:#1a1a1a;--input-border:#2a2a2a;--input-focus:#e8ff47;
+  --select-arrow:"%23555";
+  --btn-primary-bg:#e8ff47;--btn-primary-hover:#d4eb2a;
+  --feature-bg:#111;--feature-border:#2a2a2a;
+  --footer-border:#2a2a2a;
+  --swap-bg:#1a1a1a;--swap-border:#2a2a2a;--swap-color:#888;
+  --swap-hover-border:#e8ff47;--swap-hover-color:#e8ff47;
+  --dl-btn-bg:rgba(109,255,138,.06);--dl-btn-border:rgba(109,255,138,.22);--dl-btn-color:#6dff8a;
+  --dl-btn-hover:rgba(109,255,138,.14);
+  --result-b-color:#47c8ff;
+  --pdf-note-bg:rgba(167,139,250,.04);--pdf-note-border:rgba(167,139,250,.14);--pdf-note-color-b:#a78bfa;
+  --pdf-tool-hover-border:#a78bfa;--pdf-tool-active-border:#a78bfa;--pdf-tool-active-bg:rgba(167,139,250,.09);
+  --combined-bg:rgba(71,200,255,.04);--combined-border:rgba(71,200,255,.11);--combined-b:#47c8ff;
+  --split-help-bg:rgba(167,139,250,.04);--split-help-border:rgba(167,139,250,.10);
+  --wm-pages-bg:rgba(167,139,250,.04);--wm-pages-border:rgba(167,139,250,.12);
+  --wm-tab-active-border:#a78bfa;--wm-tab-active-color:#a78bfa;--wm-tab-active-bg:rgba(167,139,250,.07);
+  --wm-preview-bg:#1a1a1a;
+  --target-size-bg:rgba(71,200,255,.04);--target-size-border:rgba(71,200,255,.12);--target-size-title:#47c8ff;
+  --merge-drag-color:#555;
+  --merge-dl-bg:rgba(109,255,138,.04);--merge-dl-border:rgba(109,255,138,.18);
+  --org-all-color:#47c8ff;--org-all-border:rgba(71,200,255,.28);--org-all-bg:rgba(71,200,255,.05);
+  --file-ext-bg:#2a2a2a;--file-ext-color:#e8ff47;
+  --progress-color:#47c8ff;
+  --toast-bg:#111;
+  --hero-ey-color:#e8ff47;--hero-hl:#e8ff47;--hero-hl2:#47c8ff;--hero-hl3:#a78bfa;
+  --hero-sub-color:#888;
+  --theme-btn-bg:#1a1a1a;--theme-btn-border:#333;--theme-btn-color:#888;
+  --theme-btn-hover-bg:#e8ff47;--theme-btn-hover-color:#000;
+  --grid-line:rgba(255,255,255,.02);
 }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;transition:background .25s,color .25s}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
 .wrapper{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 16px}
+
 header{padding:18px 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
 /* ── LOGO ── */
 .logo{display:inline-flex;flex-direction:row;align-items:center;gap:8px;text-decoration:none;line-height:1}
-.logo-img{height:36px;width:auto;display:block;flex-shrink:0;mix-blend-mode:lighten}
+.logo-img{height:36px;width:auto;display:block;flex-shrink:0;mix-blend-mode:multiply}
+[data-theme="dark"] .logo-img{mix-blend-mode:lighten}
 .logo-img-fallback{font-family:var(--mono);font-size:1rem;font-weight:700;letter-spacing:-.02em;color:var(--accent);display:none;flex-shrink:0}
 .logo-img.errored{display:none}
 .logo-img.errored ~ .logo-img-fallback{display:block}
-.logo-beta{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#000;background:var(--accent);padding:4px 6px;border-radius:2px;flex-shrink:0;line-height:1.4;align-self:center;writing-mode:vertical-lr;transform:rotate(0deg)}
+.logo-beta{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--accent);padding:4px 6px;border-radius:2px;flex-shrink:0;line-height:1.4;align-self:center;writing-mode:vertical-lr}
+[data-theme="light"] .logo-beta{color:#fff}
+[data-theme="dark"] .logo-beta{color:#000}
 
 .header-right{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.badge-g{font-family:var(--mono);font-size:.58rem;color:var(--green);border:1px solid rgba(109,255,138,.22);padding:3px 8px;border-radius:2px;background:rgba(109,255,138,.04)}
-.badge-r{font-family:var(--mono);font-size:.58rem;color:var(--accent3);border:1px solid rgba(255,107,71,.18);padding:3px 8px;border-radius:2px;background:rgba(255,107,71,.04)}
-.btn-feedback-header{font-family:var(--mono);font-size:.58rem;color:var(--accent4);border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.05);padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .14s;white-space:nowrap}
+
+/* Theme toggle */
+.theme-toggle{font-family:var(--mono);font-size:.7rem;color:var(--theme-btn-color);border:1px solid var(--theme-btn-border);background:var(--theme-btn-bg);padding:5px 10px;border-radius:2px;cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0}
+.theme-toggle:hover{background:var(--theme-btn-hover-bg);color:var(--theme-btn-hover-color);border-color:var(--theme-btn-hover-bg)}
+
+.badge-g{font-family:var(--mono);font-size:.58rem;color:var(--badge-local-color);border:1px solid var(--badge-local-border);padding:3px 8px;border-radius:2px;background:var(--badge-local-bg);display:flex;align-items:center;gap:4px}
+.badge-r{font-family:var(--mono);font-size:.58rem;color:var(--badge-server-color);border:1px solid var(--badge-server-border);padding:3px 8px;border-radius:2px;background:var(--badge-server-bg);display:flex;align-items:center;gap:4px}
+.btn-feedback-header{font-family:var(--mono);font-size:.58rem;color:var(--accent4);border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.05);padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .14s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+[data-theme="light"] .btn-feedback-header{border-color:rgba(230,78,157,.28);color:#E64e9d;background:rgba(230,78,157,.06)}
 .btn-feedback-header:hover{background:rgba(167,139,250,.14);border-color:var(--accent4)}
+[data-theme="light"] .btn-feedback-header:hover{background:rgba(230,78,157,.14);border-color:#E64e9d}
 
 .hero{padding:28px 0 16px}
-.hero-ey{font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.hero-ey::before{content:'';width:18px;height:1px;background:var(--accent)}
+.hero-ey{font-family:var(--mono);font-size:.62rem;color:var(--hero-ey-color);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.hero-ey::before{content:'';width:18px;height:1px;background:var(--hero-ey-color)}
 #hero-title{font-size:clamp(1.5rem,5vw,2.8rem);font-weight:800;line-height:1.07;letter-spacing:-.03em;transition:all .3s ease}
-#hero-title .hl{color:var(--accent)}
-#hero-title .hl2{color:var(--accent2)}
-#hero-title .hl3{color:var(--accent4)}
-.hero-sub{margin-top:10px;color:var(--text2);font-family:var(--mono);font-size:.68rem;max-width:520px;line-height:1.65}
-.privacy-banner{display:flex;align-items:flex-start;gap:10px;background:rgba(109,255,138,.04);border:1px solid rgba(109,255,138,.14);border-radius:var(--radius);padding:10px 14px;margin:14px 0 0}
-.privacy-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+#hero-title .hl{color:var(--hero-hl)}
+#hero-title .hl2{color:var(--hero-hl2)}
+#hero-title .hl3{color:var(--hero-hl3)}
+.hero-sub{margin-top:10px;color:var(--hero-sub-color);font-family:var(--mono);font-size:.68rem;max-width:520px;line-height:1.65}
+
+.privacy-banner{display:flex;align-items:flex-start;gap:10px;background:var(--privacy-bg);border:1px solid var(--privacy-border);border-radius:var(--radius);padding:10px 14px;margin:14px 0 0}
+.privacy-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;color:var(--green)}
 .privacy-text{font-family:var(--mono);font-size:.63rem;color:var(--text2);line-height:1.65}
 .privacy-text strong{color:var(--green)}
+
 .tabs{display:flex;gap:2px;margin:20px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);padding:8px 12px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .14s,border-color .14s;white-space:nowrap;flex-shrink:0}
+.tab{font-family:var(--mono);font-size:.65rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);padding:8px 12px;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .14s,border-color .14s;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px}
 .tab:hover{color:var(--text2)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:0}
+.tab.active{color:var(--tab-active-color);border-bottom-color:var(--tab-active-border)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:0;box-shadow:var(--card-shadow);transition:background .25s,border-color .25s}
+
 .panel{display:none}.panel.active{display:block}
 .state-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.62rem;color:var(--text3);margin-bottom:14px;padding:7px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
-.dot.live{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.dot.live{background:var(--dot-live);box-shadow:0 0 6px var(--dot-live)}
+
 .format-cats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .cat-btn{font-family:var(--mono);font-size:.59rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 8px;border-radius:2px;cursor:pointer;transition:all .12s;white-space:nowrap}
-.cat-btn:hover,.cat-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.05)}
+.cat-btn:hover,.cat-btn.active{border-color:var(--cat-active-border);color:var(--cat-active-color);background:var(--cat-active-bg)}
+
 .conversion-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:14px}
 @media(max-width:480px){.conversion-row{grid-template-columns:1fr;gap:6px}}
 @media(max-width:480px){.conversion-row .swap-btn{display:none}}
 .field-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px}
-select{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:8px 26px 8px 10px;border-radius:var(--radius);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:border-color .13s}
-select:focus{outline:none;border-color:var(--accent)}
-select option,select optgroup{background:#1a1a1a}
-.swap-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;flex-shrink:0;align-self:flex-end}
-.swap-btn:hover{border-color:var(--accent);color:var(--accent);transform:rotate(180deg)}
-input[type="number"],input[type="text"],input[type="range"],textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:8px 10px;border-radius:var(--radius);transition:border-color .13s}
-input[type="number"]:focus,input[type="text"]:focus,textarea:focus{outline:none;border-color:var(--accent2)}
+
+select{width:100%;background:var(--input-bg);border:1px solid var(--input-border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:8px 26px 8px 10px;border-radius:var(--radius);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a0522d'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;transition:border-color .13s}
+[data-theme="dark"] select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E")}
+select:focus{outline:none;border-color:var(--input-focus)}
+select option,select optgroup{background:var(--surface2)}
+[data-theme="dark"] select option,[data-theme="dark"] select optgroup{background:#1a1a1a}
+
+.swap-btn{background:var(--swap-bg);border:1px solid var(--swap-border);color:var(--swap-color);width:34px;height:34px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s;flex-shrink:0;align-self:flex-end}
+.swap-btn:hover{border-color:var(--swap-hover-border);color:var(--swap-hover-color);transform:rotate(180deg)}
+
+input[type="number"],input[type="text"],input[type="range"],textarea{width:100%;background:var(--input-bg);border:1px solid var(--input-border);color:var(--text);font-family:var(--mono);font-size:.73rem;padding:8px 10px;border-radius:var(--radius);transition:border-color .13s}
+input[type="number"]:focus,input[type="text"]:focus,textarea:focus{outline:none;border-color:var(--input-focus)}
 input[type="range"]{padding:4px 0;cursor:pointer;accent-color:var(--accent)}
 textarea{resize:vertical;min-height:60px}
+
 .size-row{display:flex;gap:8px;align-items:end;margin-bottom:12px;flex-wrap:wrap}
 .size-field{flex:1;min-width:110px}
 .unit-group{display:flex;gap:3px}
 .unit-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.62rem;padding:5px 9px;border-radius:var(--radius);cursor:pointer;transition:all .12s}
-.unit-btn.active,.unit-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+.unit-btn.active,.unit-btn:hover{border-color:var(--cat-active-border);color:var(--cat-active-color)}
+
 .quality-row{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
 .quality-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
 .q-btn{font-family:var(--mono);font-size:.60rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px;white-space:nowrap}
-.q-btn:hover{border-color:var(--accent2);color:var(--accent2)}
-.q-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,.06)}
+.q-btn:hover{border-color:var(--cat-active-border);color:var(--cat-active-color)}
+.q-btn.active{border-color:var(--q-active-border);color:var(--q-active-color);background:var(--q-active-bg)}
 .q-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
 .presets{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
 .preset-btn{font-family:var(--mono);font-size:.58rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 8px;border-radius:2px;cursor:pointer;transition:all .11s}
-.preset-btn:hover{color:var(--accent2);border-color:var(--accent2)}
-.pdf-note{font-family:var(--mono);font-size:.62rem;color:var(--text2);background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.14);border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;line-height:1.6}
-.pdf-note b{color:var(--accent4)}
+.preset-btn:hover{color:var(--cat-active-color);border-color:var(--cat-active-border)}
+
+.pdf-note{font-family:var(--mono);font-size:.62rem;color:var(--text2);background:var(--pdf-note-bg);border:1px solid var(--pdf-note-border);border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;line-height:1.6}
+.pdf-note b{color:var(--pdf-note-color-b)}
+
 .pdf-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:14px}
 @media(max-width:360px){.pdf-tools{grid-template-columns:1fr 1fr}}
 .pdf-tool-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 9px;cursor:pointer;transition:all .12s;text-align:left}
-.pdf-tool-btn:hover{border-color:var(--accent4);background:rgba(167,139,250,.05)}
-.pdf-tool-btn.active{border-color:var(--accent4);background:rgba(167,139,250,.09)}
-.pdf-tool-icon{font-size:1.05rem;margin-bottom:3px}
+.pdf-tool-btn:hover{border-color:var(--pdf-tool-hover-border);background:rgba(230,78,157,.04)}
+[data-theme="dark"] .pdf-tool-btn:hover{background:rgba(167,139,250,.05)}
+.pdf-tool-btn.active{border-color:var(--pdf-tool-active-border);background:var(--pdf-tool-active-bg)}
+.pdf-tool-icon{font-size:1.05rem;margin-bottom:4px;color:var(--accent4)}
 .pdf-tool-title{font-size:.73rem;font-weight:700;margin-bottom:2px}
 .pdf-tool-desc{font-family:var(--mono);font-size:.56rem;color:var(--text3);line-height:1.45}
-.combined-info{display:flex;align-items:flex-start;gap:8px;background:rgba(71,200,255,.04);border:1px solid rgba(71,200,255,.11);border-radius:var(--radius);padding:10px 13px;margin-bottom:12px}
+
+.combined-info{display:flex;align-items:flex-start;gap:8px;background:var(--combined-bg);border:1px solid var(--combined-border);border-radius:var(--radius);padding:10px 13px;margin-bottom:12px}
 .combined-info p{font-family:var(--mono);font-size:.64rem;color:var(--text2);line-height:1.55}
-.combined-info p b{color:var(--accent2)}
+.combined-info p b{color:var(--combined-b)}
 .divider{height:1px;background:var(--border);margin:16px 0}
-.dropzone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:26px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;user-select:none}
+
+.dropzone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:26px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .dropzone::before{content:'';position:absolute;inset:0;background:var(--accent);opacity:0;transition:opacity .18s;pointer-events:none}
 .dropzone.dragover{border-color:var(--accent)}.dropzone.dragover::before{opacity:.04}
 .dropzone:hover{border-color:var(--text3)}
-.drop-icon{font-size:1.6rem;margin-bottom:7px;display:block;opacity:.45}
+.drop-icon{font-size:1.6rem;margin-bottom:7px;display:block;opacity:.45;color:var(--accent)}
 .drop-title{font-size:.88rem;font-weight:700;margin-bottom:3px}
 .drop-sub{font-family:var(--mono);font-size:.62rem;color:var(--text3)}
 .drop-sub span{color:var(--accent);cursor:pointer;text-decoration:underline}
 #file-input,#img-wm-input{display:none}
+
 .file-list{margin-top:10px;display:flex;flex-direction:column;gap:5px}
 .file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;display:flex;align-items:center;gap:8px;animation:slideIn .17s ease}
 @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.file-ext{font-family:var(--mono);font-size:.55rem;font-weight:700;padding:2px 5px;border-radius:2px;background:var(--border);color:var(--accent);flex-shrink:0;text-transform:uppercase;min-width:34px;text-align:center}
+.file-ext{font-family:var(--mono);font-size:.55rem;font-weight:700;padding:2px 5px;border-radius:2px;background:var(--file-ext-bg);color:var(--file-ext-color);flex-shrink:0;text-transform:uppercase;min-width:34px;text-align:center}
 .file-info{flex:1;min-width:0}
 .file-name{font-size:.77rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .file-size{font-family:var(--mono);font-size:.58rem;color:var(--text3);margin-top:2px}
 .progress-wrap{margin-top:3px;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
-.progress-bar{height:100%;background:var(--accent2);border-radius:1px;transition:width .22s ease;width:0}
+.progress-bar{height:100%;background:var(--progress-color);border-radius:1px;transition:width .22s ease;width:0}
 .file-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;padding:2px 4px;border-radius:2px;transition:color .11s;flex-shrink:0}
 .file-remove:hover{color:var(--accent3)}
 .file-status{font-family:var(--mono);font-size:.57rem;color:var(--text3);flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .file-status.done{color:var(--green)}.file-status.error{color:var(--accent3)}
-.file-status.working{color:var(--accent2);animation:pulse 1s infinite}
+.file-status.working{color:var(--cat-active-color);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
 .action-row{display:flex;gap:8px;margin-top:14px;align-items:center;flex-wrap:wrap}
-.btn-primary{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--accent);color:#000;border:none;padding:10px 20px;border-radius:var(--radius);cursor:pointer;transition:all .16s;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
-.btn-primary:hover{background:#d4eb2a;transform:translateY(-1px);box-shadow:0 5px 20px rgba(232,255,71,.16)}
+.btn-primary{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--btn-primary-bg);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius);cursor:pointer;transition:all .16s;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap}
+[data-theme="dark"] .btn-primary{color:#000}
+.btn-primary:hover{background:var(--btn-primary-hover);transform:translateY(-1px);box-shadow:0 5px 20px rgba(249,70,1,.22)}
+[data-theme="dark"] .btn-primary:hover{background:#d4eb2a;box-shadow:0 5px 20px rgba(232,255,71,.16)}
 .btn-primary:active{transform:translateY(0)}
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-secondary{font-family:var(--mono);font-size:.64rem;color:var(--text3);border:1px solid var(--border);background:none;padding:9px 13px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap}
 .btn-secondary:hover{color:var(--text);border-color:var(--text3)}
 .btn-accent{font-family:var(--mono);font-size:.64rem;color:var(--accent4);border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.05);padding:9px 13px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap}
+[data-theme="light"] .btn-accent{color:#E64e9d;border-color:rgba(230,78,157,.28);background:rgba(230,78,157,.05)}
 .btn-accent:hover{background:rgba(167,139,250,.11)}
-.btn-dl-all{font-family:var(--mono);font-size:.64rem;color:var(--accent2);border:1px solid rgba(71,200,255,.28);background:rgba(71,200,255,.05);padding:9px 13px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap}
-.btn-dl-all:hover{background:rgba(71,200,255,.11)}
+[data-theme="light"] .btn-accent:hover{background:rgba(230,78,157,.11)}
+.btn-dl-all{font-family:var(--mono);font-size:.64rem;color:var(--cat-active-color);border:1px solid var(--cat-active-border);background:rgba(131,109,238,.05);padding:9px 13px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+[data-theme="dark"] .btn-dl-all{color:#47c8ff;border-color:rgba(71,200,255,.28);background:rgba(71,200,255,.05)}
+.btn-dl-all:hover{background:rgba(131,109,238,.11)}
+[data-theme="dark"] .btn-dl-all:hover{background:rgba(71,200,255,.11)}
 .result-info{font-family:var(--mono);font-size:.62rem;color:var(--text3);flex:1;line-height:1.6;min-width:0}
-.result-info b{color:var(--accent2)}
-.btn-dl{font-family:var(--mono);font-size:.57rem;background:rgba(109,255,138,.06);border:1px solid rgba(109,255,138,.22);color:var(--green);padding:3px 8px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-block}
-.btn-dl:hover{background:rgba(109,255,138,.14)}
+.result-info b{color:var(--result-b-color)}
+.btn-dl{font-family:var(--mono);font-size:.57rem;background:var(--dl-btn-bg);border:1px solid var(--dl-btn-border);color:var(--dl-btn-color);padding:3px 8px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.btn-dl:hover{background:var(--dl-btn-hover)}
+
 .quick-links{display:flex;gap:4px;flex-wrap:wrap;margin:12px 0 16px}
 .ql-btn{font-family:var(--mono);font-size:.56rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 7px;border-radius:2px;cursor:pointer;transition:all .11s;white-space:nowrap}
 .ql-btn:hover{border-color:var(--accent5);color:var(--accent5)}
+[data-theme="light"] .ql-btn:hover{border-color:#Ff782b;color:#Ff782b}
+
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:520px){.two-col{grid-template-columns:1fr}}
 .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 @media(max-width:520px){.three-col{grid-template-columns:1fr 1fr}}
 .sec-label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin:12px 0 6px;display:flex;align-items:center;gap:7px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
 .rot-opts{display:flex;gap:4px;flex-wrap:wrap}
 .split-mode-btns{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
 .split-mode-btn{font-family:var(--mono);font-size:.60rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .12s;white-space:nowrap}
-.split-mode-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.07)}
-.split-help{font-family:var(--mono);font-size:.60rem;color:var(--text3);line-height:1.6;margin-bottom:8px;background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.1);padding:7px 10px;border-radius:var(--radius)}
+.split-mode-btn.active{border-color:var(--wm-tab-active-border);color:var(--wm-tab-active-color);background:var(--wm-tab-active-bg)}
+.split-help{font-family:var(--mono);font-size:.60rem;color:var(--text2);line-height:1.6;margin-bottom:8px;background:var(--split-help-bg);border:1px solid var(--split-help-border);padding:7px 10px;border-radius:var(--radius)}
+
 .wm-section{margin-bottom:14px}
 .wm-settings-area{margin-bottom:14px}
 .wm-preview-area{margin-bottom:14px}
 .wm-tabs{display:flex;gap:3px;margin-bottom:10px}
 .wm-tab{font-family:var(--mono);font-size:.62rem;color:var(--text3);border:1px solid var(--border);background:none;padding:5px 12px;border-radius:2px;cursor:pointer;transition:all .12s}
-.wm-tab.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.07)}
+.wm-tab.active{border-color:var(--wm-tab-active-border);color:var(--wm-tab-active-color);background:var(--wm-tab-active-bg)}
 .wm-panel{display:none}.wm-panel.active{display:block}
+
 .color-row{display:flex;align-items:center;gap:8px}
 .color-swatch{width:32px;height:32px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;overflow:hidden;flex-shrink:0}
 .color-swatch input[type="color"]{width:200%;height:200%;margin:-25%;border:none;background:none;cursor:pointer;padding:0}
 .placement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}
 .place-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:var(--surface2);padding:6px 4px;border-radius:var(--radius);cursor:pointer;transition:all .12s;text-align:center}
-.place-btn:hover,.place-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.05)}
+.place-btn:hover,.place-btn.active{border-color:var(--cat-active-border);color:var(--cat-active-color);background:var(--cat-active-bg)}
 .place-btn.center-btn{background:var(--surface3)}
+
 .toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .toggle-label{font-family:var(--mono);font-size:.6rem;color:var(--text3);flex:1}
 .toggle{position:relative;width:34px;height:18px;flex-shrink:0}
 .toggle input{opacity:0;width:0;height:0;position:absolute}
 .toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:9px;cursor:pointer;transition:.2s}
-.toggle-slider::before{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#555;left:3px;top:3px;transition:.2s}
-.toggle input:checked+.toggle-slider{background:rgba(167,139,250,.3)}
+.toggle-slider::before{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--text3);left:3px;top:3px;transition:.2s}
+.toggle input:checked+.toggle-slider{background:rgba(230,78,157,.3)}
+[data-theme="dark"] .toggle input:checked+.toggle-slider{background:rgba(167,139,250,.3)}
 .toggle input:checked+.toggle-slider::before{transform:translateX(16px);background:var(--accent4)}
+
 .preview-toggle-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:9px 13px;margin-bottom:10px}
 .preview-toggle-label{font-family:var(--mono);font-size:.62rem;color:var(--text2);flex:1}
-.preview-toggle-label b{color:var(--accent2)}
-.wm-preview-wrap{position:relative;background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;min-height:180px;cursor:crosshair}
+.preview-toggle-label b{color:var(--cat-active-color)}
+.wm-preview-wrap{position:relative;background:var(--wm-preview-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;min-height:180px;cursor:crosshair}
 #wm-preview-canvas{display:block;width:100%;height:auto}
-.wm-drag-hint{position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:.54rem;color:var(--text3);pointer-events:none;background:rgba(0,0,0,.5);padding:2px 6px;border-radius:2px}
-.wm-pages-section{background:rgba(167,139,250,.04);border:1px solid rgba(167,139,250,.12);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
+.wm-drag-hint{position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:.54rem;color:var(--text3);pointer-events:none;background:rgba(0,0,0,.3);padding:2px 6px;border-radius:2px}
+
+.wm-pages-section{background:var(--wm-pages-bg);border:1px solid var(--wm-pages-border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px}
 .wm-pages-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .wm-page-mode-btns{display:flex;gap:3px}
 .wm-page-mode-btn{font-family:var(--mono);font-size:.58rem;color:var(--text3);border:1px solid var(--border);background:none;padding:3px 8px;border-radius:2px;cursor:pointer;transition:all .12s}
-.wm-page-mode-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.07)}
+.wm-page-mode-btn.active{border-color:var(--wm-tab-active-border);color:var(--wm-tab-active-color);background:var(--wm-tab-active-bg)}
 #wm-pages-input-wrap{margin-top:6px}
+
 .dl-options-panel{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;margin-top:10px}
 .dl-options-title{font-family:var(--mono);font-size:.6rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .dl-options-title::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -299,36 +396,41 @@ textarea{resize:vertical;min-height:60px}
 .dl-option-label{font-family:var(--mono);font-size:.63rem;color:var(--text2);flex:1}
 .dl-option-size{font-family:var(--mono);font-size:.6rem;color:var(--text3);min-width:70px;text-align:right}
 .dl-option-size.loading{animation:pulse 1s infinite}
-.btn-dl-opt{font-family:var(--mono);font-size:.58rem;background:rgba(109,255,138,.06);border:1px solid rgba(109,255,138,.22);color:var(--green);padding:4px 10px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-block;flex-shrink:0}
-.btn-dl-opt:hover{background:rgba(109,255,138,.14)}
+.btn-dl-opt{font-family:var(--mono);font-size:.58rem;background:var(--dl-btn-bg);border:1px solid var(--dl-btn-border);color:var(--dl-btn-color);padding:4px 10px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .11s;white-space:nowrap;display:inline-block;flex-shrink:0}
+.btn-dl-opt:hover{background:var(--dl-btn-hover)}
 .btn-dl-opt:disabled{opacity:.35;cursor:not-allowed}
-.target-size-section{background:rgba(71,200,255,.04);border:1px solid rgba(71,200,255,.12);border-radius:var(--radius);padding:10px 13px;margin-bottom:12px}
-.target-size-title{font-family:var(--mono);font-size:.6rem;color:var(--accent2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+
+.target-size-section{background:var(--target-size-bg);border:1px solid var(--target-size-border);border-radius:var(--radius);padding:10px 13px;margin-bottom:12px}
+.target-size-title{font-family:var(--mono);font-size:.6rem;color:var(--target-size-title);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
 .target-size-row{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
 .target-size-note{font-family:var(--mono);font-size:.57rem;color:var(--text3);margin-top:5px;line-height:1.5}
-.target-size-note.error{color:var(--accent3)}
-.target-size-note.ok{color:var(--green)}
+.target-size-note.error{color:var(--accent3)}.target-size-note.ok{color:var(--green)}
+
 .wm-img-info{background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;margin-bottom:8px;font-family:var(--mono);font-size:.6rem;color:var(--text3);display:none;align-items:center;gap:8px}
 .wm-img-info.visible{display:flex}
-.wm-img-size-badge{background:rgba(232,255,71,.08);border:1px solid rgba(232,255,71,.2);color:var(--accent);padding:2px 6px;border-radius:2px;font-size:.56rem}
+.wm-img-size-badge{background:var(--q-active-bg);border:1px solid var(--q-active-border);color:var(--q-active-color);padding:2px 6px;border-radius:2px;font-size:.56rem}
+
 .merge-files-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-.merge-file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:grab;user-select:none}
+.merge-file-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:grab}
 .merge-file-item.dragging{opacity:.4;cursor:grabbing}
-.merge-file-item.drag-over{border-color:var(--accent4);background:rgba(167,139,250,.07)}
-.merge-drag-handle{color:var(--text3);font-size:.9rem;flex-shrink:0;cursor:grab;padding:0 2px}
+.merge-file-item.drag-over{border-color:var(--wm-tab-active-border);background:var(--wm-tab-active-bg)}
+.merge-drag-handle{color:var(--merge-drag-color);font-size:.9rem;flex-shrink:0;cursor:grab;padding:0 2px}
 .merge-file-name{flex:1;font-size:.77rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .merge-file-pages{font-family:var(--mono);font-size:.57rem;color:var(--text3);flex-shrink:0}
 .merge-file-actions{display:flex;gap:4px;flex-shrink:0}
 .merge-btn-sm{font-family:var(--mono);font-size:.56rem;color:var(--text3);border:1px solid var(--border);background:none;padding:2px 7px;border-radius:2px;cursor:pointer;transition:all .11s;white-space:nowrap}
-.merge-btn-sm:hover{color:var(--accent4);border-color:var(--accent4)}
+.merge-btn-sm:hover{color:var(--wm-tab-active-color);border-color:var(--wm-tab-active-border)}
 .merge-btn-sm.danger:hover{color:var(--accent3);border-color:var(--accent3)}
-.merge-all-org-btn{font-family:var(--mono);font-size:.62rem;color:var(--accent2);border:1px solid rgba(71,200,255,.28);background:rgba(71,200,255,.05);padding:6px 12px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap;display:flex;align-items:center;gap:5px;margin-bottom:10px}
-.merge-all-org-btn:hover{background:rgba(71,200,255,.11)}
+.merge-all-org-btn{font-family:var(--mono);font-size:.62rem;color:var(--org-all-color);border:1px solid var(--org-all-border);background:var(--org-all-bg);padding:6px 12px;border-radius:var(--radius);cursor:pointer;transition:all .11s;white-space:nowrap;display:flex;align-items:center;gap:5px;margin-bottom:10px}
+.merge-all-org-btn:hover{background:rgba(131,109,238,.11)}
+[data-theme="dark"] .merge-all-org-btn:hover{background:rgba(71,200,255,.11)}
 .merge-dl-btn-wrap{margin-top:10px;display:none}
-.merge-dl-result{display:flex;align-items:center;gap:10px;background:rgba(109,255,138,.04);border:1px solid rgba(109,255,138,.18);border-radius:var(--radius);padding:10px 13px}
+.merge-dl-result{display:flex;align-items:center;gap:10px;background:var(--merge-dl-bg);border:1px solid var(--merge-dl-border);border-radius:var(--radius);padding:10px 13px}
 .merge-dl-info{font-family:var(--mono);font-size:.62rem;color:var(--text2);flex:1}
 .merge-dl-info b{color:var(--green)}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+[data-theme="light"] .modal-overlay{background:rgba(90,30,0,.35)}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:6px;width:100%;max-width:720px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
 .modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
 .modal-title{font-size:.88rem;font-weight:700}
@@ -336,85 +438,102 @@ textarea{resize:vertical;min-height:60px}
 .modal-close:hover{color:var(--text)}
 .modal-body{flex:1;overflow-y:auto;padding:16px 18px}
 .modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
 .page-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
 @media(max-width:400px){.page-grid{grid-template-columns:repeat(3,1fr)}}
 .page-thumb{background:var(--surface2);border:1px solid var(--border);border-radius:3px;cursor:grab;user-select:none;text-align:center;overflow:hidden;transition:all .12s;position:relative}
-.page-thumb:hover{border-color:var(--accent4)}
-.page-thumb.selected{border-color:var(--accent);background:rgba(232,255,71,.06)}
+.page-thumb:hover{border-color:var(--wm-tab-active-border)}
+.page-thumb.selected{border-color:var(--accent);background:var(--q-active-bg)}
 .page-thumb.dragging{opacity:.35;cursor:grabbing}
-.page-thumb.drag-over{border-color:var(--accent);background:rgba(232,255,71,.07)}
+.page-thumb.drag-over{border-color:var(--accent);background:var(--q-active-bg)}
 .page-thumb canvas{display:block;width:100%;height:auto}
 .page-thumb-label{font-family:var(--mono);font-size:.52rem;color:var(--text3);padding:3px 4px}
 .page-thumb-del{position:absolute;top:3px;right:3px;background:rgba(255,107,71,.8);border:none;color:#fff;width:16px;height:16px;border-radius:50%;font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
 .page-thumb:hover .page-thumb-del{display:flex}
 .page-file-separator{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:6px 0 2px;margin-top:4px}
 .page-file-separator:first-child{margin-top:0;padding-top:0}
-.page-file-sep-label{font-family:var(--mono);font-size:.58rem;color:var(--accent2);letter-spacing:.06em;background:rgba(71,200,255,.08);border:1px solid rgba(71,200,255,.2);padding:2px 8px;border-radius:2px;white-space:nowrap;flex-shrink:0}
-.page-file-sep-line{flex:1;height:1px;background:rgba(71,200,255,.15)}
+.page-file-sep-label{font-family:var(--mono);font-size:.58rem;color:var(--org-all-color);letter-spacing:.06em;background:var(--org-all-bg);border:1px solid var(--org-all-border);padding:2px 8px;border-radius:2px;white-space:nowrap;flex-shrink:0}
+.page-file-sep-line{flex:1;height:1px;background:var(--org-all-border)}
 .org-controls{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
 .org-controls .field-label{margin:0;white-space:nowrap}
+
 .features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:26px 0}
 @media(max-width:700px){.features{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:380px){.features{grid-template-columns:1fr 1fr}}
-.feature{padding:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
-.feature-icon{font-size:1.1rem;margin-bottom:6px}
+.feature{padding:13px;border:1px solid var(--feature-border);border-radius:var(--radius);background:var(--feature-bg);transition:border-color .2s,transform .2s;box-shadow:var(--card-shadow)}
+.feature:hover{border-color:var(--accent);transform:translateY(-2px)}
+.feature-icon{font-size:1.1rem;margin-bottom:6px;color:var(--accent)}
 .feature-title{font-size:.78rem;font-weight:700;margin-bottom:3px}
 .feature-desc{font-family:var(--mono);font-size:.58rem;color:var(--text3);line-height:1.55}
-footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px}
+
+footer{border-top:1px solid var(--footer-border);padding:16px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px}
 .footer-left{font-family:var(--mono);font-size:.56rem;color:var(--text3)}
 .footer-feedback-link{font-family:var(--mono);font-size:.56rem;color:var(--accent4);cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
+[data-theme="light"] .footer-feedback-link{color:#E64e9d}
 .footer-feedback-link:hover{color:var(--accent)}
 .footer-dev{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .footer-dev-label{font-family:var(--mono);font-size:.52rem;color:var(--text3);letter-spacing:.06em;white-space:nowrap}
-.footer-dev-img{height:28px;width:auto;mix-blend-mode:lighten;opacity:.85;transition:opacity .15s}
+.footer-dev-img{height:28px;width:auto;opacity:.85;transition:opacity .15s}
+[data-theme="dark"] .footer-dev-img{mix-blend-mode:lighten}
+[data-theme="light"] .footer-dev-img{mix-blend-mode:multiply}
 .footer-dev-img:hover{opacity:1}
-.supported-list{display:flex;gap:3px;flex-wrap:wrap}
-.fmt-tag{font-family:var(--mono);font-size:.54rem;color:var(--text3);border:1px solid var(--border);padding:2px 5px;border-radius:2px}
-.toast{position:fixed;bottom:16px;right:16px;left:16px;max-width:320px;margin-left:auto;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.66rem;padding:10px 14px;border-radius:var(--radius);z-index:9999;transform:translateY(70px);opacity:0;transition:all .26s ease;line-height:1.5}
+
+.toast{position:fixed;bottom:16px;right:16px;left:16px;max-width:320px;margin-left:auto;background:var(--toast-bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.66rem;padding:10px 14px;border-radius:var(--radius);z-index:9999;transform:translateY(70px);opacity:0;transition:all .26s ease;line-height:1.5;box-shadow:var(--shadow)}
 .toast.show{transform:translateY(0);opacity:1}
-.toast.success{border-color:rgba(109,255,138,.38);color:var(--green)}
+.toast.success{border-color:var(--merge-dl-border);color:var(--green)}
 .toast.error{border-color:rgba(255,107,71,.32);color:var(--accent3)}
-.toast.info{border-color:rgba(71,200,255,.32);color:var(--accent2)}
+.toast.info{border-color:var(--cat-active-border);color:var(--cat-active-color)}
+
 .range-row{display:flex;align-items:center;gap:10px}
-.range-val{font-family:var(--mono);font-size:.65rem;color:var(--accent2);min-width:36px;text-align:right;flex-shrink:0}
-.inline-badge{font-family:var(--mono);font-size:.56rem;padding:2px 6px;border-radius:2px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);color:var(--accent4)}
+.range-val{font-family:var(--mono);font-size:.65rem;color:var(--cat-active-color);min-width:36px;text-align:right;flex-shrink:0}
+.inline-badge{font-family:var(--mono);font-size:.56rem;padding:2px 6px;border-radius:2px;background:var(--wm-tab-active-bg);border:1px solid var(--wm-tab-active-border);color:var(--wm-tab-active-color)}
+
 .style-toggles{display:flex;gap:4px}
 .style-btn{font-family:var(--mono);font-size:.68rem;border:1px solid var(--border);background:var(--surface2);color:var(--text3);width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
-.style-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.1)}
+.style-btn.active{border-color:var(--wm-tab-active-border);color:var(--wm-tab-active-color);background:var(--wm-tab-active-bg)}
 .style-btn:hover{border-color:var(--text2);color:var(--text2)}
 .layer-btns{display:flex;gap:4px}
 .layer-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 9px;border-radius:2px;cursor:pointer;transition:all .12s}
-.layer-btn.active{border-color:var(--accent2);color:var(--accent2);background:rgba(71,200,255,.06)}
-.org-mode-badge{font-family:var(--mono);font-size:.58rem;padding:2px 8px;border-radius:2px;background:rgba(71,200,255,.1);border:1px solid rgba(71,200,255,.2);color:var(--accent2);margin-left:8px}
+.layer-btn.active{border-color:var(--cat-active-border);color:var(--cat-active-color);background:var(--cat-active-bg)}
+.org-mode-badge{font-family:var(--mono);font-size:.58rem;padding:2px 8px;border-radius:2px;background:var(--org-all-bg);border:1px solid var(--org-all-border);color:var(--org-all-color);margin-left:8px}
 
 /* ══════════════════════════════════
    FEEDBACK MODAL
 ═══════════════════════════════════ */
 #feedback-modal{z-index:2000}
-.feedback-modal-inner{background:var(--surface);border:1px solid var(--border2);border-radius:6px;width:100%;max-width:480px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.feedback-modal-inner{background:var(--surface);border:1px solid var(--border2);border-radius:6px;width:100%;max-width:480px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+[data-theme="light"] .feedback-modal-inner{box-shadow:0 24px 60px rgba(90,30,0,.18)}
 .feedback-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border)}
 .feedback-title{font-size:.95rem;font-weight:800;letter-spacing:-.02em}
 .feedback-title span{color:var(--accent4)}
+[data-theme="light"] .feedback-title span{color:#E64e9d}
 .feedback-body{padding:18px 20px;display:flex;flex-direction:column;gap:12px}
 .feedback-type-row{display:flex;gap:4px;flex-wrap:wrap}
 .fb-type-btn{font-family:var(--mono);font-size:.6rem;color:var(--text3);border:1px solid var(--border);background:none;padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .12s;white-space:nowrap}
-.fb-type-btn.active{border-color:var(--accent4);color:var(--accent4);background:rgba(167,139,250,.08)}
+.fb-type-btn.active{border-color:var(--wm-tab-active-border);color:var(--wm-tab-active-color);background:var(--wm-tab-active-bg)}
 .feedback-field label{font-family:var(--mono);font-size:.58rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:5px}
-.feedback-field input,.feedback-field textarea,.feedback-field select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.72rem;padding:8px 10px;border-radius:var(--radius);width:100%;transition:border-color .13s;resize:vertical}
+.feedback-field input,.feedback-field textarea,.feedback-field select{background:var(--input-bg);border:1px solid var(--input-border);color:var(--text);font-family:var(--mono);font-size:.72rem;padding:8px 10px;border-radius:var(--radius);width:100%;transition:border-color .13s;resize:vertical}
 .feedback-field textarea{min-height:90px}
-.feedback-field input:focus,.feedback-field textarea:focus{outline:none;border-color:var(--accent4)}
+.feedback-field input:focus,.feedback-field textarea:focus{outline:none;border-color:var(--wm-tab-active-border)}
 .star-row{display:flex;gap:4px}
 .star-btn{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--border2);transition:color .12s;padding:0 2px}
 .star-btn.active,.star-btn:hover,.star-btn.hover{color:var(--accent)}
+[data-theme="light"] .star-btn.active,[data-theme="light"] .star-btn:hover{color:#F94601}
 .feedback-footer{padding:12px 20px 16px;display:flex;gap:8px;justify-content:flex-end;align-items:center}
 .feedback-sending{font-family:var(--mono);font-size:.6rem;color:var(--text3);flex:1;animation:pulse 1s infinite;display:none}
 .btn-send-feedback{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;background:var(--accent4);color:#fff;border:none;padding:9px 20px;border-radius:var(--radius);cursor:pointer;transition:all .16s;white-space:nowrap}
-.btn-send-feedback:hover{background:#9d7ef0;transform:translateY(-1px);box-shadow:0 5px 20px rgba(167,139,250,.25)}
+[data-theme="light"] .btn-send-feedback{background:#E64e9d}
+.btn-send-feedback:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(167,139,250,.25)}
+[data-theme="light"] .btn-send-feedback:hover{box-shadow:0 5px 20px rgba(230,78,157,.25)}
 .btn-send-feedback:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
 .feedback-success{display:none;text-align:center;padding:24px 20px;flex-direction:column;align-items:center;gap:12px}
 .feedback-success-icon{font-size:2.4rem}
 .feedback-success-title{font-size:1rem;font-weight:800}
 .feedback-success-sub{font-family:var(--mono);font-size:.65rem;color:var(--text3);line-height:1.65;max-width:300px}
+
+/* FA icon sizing helpers */
+.fa-icon-sm { font-size:.7rem; }
+.fa-icon-md { font-size:.85rem; }
 </style>
 </head>
 <body>
@@ -422,30 +541,40 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
 <header>
   <a class="logo" href="#">
-    <img class="logo-img" src="/img/FHKSPGKUSSALOGO.png" alt="Fynresh" onerror="this.classList.add('errored')">
+    <!-- Light logo shown by default, dark logo shown in dark mode via JS -->
+    <img class="logo-img" id="logo-img" src="/img/FHKSPGKUSSALOGO-lsprljhs.png" alt="Fynresh" onerror="this.classList.add('errored')">
     <span class="logo-img-fallback">Fynresh</span>
     <span class="logo-beta">BETA</span>
   </a>
   <div class="header-right">
-    <div class="badge-g">🔒 100% LOCAL</div>
-    <div class="badge-r">✕ ZERO SERVER</div>
-    <button class="btn-feedback-header" onclick="openFeedback()">💬 Feedback</button>
+    <div class="badge-g"><i class="fa-solid fa-lock fa-icon-sm"></i> 100% LOCAL</div>
+    <div class="badge-r"><i class="fa-solid fa-server fa-icon-sm"></i> ZERO SERVER</div>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+      <i class="fa-solid fa-moon fa-icon-sm" id="theme-icon"></i>
+      <span id="theme-label">Dark</span>
+    </button>
+    <button class="btn-feedback-header" onclick="openFeedback()"><i class="fa-regular fa-comment fa-icon-sm"></i> Feedback</button>
   </div>
 </header>
 
 <section class="hero">
-  <div class="hero-ey">Free File Tools · Beta</div>
-  <h1 id="hero-title"><span class="hl">ANY</span> → <span class="hl2">ANY</span><br>File Converter</h1>
+  <div class="hero-ey">Free File Tools &middot; Beta</div>
+  <h1 id="hero-title"><span class="hl">ANY</span> &rarr; <span class="hl2">ANY</span><br>File Converter</h1>
   <p class="hero-sub" id="hero-sub">Convert DOCX, PPTX, XLSX, PDF, images, audio, video and more — entirely in your browser. Zero uploads, zero tracking.</p>
 </section>
 
-
+<div class="privacy-banner">
+  <div class="privacy-icon"><i class="fa-solid fa-shield-halved"></i></div>
+  <div class="privacy-text">
+    <strong>100% private — your files never leave your device.</strong> All processing uses local browser APIs: Canvas, Web Audio, PDF-lib, PDF.js, JSZip, and SheetJS.
+  </div>
+</div>
 
 <div class="tabs">
-  <button class="tab active" id="tab-convert"  onclick="switchTab('convert')">⇄ Convert</button>
-  <button class="tab"        id="tab-compress" onclick="switchTab('compress')">⊟ Compress</button>
-  <button class="tab"        id="tab-pdf"      onclick="switchTab('pdf')">📄 PDF Tools</button>
-  <button class="tab"        id="tab-both"     onclick="switchTab('both')">Both (Convert & Compress)</button>
+  <button class="tab active" id="tab-convert"  onclick="switchTab('convert')"><i class="fa-solid fa-right-left fa-icon-sm"></i> Convert</button>
+  <button class="tab"        id="tab-compress" onclick="switchTab('compress')"><i class="fa-solid fa-compress fa-icon-sm"></i> Compress</button>
+  <button class="tab"        id="tab-pdf"      onclick="switchTab('pdf')"><i class="fa-solid fa-file-pdf fa-icon-sm"></i> PDF Tools</button>
+  <button class="tab"        id="tab-both"     onclick="switchTab('both')"><i class="fa-solid fa-star fa-icon-sm"></i> Both</button>
 </div>
 
 <div class="card">
@@ -456,34 +585,34 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
   <div class="quick-links" id="quick-links">
     <span style="font-family:var(--mono);font-size:.56rem;color:var(--text3);padding:3px 0;flex-shrink:0">Popular:</span>
-    <button class="ql-btn" onclick="quickSet('mp4','mp3')">MP4→MP3</button>
-    <button class="ql-btn" onclick="quickSet('jpg','png')">JPG→PNG</button>
-    <button class="ql-btn" onclick="quickSet('jpg','webp')">JPG→WebP</button>
-    <button class="ql-btn" onclick="quickSet('png','jpg')">PNG→JPG</button>
-    <button class="ql-btn" onclick="quickSet('docx','pdf')">DOCX→PDF</button>
-    <button class="ql-btn" onclick="quickSet('pptx','pdf')">PPTX→PDF</button>
-    <button class="ql-btn" onclick="quickSet('xlsx','csv')">XLSX→CSV</button>
-    <button class="ql-btn" onclick="quickSet('xlsx','json')">XLSX→JSON</button>
-    <button class="ql-btn" onclick="quickSet('pdf','txt')">PDF→TXT</button>
-    <button class="ql-btn" onclick="quickSet('txt','pdf')">TXT→PDF</button>
-    <button class="ql-btn" onclick="quickSet('csv','json')">CSV→JSON</button>
-    <button class="ql-btn" onclick="quickSet('json','csv')">JSON→CSV</button>
+    <button class="ql-btn" onclick="quickSet('mp4','mp3')">MP4&rarr;MP3</button>
+    <button class="ql-btn" onclick="quickSet('jpg','png')">JPG&rarr;PNG</button>
+    <button class="ql-btn" onclick="quickSet('jpg','webp')">JPG&rarr;WebP</button>
+    <button class="ql-btn" onclick="quickSet('png','jpg')">PNG&rarr;JPG</button>
+    <button class="ql-btn" onclick="quickSet('docx','pdf')">DOCX&rarr;PDF</button>
+    <button class="ql-btn" onclick="quickSet('pptx','pdf')">PPTX&rarr;PDF</button>
+    <button class="ql-btn" onclick="quickSet('xlsx','csv')">XLSX&rarr;CSV</button>
+    <button class="ql-btn" onclick="quickSet('xlsx','json')">XLSX&rarr;JSON</button>
+    <button class="ql-btn" onclick="quickSet('pdf','txt')">PDF&rarr;TXT</button>
+    <button class="ql-btn" onclick="quickSet('txt','pdf')">TXT&rarr;PDF</button>
+    <button class="ql-btn" onclick="quickSet('csv','json')">CSV&rarr;JSON</button>
+    <button class="ql-btn" onclick="quickSet('json','csv')">JSON&rarr;CSV</button>
   </div>
 
   <!-- ===== CONVERT PANEL ===== -->
   <div class="panel active" id="panel-convert">
     <div class="format-cats">
       <button class="cat-btn active" onclick="filterCat('all',this)">All</button>
-      <button class="cat-btn" onclick="filterCat('image',this)">🖼 Image</button>
-      <button class="cat-btn" onclick="filterCat('audio',this)">🎵 Audio</button>
-      <button class="cat-btn" onclick="filterCat('video',this)">🎬 Video</button>
-      <button class="cat-btn" onclick="filterCat('office',this)">📑 Office</button>
-      <button class="cat-btn" onclick="filterCat('doc',this)">📝 Doc</button>
-      <button class="cat-btn" onclick="filterCat('data',this)">⚙ Data</button>
+      <button class="cat-btn" onclick="filterCat('image',this)"><i class="fa-regular fa-image fa-icon-sm"></i> Image</button>
+      <button class="cat-btn" onclick="filterCat('audio',this)"><i class="fa-solid fa-music fa-icon-sm"></i> Audio</button>
+      <button class="cat-btn" onclick="filterCat('video',this)"><i class="fa-solid fa-film fa-icon-sm"></i> Video</button>
+      <button class="cat-btn" onclick="filterCat('office',this)"><i class="fa-regular fa-file-lines fa-icon-sm"></i> Office</button>
+      <button class="cat-btn" onclick="filterCat('doc',this)"><i class="fa-regular fa-file fa-icon-sm"></i> Doc</button>
+      <button class="cat-btn" onclick="filterCat('data',this)"><i class="fa-solid fa-gear fa-icon-sm"></i> Data</button>
     </div>
     <div class="conversion-row">
       <div><div class="field-label">From</div><select id="sel-from" onchange="onFromChange('sel-from','sel-to')"></select></div>
-      <button class="swap-btn" onclick="swapFormats('sel-from','sel-to')">⇄</button>
+      <button class="swap-btn" onclick="swapFormats('sel-from','sel-to')" title="Swap formats"><i class="fa-solid fa-right-left"></i></button>
       <div><div class="field-label">To</div><select id="sel-to" onchange="refreshUI()"></select></div>
     </div>
   </div>
@@ -492,9 +621,9 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   <div class="panel" id="panel-compress">
     <div class="quality-row">
       <span class="quality-label">Quality:</span>
-      <button class="q-btn active" id="q-max" onclick="setQuality('max',this)"><span class="q-dot" style="background:#6dff8a"></span>Max</button>
-      <button class="q-btn"        id="q-bal" onclick="setQuality('balanced',this)"><span class="q-dot" style="background:#47c8ff"></span>Balanced</button>
-      <button class="q-btn"        id="q-min" onclick="setQuality('smallest',this)"><span class="q-dot" style="background:#e8ff47"></span>Smallest</button>
+      <button class="q-btn active" id="q-max" onclick="setQuality('max',this)"><span class="q-dot" style="background:#2d9e6b"></span>Max</button>
+      <button class="q-btn"        id="q-bal" onclick="setQuality('balanced',this)"><span class="q-dot" style="background:#836dee"></span>Balanced</button>
+      <button class="q-btn"        id="q-min" onclick="setQuality('smallest',this)"><span class="q-dot" style="background:#F94601"></span>Smallest</button>
     </div>
     <div class="size-row">
       <div class="size-field"><div class="field-label">Target Max Size</div><input type="number" id="size-val" placeholder="e.g. 200" min="1" oninput="refreshUI()"></div>
@@ -515,42 +644,42 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
   <!-- ===== PDF PANEL ===== -->
   <div class="panel" id="panel-pdf">
-    <div class="pdf-note"><b>100% local PDF processing</b> — PDF-lib & PDF.js run entirely in your browser.</div>
+    <div class="pdf-note"><b>100% local PDF processing</b> — PDF-lib &amp; PDF.js run entirely in your browser.</div>
     <div class="pdf-tools">
       <button class="pdf-tool-btn active" id="pt-compress"  onclick="setPdfTool('compress',this)">
-        <div class="pdf-tool-icon">⊟</div><div class="pdf-tool-title">Compress</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-compress"></i></div><div class="pdf-tool-title">Compress</div>
         <div class="pdf-tool-desc">Reduce file size</div>
       </button>
       <button class="pdf-tool-btn" id="pt-merge" onclick="setPdfTool('merge',this)">
-        <div class="pdf-tool-icon">⊕</div><div class="pdf-tool-title">Merge</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-circle-plus"></i></div><div class="pdf-tool-title">Merge</div>
         <div class="pdf-tool-desc">Combine PDFs</div>
       </button>
       <button class="pdf-tool-btn" id="pt-organize" onclick="setPdfTool('organize',this)">
-        <div class="pdf-tool-icon">⊞</div><div class="pdf-tool-title">Organize</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-table-cells"></i></div><div class="pdf-tool-title">Organize</div>
         <div class="pdf-tool-desc">Reorder &amp; delete pages</div>
       </button>
       <button class="pdf-tool-btn" id="pt-split" onclick="setPdfTool('split',this)">
-        <div class="pdf-tool-icon">⊘</div><div class="pdf-tool-title">Split</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-scissors"></i></div><div class="pdf-tool-title">Split</div>
         <div class="pdf-tool-desc">Extract pages</div>
       </button>
       <button class="pdf-tool-btn" id="pt-rotate" onclick="setPdfTool('rotate',this)">
-        <div class="pdf-tool-icon">↻</div><div class="pdf-tool-title">Rotate</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-rotate-right"></i></div><div class="pdf-tool-title">Rotate</div>
         <div class="pdf-tool-desc">Rotate pages</div>
       </button>
       <button class="pdf-tool-btn" id="pt-toimg" onclick="setPdfTool('toimg',this)">
-        <div class="pdf-tool-icon">🖼</div><div class="pdf-tool-title">PDF→Images</div>
+        <div class="pdf-tool-icon"><i class="fa-regular fa-image"></i></div><div class="pdf-tool-title">PDF&rarr;Images</div>
         <div class="pdf-tool-desc">Pages as PNG</div>
       </button>
       <button class="pdf-tool-btn" id="pt-topdf" onclick="setPdfTool('topdf',this)">
-        <div class="pdf-tool-icon">📄</div><div class="pdf-tool-title">Images→PDF</div>
+        <div class="pdf-tool-icon"><i class="fa-regular fa-file-pdf"></i></div><div class="pdf-tool-title">Images&rarr;PDF</div>
         <div class="pdf-tool-desc">Build from images</div>
       </button>
       <button class="pdf-tool-btn" id="pt-text" onclick="setPdfTool('text',this)">
-        <div class="pdf-tool-icon">📝</div><div class="pdf-tool-title">Extract Text</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-align-left"></i></div><div class="pdf-tool-title">Extract Text</div>
         <div class="pdf-tool-desc">Get plain text</div>
       </button>
       <button class="pdf-tool-btn" id="pt-watermark" onclick="setPdfTool('watermark',this)">
-        <div class="pdf-tool-icon">💧</div><div class="pdf-tool-title">Watermark</div>
+        <div class="pdf-tool-icon"><i class="fa-solid fa-droplet"></i></div><div class="pdf-tool-title">Watermark</div>
         <div class="pdf-tool-desc">Text or image stamp</div>
       </button>
     </div>
@@ -574,7 +703,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
         <input type="number" id="split-every-n" placeholder="e.g. 2" min="1" value="2" style="max-width:140px">
       </div>
       <div id="split-pages-opts" style="display:none">
-        <div class="split-help">Enter page numbers like: <b>1, 3, 5-7</b><br>All specified pages → one PDF</div>
+        <div class="split-help">Enter page numbers like: <b>1, 3, 5-7</b><br>All specified pages &rarr; one PDF</div>
         <div class="field-label">Pages to Extract</div>
         <input type="text" id="split-pages-input" placeholder="e.g. 1, 3, 5-7">
       </div>
@@ -584,16 +713,16 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
     <div id="rotate-opts" style="display:none">
       <div class="sec-label">Rotation</div>
       <div class="rot-opts">
-        <button class="unit-btn active" id="rot-90"  onclick="setRot(90)">90°</button>
-        <button class="unit-btn"        id="rot-180" onclick="setRot(180)">180°</button>
-        <button class="unit-btn"        id="rot-270" onclick="setRot(270)">270°</button>
+        <button class="unit-btn active" id="rot-90"  onclick="setRot(90)">90&deg;</button>
+        <button class="unit-btn"        id="rot-180" onclick="setRot(180)">180&deg;</button>
+        <button class="unit-btn"        id="rot-270" onclick="setRot(270)">270&deg;</button>
       </div>
     </div>
 
     <!-- WATERMARK OPTIONS -->
     <div id="watermark-opts" style="display:none">
-      <div style="background:rgba(232,255,71,.04);border:1px solid rgba(232,255,71,.14);border-radius:var(--radius);padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:1rem">⬆</span>
+      <div style="background:var(--q-active-bg);border:1px solid var(--q-active-border);border-radius:var(--radius);padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <i class="fa-solid fa-arrow-up" style="color:var(--accent)"></i>
         <span style="font-family:var(--mono);font-size:.62rem;color:var(--text2);line-height:1.55"><b style="color:var(--accent)">Step 1:</b> Drop your PDF files in the upload zone below first.</span>
       </div>
       <div class="wm-settings-area">
@@ -613,8 +742,8 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
           </div>
         </div>
         <div class="wm-tabs">
-          <button class="wm-tab active" id="wmt-text" onclick="setWmTab('text',this)">✏ Text</button>
-          <button class="wm-tab"        id="wmt-image" onclick="setWmTab('image',this)">🖼 Image</button>
+          <button class="wm-tab active" id="wmt-text" onclick="setWmTab('text',this)"><i class="fa-solid fa-pen fa-icon-sm"></i> Text</button>
+          <button class="wm-tab"        id="wmt-image" onclick="setWmTab('image',this)"><i class="fa-regular fa-image fa-icon-sm"></i> Image</button>
         </div>
         <div class="wm-panel active" id="wmp-text">
           <div class="two-col" style="margin-bottom:8px">
@@ -649,13 +778,13 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
             </div>
           </div>
           <div>
-            <div class="field-label">Rotation <span id="wm-rot-val" class="range-val">45°</span></div>
+            <div class="field-label">Rotation <span id="wm-rot-val" class="range-val">45&deg;</span></div>
             <input type="range" id="wm-rotation" min="-180" max="180" value="45" oninput="updateWmPreview();document.getElementById('wm-rot-val').textContent=this.value+'°'" style="margin-bottom:10px">
           </div>
         </div>
         <div class="wm-panel" id="wmp-image">
           <div style="margin-bottom:8px">
-            <button class="btn-secondary" onclick="document.getElementById('img-wm-input').click()">📁 Choose Watermark Image</button>
+            <button class="btn-secondary" onclick="document.getElementById('img-wm-input').click()"><i class="fa-solid fa-folder-open fa-icon-sm"></i> Choose Watermark Image</button>
             <input type="file" id="img-wm-input" accept="image/*" onchange="loadWmImage(this)">
             <span id="wm-img-name" style="font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-left:8px">No image selected</span>
           </div>
@@ -672,21 +801,21 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
             </div>
           </div>
           <div>
-            <div class="field-label">Rotation <span id="wm-img-rot-val" class="range-val">0°</span></div>
+            <div class="field-label">Rotation <span id="wm-img-rot-val" class="range-val">0&deg;</span></div>
             <input type="range" id="wm-img-rotation" min="-180" max="180" value="0" oninput="updateWmPreview();document.getElementById('wm-img-rot-val').textContent=this.value+'°'" style="margin-bottom:10px">
           </div>
         </div>
         <div class="sec-label">Placement</div>
         <div class="placement-grid" id="wm-placement-grid">
-          <button class="place-btn" data-pos="tl" onclick="setWmPos('tl',this)">↖ Top Left</button>
-          <button class="place-btn" data-pos="tc" onclick="setWmPos('tc',this)">↑ Top</button>
-          <button class="place-btn" data-pos="tr" onclick="setWmPos('tr',this)">↗ Top Right</button>
-          <button class="place-btn" data-pos="ml" onclick="setWmPos('ml',this)">← Mid Left</button>
-          <button class="place-btn center-btn active" data-pos="center" onclick="setWmPos('center',this)">✦ Center</button>
-          <button class="place-btn" data-pos="mr" onclick="setWmPos('mr',this)">→ Mid Right</button>
-          <button class="place-btn" data-pos="bl" onclick="setWmPos('bl',this)">↙ Bot Left</button>
-          <button class="place-btn" data-pos="bc" onclick="setWmPos('bc',this)">↓ Bottom</button>
-          <button class="place-btn" data-pos="br" onclick="setWmPos('br',this)">↘ Bot Right</button>
+          <button class="place-btn" data-pos="tl" onclick="setWmPos('tl',this)">&#8598; Top Left</button>
+          <button class="place-btn" data-pos="tc" onclick="setWmPos('tc',this)">&#8593; Top</button>
+          <button class="place-btn" data-pos="tr" onclick="setWmPos('tr',this)">&#8599; Top Right</button>
+          <button class="place-btn" data-pos="ml" onclick="setWmPos('ml',this)">&#8592; Mid Left</button>
+          <button class="place-btn center-btn active" data-pos="center" onclick="setWmPos('center',this)"><i class="fa-solid fa-crosshairs fa-icon-sm"></i> Center</button>
+          <button class="place-btn" data-pos="mr" onclick="setWmPos('mr',this)">&#8594; Mid Right</button>
+          <button class="place-btn" data-pos="bl" onclick="setWmPos('bl',this)">&#8601; Bot Left</button>
+          <button class="place-btn" data-pos="bc" onclick="setWmPos('bc',this)">&#8595; Bottom</button>
+          <button class="place-btn" data-pos="br" onclick="setWmPos('br',this)">&#8600; Bot Right</button>
         </div>
         <div class="sec-label" style="margin-top:10px">Layer</div>
         <div class="layer-btns" style="margin-bottom:14px">
@@ -732,14 +861,14 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
     <!-- MERGE OPTIONS -->
     <div id="merge-opts" style="display:none">
       <div class="sec-label">File Order <span class="inline-badge">Drag to reorder</span></div>
-      <button class="merge-all-org-btn" id="merge-org-all-btn" onclick="openOrgModalAll()" style="display:none">⊞ Organize All Pages Across Files</button>
+      <button class="merge-all-org-btn" id="merge-org-all-btn" onclick="openOrgModalAll()" style="display:none"><i class="fa-solid fa-table-cells fa-icon-sm"></i> Organize All Pages Across Files</button>
       <div class="merge-files-list" id="merge-files-list">
         <div style="font-family:var(--mono);font-size:.62rem;color:var(--text3);padding:8px;text-align:center">Drop PDF files below to add them</div>
       </div>
       <div class="merge-dl-btn-wrap" id="merge-dl-btn-wrap">
         <div class="merge-dl-result">
-          <div class="merge-dl-info"><div style="margin-bottom:3px">✓ Merged PDF ready</div><div id="merge-dl-size" style="color:var(--text3)">—</div></div>
-          <a class="btn-dl" id="merge-dl-link" href="#" download="merged.pdf">↓ Download Merged PDF</a>
+          <div class="merge-dl-info"><div style="margin-bottom:3px">Merged PDF ready</div><div id="merge-dl-size" style="color:var(--text3)">—</div></div>
+          <a class="btn-dl" id="merge-dl-link" href="#" download="merged.pdf"><i class="fa-solid fa-download fa-icon-sm"></i> Download Merged PDF</a>
         </div>
       </div>
     </div>
@@ -756,19 +885,19 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   <!-- ===== BOTH PANEL ===== -->
   <div class="panel" id="panel-both">
     <div class="combined-info">
-      <div style="font-size:1rem;flex-shrink:0">✦</div>
+      <div style="font-size:1rem;flex-shrink:0;color:var(--combined-b)"><i class="fa-solid fa-star"></i></div>
       <p>Convert format <b>AND</b> reduce size in one step.</p>
     </div>
     <div class="conversion-row">
       <div><div class="field-label">From</div><select id="sel-from-b" onchange="onFromChange('sel-from-b','sel-to-b')"></select></div>
-      <button class="swap-btn" onclick="swapFormats('sel-from-b','sel-to-b')">⇄</button>
+      <button class="swap-btn" onclick="swapFormats('sel-from-b','sel-to-b')"><i class="fa-solid fa-right-left"></i></button>
       <div><div class="field-label">To</div><select id="sel-to-b" onchange="refreshUI()"></select></div>
     </div>
     <div class="quality-row">
       <span class="quality-label">Quality:</span>
-      <button class="q-btn active" id="q-max-b" onclick="setQualityB('max',this)"><span class="q-dot" style="background:#6dff8a"></span>Max</button>
-      <button class="q-btn" id="q-bal-b" onclick="setQualityB('balanced',this)"><span class="q-dot" style="background:#47c8ff"></span>Balanced</button>
-      <button class="q-btn" id="q-min-b" onclick="setQualityB('smallest',this)"><span class="q-dot" style="background:#e8ff47"></span>Smallest</button>
+      <button class="q-btn active" id="q-max-b" onclick="setQualityB('max',this)"><span class="q-dot" style="background:#2d9e6b"></span>Max</button>
+      <button class="q-btn" id="q-bal-b" onclick="setQualityB('balanced',this)"><span class="q-dot" style="background:#836dee"></span>Balanced</button>
+      <button class="q-btn" id="q-min-b" onclick="setQualityB('smallest',this)"><span class="q-dot" style="background:#F94601"></span>Smallest</button>
     </div>
     <div class="size-row">
       <div class="size-field"><div class="field-label">Max Size (optional)</div><input type="number" id="size-val-b" placeholder="e.g. 400" min="1" oninput="refreshUI()"></div>
@@ -788,9 +917,9 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   <div class="dropzone" id="dropzone"
        onclick="document.getElementById('file-input').click()"
        ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
-    <span class="drop-icon">⬆</span>
+    <span class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span>
     <div class="drop-title" id="drop-title">Drop files here</div>
-    <div class="drop-sub">or <span onclick="event.stopPropagation();document.getElementById('file-input').click()">browse</span> · Batch OK · Nothing uploaded</div>
+    <div class="drop-sub">or <span onclick="event.stopPropagation();document.getElementById('file-input').click()">browse</span> &middot; Batch OK &middot; Nothing uploaded</div>
   </div>
   <input type="file" id="file-input" multiple onchange="addFiles(this.files);this.value=''">
 
@@ -798,10 +927,10 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
   <div class="action-row">
     <button class="btn-primary" id="btn-go" onclick="startConversion()" disabled>
-      <span id="btn-text">▶ Convert</span>
+      <i class="fa-solid fa-play fa-icon-sm"></i><span id="btn-text">Convert</span>
     </button>
     <button class="btn-secondary" onclick="clearAll()">Clear</button>
-    <button class="btn-dl-all" id="btn-dl-all" onclick="downloadAllZip()" style="display:none">↓ ZIP All</button>
+    <button class="btn-dl-all" id="btn-dl-all" onclick="downloadAllZip()" style="display:none"><i class="fa-solid fa-file-zipper fa-icon-sm"></i> ZIP All</button>
     <div class="result-info" id="result-info"></div>
   </div>
 
@@ -812,14 +941,14 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 </div>
 
 <div class="features">
-  <div class="feature"><div class="feature-icon">🔒</div><div class="feature-title">Zero Upload</div><div class="feature-desc">Files never leave your device. All conversion runs locally.</div></div>
-  <div class="feature"><div class="feature-icon">📑</div><div class="feature-title">Office Files</div><div class="feature-desc">DOCX, PPTX, XLSX — convert to PDF, text, HTML, CSV, JSON.</div></div>
-  <div class="feature"><div class="feature-icon">🎯</div><div class="feature-title">Smart Compress</div><div class="feature-desc">Quality-first compression — best clarity at target size.</div></div>
-  <div class="feature"><div class="feature-icon">⚡</div><div class="feature-title">Batch + ZIP</div><div class="feature-desc">Convert multiple files, download individually or as ZIP.</div></div>
+  <div class="feature"><div class="feature-icon"><i class="fa-solid fa-lock"></i></div><div class="feature-title">Zero Upload</div><div class="feature-desc">Files never leave your device. All conversion runs locally.</div></div>
+  <div class="feature"><div class="feature-icon"><i class="fa-regular fa-file-lines"></i></div><div class="feature-title">Office Files</div><div class="feature-desc">DOCX, PPTX, XLSX — convert to PDF, text, HTML, CSV, JSON.</div></div>
+  <div class="feature"><div class="feature-icon"><i class="fa-solid fa-bullseye"></i></div><div class="feature-title">Smart Compress</div><div class="feature-desc">Quality-first compression — best clarity at target size.</div></div>
+  <div class="feature"><div class="feature-icon"><i class="fa-solid fa-bolt"></i></div><div class="feature-title">Batch + ZIP</div><div class="feature-desc">Convert multiple files, download individually or as ZIP.</div></div>
 </div>
 
 <footer>
-  <div class="footer-left">© Fynresh Beta · 100% local · No server · No tracking · <button class="footer-feedback-link" onclick="openFeedback()">Send Feedback</button></div>
+  <div class="footer-left">&copy; Fynresh Beta &middot; 100% local &middot; No server &middot; No tracking &middot; <button class="footer-feedback-link" onclick="openFeedback()">Send Feedback</button></div>
   <div class="footer-dev">
     <span class="footer-dev-label">developed by</span>
     <img class="footer-dev-img" src="/img/wbhk.png" alt="Websites by Hansraj Kondeda">
@@ -832,7 +961,7 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="org-modal-title">Organize Pages</span>
-      <button class="modal-close" onclick="closeOrgModal()">✕</button>
+      <button class="modal-close" onclick="closeOrgModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <div class="org-controls">
@@ -845,75 +974,62 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeOrgModal()">Cancel</button>
-      <button class="btn-primary" onclick="applyOrgModal()">✓ Apply Changes</button>
+      <button class="btn-primary" onclick="applyOrgModal()"><i class="fa-solid fa-check fa-icon-sm"></i> Apply Changes</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════
-     FEEDBACK MODAL
-════════════════════════════════════ -->
+<!-- FEEDBACK MODAL -->
 <div class="modal-overlay" id="feedback-modal" style="display:none" onclick="if(event.target===this)closeFeedback()">
   <div class="feedback-modal-inner">
     <div class="feedback-header">
       <span class="feedback-title">Share <span>Feedback</span></span>
-      <button class="modal-close" onclick="closeFeedback()">✕</button>
+      <button class="modal-close" onclick="closeFeedback()"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <!-- Form view -->
     <div id="feedback-form-view">
       <div class="feedback-body">
-
-        <!-- Type -->
         <div class="feedback-field">
           <label>Type</label>
           <div class="feedback-type-row">
-            <button class="fb-type-btn active" id="fbt-suggestion" onclick="setFbType('suggestion',this)">💡 Suggestion</button>
-            <button class="fb-type-btn" id="fbt-bug" onclick="setFbType('bug',this)">🐛 Bug Report</button>
-            <button class="fb-type-btn" id="fbt-praise" onclick="setFbType('praise',this)">⭐ Praise</button>
-            <button class="fb-type-btn" id="fbt-other" onclick="setFbType('other',this)">📝 Other</button>
+            <button class="fb-type-btn active" id="fbt-suggestion" onclick="setFbType('suggestion',this)">Suggestion</button>
+            <button class="fb-type-btn" id="fbt-bug" onclick="setFbType('bug',this)">Bug Report</button>
+            <button class="fb-type-btn" id="fbt-praise" onclick="setFbType('praise',this)">Praise</button>
+            <button class="fb-type-btn" id="fbt-other" onclick="setFbType('other',this)">Other</button>
           </div>
         </div>
-
-        <!-- Rating -->
         <div class="feedback-field">
           <label>Overall Rating</label>
           <div class="star-row" id="star-row">
-            <button class="star-btn" data-val="1" onclick="setStars(1)">★</button>
-            <button class="star-btn" data-val="2" onclick="setStars(2)">★</button>
-            <button class="star-btn" data-val="3" onclick="setStars(3)">★</button>
-            <button class="star-btn" data-val="4" onclick="setStars(4)">★</button>
-            <button class="star-btn" data-val="5" onclick="setStars(5)">★</button>
+            <button class="star-btn" data-val="1" onclick="setStars(1)">&#9733;</button>
+            <button class="star-btn" data-val="2" onclick="setStars(2)">&#9733;</button>
+            <button class="star-btn" data-val="3" onclick="setStars(3)">&#9733;</button>
+            <button class="star-btn" data-val="4" onclick="setStars(4)">&#9733;</button>
+            <button class="star-btn" data-val="5" onclick="setStars(5)">&#9733;</button>
           </div>
         </div>
-
-        <!-- Name (optional) -->
         <div class="feedback-field">
           <label>Name <span style="opacity:.5">(optional)</span></label>
           <input type="text" id="fb-name" placeholder="Your name">
         </div>
-
-        <!-- Email (optional) -->
         <div class="feedback-field">
           <label>Email <span style="opacity:.5">(optional — for follow-up)</span></label>
           <input type="email" id="fb-email" placeholder="you@example.com">
         </div>
-
-        <!-- Message -->
         <div class="feedback-field">
           <label>Message <span style="color:var(--accent3)">*</span></label>
           <textarea id="fb-message" placeholder="Tell us what you think, what's broken, or what you'd love to see…"></textarea>
         </div>
-
       </div>
       <div class="feedback-footer">
         <span class="feedback-sending" id="feedback-sending">Sending…</span>
         <button class="btn-secondary" onclick="closeFeedback()">Cancel</button>
-        <button class="btn-send-feedback" id="btn-send-feedback" onclick="submitFeedback()">Send Feedback →</button>
+        <button class="btn-send-feedback" id="btn-send-feedback" onclick="submitFeedback()">Send Feedback &rarr;</button>
       </div>
     </div>
 
-    <!-- Success view -->
+    <!-- Success view — KEEP EMOJI HERE as requested -->
     <div class="feedback-success" id="feedback-success-view">
       <div class="feedback-success-icon">🎉</div>
       <div class="feedback-success-title">Thanks for your feedback!</div>
@@ -927,15 +1043,45 @@ footer{border-top:1px solid var(--border);padding:16px 0;display:flex;justify-co
 
 <script>
 /* ================================================================
+   THEME MANAGEMENT
+   ================================================================ */
+let CURRENT_THEME = 'light';
+
+function toggleTheme() {
+  CURRENT_THEME = CURRENT_THEME === 'light' ? 'dark' : 'light';
+  applyTheme(CURRENT_THEME);
+  try { localStorage.setItem('fynresh-theme', CURRENT_THEME); } catch(e) {}
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  CURRENT_THEME = theme;
+  const icon = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-label');
+  const logo = document.getElementById('logo-img');
+  if (theme === 'dark') {
+    icon.className = 'fa-solid fa-sun fa-icon-sm';
+    label.textContent = 'Light';
+    if (logo) logo.src = '/img/FHKSPGKUSSALOGO.png';
+  } else {
+    icon.className = 'fa-solid fa-moon fa-icon-sm';
+    label.textContent = 'Dark';
+    if (logo) logo.src = '/img/FHKSPGKUSSALOGO-lsprljhs.png';
+  }
+  // Re-render WM preview if open
+  if (WM_PREVIEW_ENABLED || WM_TAB === 'image') updateWmPreview();
+}
+
+/* ================================================================
    FORMAT DEFINITIONS
    ================================================================ */
 const FORMATS = {
-  image:  { label:'🖼 Image',    fmts:['jpg','jpeg','png','webp','svg','heic'] },
-  audio:  { label:'🎵 Audio',    fmts:['mp3','wav','ogg','aac','m4a','weba'] },
-  video:  { label:'🎬 Video',    fmts:['mp4','webm','ogv','avi','mov'] },
-  office: { label:'📑 Office',   fmts:['docx','pptx','xlsx'] },
-  doc:    { label:'📝 Document', fmts:['pdf','txt','html'] },
-  data:   { label:'⚙ Data',     fmts:['json','csv','xml'] }
+  image:  { label:'Image',    fmts:['jpg','jpeg','png','webp','svg','heic'] },
+  audio:  { label:'Audio',    fmts:['mp3','wav','ogg','aac','m4a','weba'] },
+  video:  { label:'Video',    fmts:['mp4','webm','ogv','avi','mov'] },
+  office: { label:'Office',   fmts:['docx','pptx','xlsx'] },
+  doc:    { label:'Document', fmts:['pdf','txt','html'] },
+  data:   { label:'Data',     fmts:['json','csv','xml'] }
 };
 
 const CONV = {
@@ -1040,37 +1186,23 @@ function setStars(n){
 async function submitFeedback(){
   const msg = document.getElementById('fb-message').value.trim();
   if(!msg){ toast('Please enter a message','error'); return; }
-
   const name  = document.getElementById('fb-name').value.trim() || 'Anonymous';
   const email = document.getElementById('fb-email').value.trim() || 'Not provided';
-  const stars = FB_STARS ? FB_STARS + '/5 ★' : 'Not rated';
-
+  const stars = FB_STARS ? FB_STARS + '/5' : 'Not rated';
   document.getElementById('btn-send-feedback').disabled = true;
   document.getElementById('feedback-sending').style.display = 'block';
-
   const templateParams = {
-    from_name:    name,
-    from_email:   email,
-    feedback_type: FB_TYPE,
-    rating:        stars,
-    message:       msg,
-    site:          'Fynresh Beta',
-    sent_at:       new Date().toLocaleString()
+    from_name: name, from_email: email,
+    feedback_type: FB_TYPE, rating: stars,
+    message: msg, site: 'Fynresh Beta',
+    sent_at: new Date().toLocaleString()
   };
-
   try {
-    // Replace YOUR_SERVICE_ID and YOUR_TEMPLATE_ID with your EmailJS values
-    await emailjs.send(
-      'service_zgqg2mw',   // ← EmailJS Service ID
-      'template_ts7oclc',  // ← EmailJS Template ID
-      templateParams
-    );
+    await emailjs.send('service_zgqmw','template_7oclc',templateParams);
     document.getElementById('feedback-form-view').style.display = 'none';
     const sv = document.getElementById('feedback-success-view');
-    sv.style.display = 'flex';
-    sv.style.flexDirection = 'column';
+    sv.style.display = 'flex';sv.style.flexDirection = 'column';
   } catch(err) {
-    console.error('EmailJS error:', err);
     toast('Failed to send — check EmailJS config', 'error');
     document.getElementById('feedback-sending').style.display = 'none';
     document.getElementById('btn-send-feedback').disabled = false;
@@ -1081,6 +1213,13 @@ async function submitFeedback(){
    INIT
    ================================================================ */
 function init() {
+  // Load saved theme
+  try {
+    const saved = localStorage.getItem('fynresh-theme');
+    if (saved === 'dark') applyTheme('dark');
+    else applyTheme('light');
+  } catch(e) { applyTheme('light'); }
+
   buildSelects();
   try {
     const p = new URLSearchParams(window.location.search);
@@ -1120,8 +1259,8 @@ function switchTab(mode,doR=true){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   const te=document.getElementById('tab-'+mode); if(te) te.classList.add('active');
   const pe=document.getElementById('panel-'+mode); if(pe) pe.classList.add('active');
-  const lbl={convert:'▶ Convert',compress:'▶ Compress',pdf:'▶ Process',both:'▶ Convert & Compress'};
-  document.getElementById('btn-text').textContent=lbl[mode]||'▶ Go';
+  const lbl={convert:'Convert',compress:'Compress',pdf:'Process',both:'Convert & Compress'};
+  document.getElementById('btn-text').textContent=lbl[mode]||'Go';
   if(doR){refreshUI();checkReady();}
 }
 
@@ -1194,10 +1333,10 @@ function validateWmTargetSize(){
   if(!tb){note.style.display='none';return;}
   const srcSize=WM_PREVIEW_PDF_BYTES?WM_PREVIEW_PDF_BYTES.byteLength:0;
   if(srcSize>0&&tb<=srcSize){
-    note.textContent='⚠ Target size must be larger than the source PDF ('+fmtSize(srcSize)+')';
+    note.textContent='Target size must be larger than the source PDF ('+fmtSize(srcSize)+')';
     note.className='target-size-note error';note.style.display='block';
   } else {
-    note.textContent='✓ Target: '+fmtSize(tb)+(srcSize?' (source: '+fmtSize(srcSize)+')':'');
+    note.textContent='Target: '+fmtSize(tb)+(srcSize?' (source: '+fmtSize(srcSize)+')':'');
     note.className='target-size-note ok';note.style.display='block';
   }
 }
@@ -1369,12 +1508,12 @@ function updateWmPreview(){
   const W=wrap.clientWidth||400;
   const H=Math.round(W*1.414);
   canvas.width=W;canvas.height=H;
-  ctx.fillStyle='#f5f5f0';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=CURRENT_THEME==='dark'?'#1a1a1a':'#f5f0ea';ctx.fillRect(0,0,W,H);
   if(WM_PREVIEW_IMG){ctx.drawImage(WM_PREVIEW_IMG,0,0,W,H);}
   else{
-    ctx.fillStyle='#e8e8e0';
+    ctx.fillStyle=CURRENT_THEME==='dark'?'#2a2a2a':'#e8e0d8';
     for(let y=40;y<H-20;y+=22){ctx.fillRect(30,y,W-60,2);}
-    ctx.fillStyle='#999';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle=CURRENT_THEME==='dark'?'#555':'#999';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
     ctx.fillText('Drop a PDF to preview',W/2,H/2-10);
     ctx.font='11px sans-serif';ctx.fillText('watermark placement',W/2,H/2+12);
     ctx.textAlign='left';
@@ -1464,7 +1603,7 @@ function rebuildOrgSingleList(){
   ORG_STANDALONE_FILES.forEach((sf, idx) => {
     const div = document.createElement('div');div.className = 'merge-file-item';
     const pageCount = sf.pages ? sf.pages.length : '?';
-    div.innerHTML = `<span class="merge-file-name">${esc(sf.file.name)}</span><span class="merge-file-pages">${pageCount}p</span><div class="merge-file-actions"><button class="merge-btn-sm" onclick="openOrgForStandaloneFile(${idx})" title="Organize pages">⊞ Organize</button><button class="merge-btn-sm danger" onclick="removeOrgStandaloneFile(${idx})" title="Remove">✕</button></div>`;
+    div.innerHTML = `<span class="merge-file-name">${esc(sf.file.name)}</span><span class="merge-file-pages">${pageCount}p</span><div class="merge-file-actions"><button class="merge-btn-sm" onclick="openOrgForStandaloneFile(${idx})" title="Organize pages">Organize</button><button class="merge-btn-sm danger" onclick="removeOrgStandaloneFile(${idx})" title="Remove">Remove</button></div>`;
     list.appendChild(div);
   });
 }
@@ -1503,7 +1642,7 @@ function rebuildMergeList(){
   MERGE_FILES.forEach((mf,idx)=>{
     const div=document.createElement('div');div.className='merge-file-item';div.dataset.idx=idx;div.draggable=true;
     const pageCount=mf.pages?mf.pages.length:'?';
-    div.innerHTML=`<span class="merge-drag-handle" title="Drag to reorder">⠿</span><span class="merge-file-name">${esc(mf.file.name)}</span><span class="merge-file-pages">${pageCount}p</span><div class="merge-file-actions"><button class="merge-btn-sm" onclick="openOrgModal(${idx})" title="Organize pages">⊞ Organize</button><button class="merge-btn-sm" onclick="moveMergeFile(${idx},-1)" title="Move up">↑</button><button class="merge-btn-sm" onclick="moveMergeFile(${idx},1)" title="Move down">↓</button><button class="merge-btn-sm danger" onclick="removeMergeFile(${idx})" title="Remove">✕</button></div>`;
+    div.innerHTML=`<span class="merge-drag-handle" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></span><span class="merge-file-name">${esc(mf.file.name)}</span><span class="merge-file-pages">${pageCount}p</span><div class="merge-file-actions"><button class="merge-btn-sm" onclick="openOrgModal(${idx})" title="Organize pages">Organize</button><button class="merge-btn-sm" onclick="moveMergeFile(${idx},-1)" title="Move up"><i class="fa-solid fa-chevron-up fa-icon-sm"></i></button><button class="merge-btn-sm" onclick="moveMergeFile(${idx},1)" title="Move down"><i class="fa-solid fa-chevron-down fa-icon-sm"></i></button><button class="merge-btn-sm danger" onclick="removeMergeFile(${idx})" title="Remove"><i class="fa-solid fa-xmark fa-icon-sm"></i></button></div>`;
     div.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',String(idx));div.classList.add('dragging');});
     div.addEventListener('dragend',()=>div.classList.remove('dragging'));
     div.addEventListener('dragover',e=>{e.preventDefault();div.classList.add('drag-over');});
@@ -1590,7 +1729,7 @@ async function renderOrgGridCombined(pdfDocs, combined){
       const mf = MERGE_FILES[entry.fileIdx];
       const sep = document.createElement('div');sep.className = 'page-file-separator';
       const shortName = mf.file.name.length > 40 ? mf.file.name.substring(0, 37) + '…' : mf.file.name;
-      sep.innerHTML = `<span class="page-file-sep-label">📄 File ${entry.fileIdx + 1}: ${esc(shortName)}</span><span class="page-file-sep-line"></span>`;
+      sep.innerHTML = `<span class="page-file-sep-label">File ${entry.fileIdx + 1}: ${esc(shortName)}</span><span class="page-file-sep-line"></span>`;
       grid.appendChild(sep);
     }
     const thumb = createPageThumb(pi, 'p.' + (entry.pageIdx + 1));grid.appendChild(thumb);
@@ -1605,9 +1744,9 @@ function createPageThumb(pi, label){
   const thumb = document.createElement('div');thumb.className = 'page-thumb';thumb.dataset.pi = String(pi);thumb.draggable = true;
   const c = document.createElement('canvas');
   const lbl = document.createElement('div');lbl.className = 'page-thumb-label';lbl.textContent = label;
-  const del = document.createElement('button');del.className = 'page-thumb-del';del.textContent = '✕';del.title = 'Remove page';
+  const del = document.createElement('button');del.className = 'page-thumb-del';del.innerHTML = '<i class="fa-solid fa-xmark" style="font-size:.5rem"></i>';del.title = 'Remove page';
   del.addEventListener('click', e => {e.stopPropagation();const currentPi = parseInt(thumb.dataset.pi);orgDeletePageAt(currentPi);});
-  thumb.addEventListener('click', e => {if (e.target === del) return;thumb.classList.toggle('selected');});
+  thumb.addEventListener('click', e => {if (e.target === del || e.target.closest('.page-thumb-del')) return;thumb.classList.toggle('selected');});
   thumb.appendChild(c);thumb.appendChild(lbl);thumb.appendChild(del);return thumb;
 }
 
@@ -1628,7 +1767,7 @@ async function _reRenderOrgAfterMove(){
   if(ORG_MODE === 'all'){if(ORG_ALL_PDF_DOCS.length > 0){await renderOrgGridCombined(ORG_ALL_PDF_DOCS, ORG_PAGES);}else{openOrgModalAll();}return;}
   if(ORG_STANDALONE_IDX >= 0 && ORG_STANDALONE_PDF){await renderOrgGrid(ORG_STANDALONE_PDF, ORG_PAGES, null);}
   else if(ORG_TARGET_IDX >= 0 && MERGE_FILES[ORG_TARGET_IDX]){
-    try{const mf = MERGE_FILES[ORG_TARGET_IDX];const bytes = new Uint8Array(await mf.file.arrayBuffer());const pdf = await pdfjsLib.getDocument({data: bytes}).promise;await renderOrgGrid(pdf, ORG_PAGES, null);}catch(e){ console.warn('Re-render failed', e); }
+    try{const mf = MERGE_FILES[ORG_TARGET_IDX];const bytes = new Uint8Array(await mf.file.arrayBuffer());const pdf = await pdfjsLib.getDocument({data: bytes}).promise;await renderOrgGrid(pdf, ORG_PAGES, null);}catch(e){}
   }
 }
 
@@ -1671,21 +1810,21 @@ function refreshUI(){
   let heroHTML='',heroSub='',stateLbl='',dropTitle='Drop files here';
 
   if(MODE==='pdf'){
-    const lbl={compress:'Compress',merge:'Merge',split:'Split',rotate:'Rotate',toimg:'→Images',topdf:'Images→PDF',text:'Extract Text',watermark:'Watermark',organize:'Organize'}[PDF_TOOL]||PDF_TOOL;
+    const lbl={compress:'Compress',merge:'Merge',split:'Split',rotate:'Rotate',toimg:'to Images',topdf:'Images to PDF',text:'Extract Text',watermark:'Watermark',organize:'Organize'}[PDF_TOOL]||PDF_TOOL;
     heroHTML=`<span class="hl3">PDF</span> <span class="hl2">${lbl}</span>`;
     heroSub=`PDF ${lbl} — 100% in your browser.`;stateLbl=`PDF tool: ${lbl}`;dropTitle=PDF_TOOL==='topdf'?'Drop images':'Drop PDF files here';
   } else if(MODE==='compress'&&sl){
     heroHTML=`Compress Files<br><span class="hl2">Under ${sl}</span>`;
     heroSub=`Reduce to under ${sl} with quality-first compression.`;stateLbl=`Compressing to under ${sl}`;dropTitle=`Drop files to compress under ${sl}`;
   } else if(MODE==='both'){
-    heroHTML=`<span class="hl">${from}</span> → <span class="hl2">${to}</span>${sl?`<br><span style="font-size:.5em;opacity:.6">under ${sl}</span>`:''}`;
+    heroHTML=`<span class="hl">${from}</span> &rarr; <span class="hl2">${to}</span>${sl?`<br><span style="font-size:.5em;opacity:.6">under ${sl}</span>`:''}`;
     heroSub=sl?`Convert ${from} to ${to} and reduce to under ${sl}.`:`Convert ${from} to ${to}, optionally compressing.`;
-    stateLbl=sl?`Convert ${from}→${to}, compress to ${sl}`:`Convert ${from}→${to}`;dropTitle=`Drop ${from} files`;
+    stateLbl=sl?`Convert ${from} to ${to}, compress to ${sl}`:`Convert ${from} to ${to}`;dropTitle=`Drop ${from} files`;
   } else if(MODE==='convert'){
-    heroHTML=`<span class="hl">${from}</span> → <span class="hl2">${to}</span><br>Converter`;
-    heroSub=`Convert ${from} to ${to} — entirely in your browser.`;stateLbl=`Converting ${from} → ${to}`;dropTitle=`Drop ${from} files`;
+    heroHTML=`<span class="hl">${from}</span> &rarr; <span class="hl2">${to}</span><br>Converter`;
+    heroSub=`Convert ${from} to ${to} — entirely in your browser.`;stateLbl=`Converting ${from} to ${to}`;dropTitle=`Drop ${from} files`;
   } else {
-    heroHTML=`<span class="hl">ANY</span> → <span class="hl2">ANY</span><br>File Converter`;
+    heroHTML=`<span class="hl">ANY</span> &rarr; <span class="hl2">ANY</span><br>File Converter`;
     heroSub=`Convert DOCX, PPTX, XLSX, PDF, images, audio, video and more. Zero uploads.`;stateLbl=`Select options then drop files below`;
   }
 
@@ -1752,15 +1891,15 @@ function renderFiles(){
   if(MODE==='pdf'&&PDF_TOOL==='merge') return;
   FILES.forEach((f,i)=>{
     const ext=f.file.name.split('.').pop().toUpperCase();
-    const sz=f.outSize!=null?`${fmtSize(f.file.size)} → <b style="color:var(--accent2)">${fmtSize(f.outSize)}</b>`:fmtSize(f.file.size);
+    const sz=f.outSize!=null?`${fmtSize(f.file.size)} &rarr; <b style="color:var(--cat-active-color)">${fmtSize(f.outSize)}</b>`:fmtSize(f.file.size);
     let st='';
     if(f.status==='ready')   st=`<span class="file-status">READY</span>`;
     if(f.status==='working') st=`<span class="file-status working">WORKING…</span>`;
-    if(f.status==='done'&&!(MODE==='pdf'&&PDF_TOOL==='watermark')) st=`<a class="btn-dl" href="${f.url}" download="${f.outName}">↓ Download</a>`;
+    if(f.status==='done'&&!(MODE==='pdf'&&PDF_TOOL==='watermark')) st=`<a class="btn-dl" href="${f.url}" download="${f.outName}"><i class="fa-solid fa-download fa-icon-sm"></i> Download</a>`;
     if(f.status==='done'&&(MODE==='pdf'&&PDF_TOOL==='watermark')) st=`<span class="file-status done">DONE</span>`;
     if(f.status==='error')   st=`<span class="file-status error" title="${esc(f.err||'')}">${esc((f.err||'Failed').substring(0,38))}</span>`;
     const div=document.createElement('div');div.className='file-item';div.id='fi-'+i;
-    div.innerHTML=`<div class="file-ext">${ext}</div><div class="file-info"><div class="file-name">${esc(f.file.name)}</div><div class="file-size">${sz}</div><div class="progress-wrap"><div class="progress-bar" id="pb-${i}"></div></div></div>${st}<button class="file-remove" onclick="removeFile(${i})">✕</button>`;
+    div.innerHTML=`<div class="file-ext">${ext}</div><div class="file-info"><div class="file-name">${esc(f.file.name)}</div><div class="file-size">${sz}</div><div class="progress-wrap"><div class="progress-bar" id="pb-${i}"></div></div></div>${st}<button class="file-remove" onclick="removeFile(${i})"><i class="fa-solid fa-xmark fa-icon-sm"></i></button>`;
     list.appendChild(div);
   });
 }
@@ -1819,7 +1958,7 @@ async function startConversion(){
 
   if(MODE==='pdf'&&PDF_TOOL==='organize'){
     const eligible = ORG_STANDALONE_FILES.filter(sf=>sf.pages&&sf.pages.length>0);
-    if(!eligible.length){toast('Organize pages using the ⊞ button first','info');document.getElementById('btn-go').disabled=false;return;}
+    if(!eligible.length){toast('Organize pages using the Organize button first','info');document.getElementById('btn-go').disabled=false;return;}
     let orgOk=0,orgFail=0;
     for(const sf of eligible){
       try{
@@ -1849,7 +1988,7 @@ async function startConversion(){
       if(MODE==='pdf'){setProg(i,25);[blob,outExt]=await runPdfTool(item.file);}
       else{
         const toExt=getTo();outExt=(MODE==='compress')?fileExt:toExt;
-        if(MODE!=='compress'){if(!CONV[fileExt]||!CONV[fileExt].includes(toExt))throw new Error(fileExt+'→'+toExt+' not supported');}
+        if(MODE!=='compress'){if(!CONV[fileExt]||!CONV[fileExt].includes(toExt))throw new Error(fileExt+' to '+toExt+' not supported');}
         setProg(i,15);
         if(MODE==='convert'||MODE==='both') blob=await convertFile(item.file,fileExt,toExt);
         else blob=item.file;setProg(i,60);
@@ -1890,7 +2029,7 @@ async function buildWmDownloadPanel(srcFile, originalBlob, ext) {
     const sizeSpan = document.createElement('span');sizeSpan.className = 'dl-option-size loading';
     sizeSpan.textContent = opt.imgResScale === 1 ? fmtSize(originalBlob.size) : 'Generating…';
     if (opt.imgResScale === 1) sizeSpan.classList.remove('loading');
-    const dlBtn = document.createElement('a');dlBtn.className = 'btn-dl-opt';dlBtn.textContent = '↓ Download';
+    const dlBtn = document.createElement('a');dlBtn.className = 'btn-dl-opt';dlBtn.innerHTML = '<i class="fa-solid fa-download fa-icon-sm"></i> Download';
     dlBtn.style.opacity = '.4';dlBtn.style.pointerEvents = 'none';
     row.innerHTML = `<span class="dl-option-label">${opt.label}</span>`;
     row.appendChild(sizeSpan);row.appendChild(dlBtn);rows.appendChild(row);
@@ -2020,11 +2159,11 @@ async function pdfCompress(file){
     try{doc.setTitle('');doc.setAuthor('');doc.setSubject('');doc.setKeywords([]);doc.setProducer('');doc.setCreator('');}catch(e){}
     const saved=await doc.save({useObjectStreams:true,addDefaultPage:false,objectsPerTick:100});
     const compressed=new Blob([saved],{type:'application/pdf'});
-    if(compressed.size<file.size*0.98){toast(`Compressed: ${fmtSize(file.size)} → ${fmtSize(compressed.size)}`,'success');return[compressed,'pdf'];}
+    if(compressed.size<file.size*0.98){toast(`Compressed: ${fmtSize(file.size)} to ${fmtSize(compressed.size)}`,'success');return[compressed,'pdf'];}
     const reRendered=await reRenderPdf(bytes,1.2);
-    if(reRendered.size<file.size*0.98){toast(`Re-rendered: ${fmtSize(file.size)} → ${fmtSize(reRendered.size)}`,'success');return[reRendered,'pdf'];}
+    if(reRendered.size<file.size*0.98){toast(`Re-rendered: ${fmtSize(file.size)} to ${fmtSize(reRendered.size)}`,'success');return[reRendered,'pdf'];}
     const out=reRendered.size<compressed.size?reRendered:compressed;
-    toast(`Result: ${fmtSize(file.size)} → ${fmtSize(out.size)}`,'info');return[out,'pdf'];
+    toast(`Result: ${fmtSize(file.size)} to ${fmtSize(out.size)}`,'info');return[out,'pdf'];
   }catch(err){throw new Error('PDF compress failed: '+err.message);}
 }
 
@@ -2112,7 +2251,7 @@ async function pdfMergeOrganized(){
   const merged=await PDFLib.PDFDocument.create();
   const sources=MERGE_FILES.length>0?MERGE_FILES:FILES.map(f=>({file:f.file,pages:null}));
   for(const mf of sources){
-    try{const doc=await PDFLib.PDFDocument.load(new Uint8Array(await mf.file.arrayBuffer()),{ignoreEncryption:true});const total=doc.getPageCount();const pageIndices=mf.pages?mf.pages.filter(i=>i>=0&&i<total):doc.getPageIndices();const copied=await merged.copyPages(doc,pageIndices);copied.forEach(p=>merged.addPage(p));}catch(e){console.warn('Skip in merge:',e);}
+    try{const doc=await PDFLib.PDFDocument.load(new Uint8Array(await mf.file.arrayBuffer()),{ignoreEncryption:true});const total=doc.getPageCount();const pageIndices=mf.pages?mf.pages.filter(i=>i>=0&&i<total):doc.getPageIndices();const copied=await merged.copyPages(doc,pageIndices);copied.forEach(p=>merged.addPage(p));}catch(e){}
   }
   const out=await merged.save({useObjectStreams:true});
   return[new Blob([out],{type:'application/pdf'}),'pdf'];
@@ -2178,7 +2317,7 @@ async function imagesToPdf(fileList){
       if(['jpg','jpeg'].includes(ext)) img=await doc.embedJpg(bytes);
       else{const b=await imgToImg(f,'png');img=await doc.embedPng(new Uint8Array(await b.arrayBuffer()));}
       const pg=doc.addPage([img.width,img.height]);pg.drawImage(img,{x:0,y:0,width:img.width,height:img.height});
-    }catch(e){console.warn('Skip in images→PDF:',e);}
+    }catch(e){}
   }
   const out=await doc.save({useObjectStreams:true});return[new Blob([out],{type:'application/pdf'}),'pdf'];
 }
@@ -2331,11 +2470,11 @@ function parseCSV(text){
 }
 function csvToJson(text){
   try{const rows=parseCSV(text);if(!rows.length)return new Blob(['[]'],{type:'application/json'});const headers=rows[0];const arr=rows.slice(1).map(cols=>{const obj={};headers.forEach((h,i)=>{obj[h]=cols[i]!==undefined?cols[i]:'';});return obj;});return new Blob([JSON.stringify(arr,null,2)],{type:'application/json'});}
-  catch(e){throw new Error('CSV→JSON failed: '+e.message);}
+  catch(e){throw new Error('CSV to JSON failed: '+e.message);}
 }
 function xmlToJson(text){
   try{const doc=new DOMParser().parseFromString(text,'application/xml');function nodeToObj(node){if(node.nodeType===3)return node.textContent.trim();const obj={};[...node.childNodes].filter(n=>n.nodeType!==3||n.textContent.trim()).forEach(child=>{const key=child.nodeName;const val=nodeToObj(child);if(obj[key]){if(!Array.isArray(obj[key]))obj[key]=[obj[key]];obj[key].push(val);}else obj[key]=val;});return obj;}return new Blob([JSON.stringify(nodeToObj(doc.documentElement),null,2)],{type:'application/json'});}
-  catch(e){throw new Error('XML→JSON failed: '+e.message);}
+  catch(e){throw new Error('XML to JSON failed: '+e.message);}
 }
 
 async function docToDoc(file,from,to){
