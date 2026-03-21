@@ -54,7 +54,7 @@ img-src 'self' data: blob:;
   setInterval(function(){ try{ console.clear(); }catch(e){} }, 300);
 })();
 (function(){
-  emailjs.init("1w2ijT66uf");
+  emailjs.init("1t10z70Sw2ijT66uf");
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1198,7 +1198,7 @@ async function submitFeedback(){
     sent_at: new Date().toLocaleString()
   };
   try {
-    await emailjs.send('service_zgqmw','template_7oclc',templateParams);
+    await emailjs.send('service_zgqg2mw','template_ts7oclc',templateParams);
     document.getElementById('feedback-form-view').style.display = 'none';
     const sv = document.getElementById('feedback-success-view');
     sv.style.display = 'flex';sv.style.flexDirection = 'column';
