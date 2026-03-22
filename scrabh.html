@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>FileQuest — File Converter Town</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -229,6 +231,218 @@ input[type=file]{display:none}
 ::-webkit-scrollbar-track{background:rgba(0,0,0,.07)}
 ::-webkit-scrollbar-thumb{background:rgba(139,61,255,.2);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(139,61,255,.36)}
+
+/* ════════════════════════════════════════════
+   MOBILE & TABLET — Comprehensive responsive
+   Breakpoints: 480px (phone), 700px (tablet)
+════════════════════════════════════════════ */
+
+/* Touch: remove hover-only states that misfire */
+@media (hover:none){
+  .fmtb:hover{transform:none}
+  .qp:hover,.pp:hover{transform:none;box-shadow:none}
+  .btn-go:hover{transform:none}
+  .sb-drop:hover{transform:none}
+}
+
+/* ── TABLET (≤768px) ── */
+@media(max-width:768px){
+  #hud{padding:0 12px;gap:8px;height:50px}
+  .logo{font-size:18px;letter-spacing:2px}
+  .logo small{font-size:5.5px;letter-spacing:2px}
+  #hxp{max-width:120px}
+  #hud-tip{display:none}
+  #hud-loc{font-size:7.5px;padding:2px 7px}
+  .chip{height:24px;padding:0 9px;font-size:9.5px}
+
+  #spanel{max-height:92vh;border-radius:14px 14px 0 0}
+  .sph{padding:12px 16px 10px;gap:10px}
+  .sph-icon-wrap{width:40px;height:40px;border-radius:10px;font-size:20px}
+  .sph-name{font-size:17px;letter-spacing:2px}
+  .sph-desc{font-size:10px}
+  .sph-xp{width:72px}
+  .sph-close{padding:6px 10px;font-size:9px}
+
+  /* Stack columns on tablet */
+  .shop-cols{
+    grid-template-columns:1fr;
+    overflow-y:auto;
+  }
+  .shop-main{
+    padding:14px 16px 0;
+    overflow-y:visible;
+    max-height:none;
+  }
+  .shop-sidebar{
+    border-left:none;
+    border-top:1px solid rgba(255,255,255,.04);
+    padding:12px 16px 16px;
+    overflow-y:visible;
+  }
+  .sb-file-panel{min-height:auto}
+  .sb-files{max-height:120px}
+  .sb-drop{padding:14px 12px 12px}
+  .sb-drop .dz-icon{font-size:22px;margin-bottom:4px}
+
+  .fmt-grid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr));max-height:160px}
+  .pdf-tools{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+  .q-btns{gap:5px}
+  .qb{min-width:70px;padding:8px 9px;font-size:11.5px}
+  .wm-grid{grid-template-columns:1fr}
+
+  #dlg{bottom:44px;padding:14px 16px}
+  #dlg-tx{font-size:12.5px}
+  #ctrl{font-size:8px;bottom:6px}
+}
+
+/* ── PHONE (≤480px) ── */
+@media(max-width:480px){
+  #hud{padding:0 10px;gap:7px;height:48px}
+  .logo{font-size:16px;letter-spacing:1.5px}
+  .logo small{display:none}
+  #hxp{max-width:90px;min-width:60px}
+  #hxp-lbl{display:none}
+  .chip{height:22px;padding:0 8px;font-size:9px;gap:4px}
+  #hud-loc{display:none}
+
+  #spanel{max-height:95vh;border-radius:12px 12px 0 0}
+  .sph{padding:10px 14px 9px;gap:8px;flex-wrap:wrap}
+  .sph-icon-wrap{width:36px;height:36px;font-size:18px;border-radius:8px}
+  .sph-name{font-size:15px;letter-spacing:1.5px}
+  .sph-desc{font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+  .sph-xp{display:none}
+  .sph-lv{height:22px;padding:0 9px;font-size:8.5px}
+  .sph-close{padding:5px 9px;font-size:8.5px}
+
+  .shop-main{padding:12px 13px 0}
+  .shop-sidebar{padding:10px 13px 14px}
+
+  .sec{font-size:7.5px;margin:12px 0 7px}
+  .info-box{font-size:11.5px;padding:9px 11px}
+  .cat-tabs{padding:2px;gap:2px}
+  .ctab{font-size:10px;padding:4px 9px;border-radius:6px}
+
+  .fmt-grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:4px;max-height:148px}
+  .fmtb{padding:8px 3px 6px;border-radius:8px}
+  .fmtb .fi{font-size:15px}
+  .fmtb .fn{font-size:7.5px}
+
+  .conv-display{padding:10px 12px;margin:9px 0}
+  .cd-val{font-size:26px}
+  .cd-arrow{font-size:16px}
+  .btn-swap{padding:4px 8px;font-size:8.5px}
+
+  .quick-picks{gap:4px}
+  .qp{font-size:8.5px;padding:4px 8px}
+  .q-btns{gap:4px}
+  .qb{min-width:0;flex:1;padding:8px 6px;font-size:11px}
+  .size-field input{width:100px;font-size:15px;padding:7px 10px}
+  .ub{padding:7px 10px;font-size:10.5px}
+  .preset-pills{gap:4px}
+  .pp{font-size:8.5px;padding:4px 8px}
+
+  .pdf-tools{grid-template-columns:repeat(3,1fr);gap:5px}
+  .pt{padding:11px 5px 9px;border-radius:9px}
+  .pt-icon{font-size:18px;margin-bottom:4px}
+  .pt-name{font-size:7px}
+  .pt-desc{font-size:8.5px}
+
+  .mode-btns{gap:4px}
+  .mb{padding:6px 10px;font-size:10.5px}
+  .opt-box{padding:9px 11px;font-size:11.5px}
+  .rot-btns{gap:5px}
+  .rb{padding:8px 10px;font-size:12px}
+
+  .wm-tabs{margin:5px 0}
+  .wmt{padding:6px 10px;font-size:10.5px}
+  .wm-grid{grid-template-columns:1fr;gap:8px}
+  .place-grid{gap:3px}
+  .pgb{padding:6px 2px;font-size:9px}
+
+  .sb-drop{padding:12px 10px;border-radius:10px}
+  .sb-drop .dz-icon{font-size:20px}
+  .sb-drop .dz-t{font-size:11px}
+  .sb-file-panel{border-radius:8px}
+  .sb-files{max-height:100px}
+  .sf{padding:7px 9px;gap:6px}
+  .sf-ext{font-size:6px;min-width:24px;padding:2px 4px}
+  .sf-name{font-size:10px}
+  .sf-size{font-size:8px}
+  .sf-dl{font-size:7px;padding:2px 6px}
+
+  .btn-go{padding:11px 12px;font-size:14px;letter-spacing:3px}
+  .btn-sec,.btn-zip{padding:7px;font-size:10.5px}
+
+  select{font-size:12.5px;padding:7px 9px}
+
+  #dlg{width:96vw;bottom:40px;padding:12px 14px}
+  #dlg-nm{font-size:11px}
+  #dlg-tx{font-size:12px}
+  #dlg-cta{font-size:8px}
+  #ctrl{font-size:7.5px;bottom:4px;width:96vw;text-align:center;letter-spacing:.1px}
+  #ctrl br{display:none}
+
+  #toast{max-width:200px;font-size:11px;padding:9px 12px}
+}
+
+/* ── Touch-specific improvements ── */
+@media(pointer:coarse){
+  /* Larger tap targets */
+  .ctab{padding:7px 12px}
+  .qp,.pp{padding:7px 12px}
+  .mb{padding:9px 14px}
+  .ub{padding:10px 14px}
+  .fmtb{padding:10px 4px 8px}
+  .sf{padding:10px 11px}
+  .pgb{padding:9px 4px}
+
+  /* Show tap feedback */
+  .btn-go:active{transform:scale(.97)!important}
+  .fmtb:active{background:rgba(139,61,255,.18)!important}
+  .qp:active,.pp:active{background:rgba(0,255,150,.12)!important}
+  .ctab:active{background:rgba(139,61,255,.22)!important}
+  .pt:active{background:rgba(0,212,255,.12)!important}
+
+  /* Disable custom cursor on touch */
+  #cursor{display:none}
+
+  /* Larger scrollable areas */
+  .fmt-grid::-webkit-scrollbar{height:0;width:0}
+  .sb-files::-webkit-scrollbar{width:0}
+}
+
+/* ── Landscape phone ── */
+@media(max-width:768px) and (orientation:landscape){
+  #spanel{max-height:96vh}
+  .shop-cols{
+    grid-template-columns:1fr 250px;
+    overflow:hidden;
+  }
+  .shop-main{overflow-y:auto;max-height:calc(96vh - 60px)}
+  .shop-sidebar{overflow-y:auto;border-left:1px solid rgba(255,255,255,.04);border-top:none}
+  .fmt-grid{max-height:120px}
+  .sb-files{max-height:90px}
+  #dlg{bottom:36px}
+}
+
+/* ── World canvas tap to walk on mobile ── */
+@media(pointer:coarse){
+  #world-scroll{cursor:pointer}
+  #ctrl{display:block}
+}
+
+/* ── Shop panel: prevent overflow on very small screens ── */
+@media(max-width:360px){
+  .sph{padding:9px 12px 8px}
+  .sph-name{font-size:13px}
+  .shop-main{padding:10px 11px 0}
+  .shop-sidebar{padding:8px 11px 12px}
+  .pdf-tools{grid-template-columns:repeat(3,1fr);gap:4px}
+  .pt-desc{display:none}
+  .btn-go{font-size:13px;letter-spacing:2.5px}
+  .fmt-grid{grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}
+}
+
 </style>
 </head>
 <body>
@@ -1021,7 +1235,7 @@ function gameLoop(ts){
 }
 
 /* ══════════════════════════════════════════════
-   INPUT
+   INPUT — Keyboard + Touch + D-Pad
 ══════════════════════════════════════════════ */
 document.addEventListener('keydown',e=>{
   keys[e.key]=true;
@@ -1033,12 +1247,30 @@ document.addEventListener('mousemove',e=>{
   const c=document.getElementById('cursor');
   c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';
 });
+
+// Click/tap on canvas → walk there
 canvas.addEventListener('click',e=>{
-  if(shopOpen)return;
+  if(shopOpen||dlgOpen)return;
   const r=canvas.getBoundingClientRect();
   const wx=(e.clientX-r.left)*(CW/r.width)+worldOff;
   walkTo(Math.max(20,Math.min(CW-65,wx-9)));
 });
+
+// Touch swipe on canvas → walk direction
+let touchStartX=0;
+canvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+canvas.addEventListener('touchend',e=>{
+  if(shopOpen||dlgOpen)return;
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  if(Math.abs(dx)<10){
+    // tap — walk to tap position
+    const r=canvas.getBoundingClientRect();
+    const wx=(e.changedTouches[0].clientX-r.left)*(CW/r.width)+worldOff;
+    walkTo(Math.max(20,Math.min(CW-65,wx-9)));
+  }
+  // swipe handled by D-pad
+},{passive:true});
+
 function walkTo(tx){
   if(shopOpen)return;
   const dir=tx>px?1:-1;facing=dir;
@@ -1050,6 +1282,90 @@ function walkTo(tx){
     }
   },16);
 }
+
+// ── D-PAD (mobile virtual controls) ──
+(function(){
+  const dpad=document.createElement('div');
+  dpad.id='dpad';
+  dpad.innerHTML=`
+    <button id="dp-l" aria-label="Walk left">◀</button>
+    <button id="dp-enter" aria-label="Enter shop">ENTER</button>
+    <button id="dp-r" aria-label="Walk right">▶</button>`;
+  dpad.style.cssText=`
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    display:none;gap:8px;align-items:center;z-index:400;
+    font-family:'Space Mono',monospace;
+  `;
+  document.body.appendChild(dpad);
+
+  const dpStyle=document.createElement('style');
+  dpStyle.textContent=`
+    #dpad{display:none}
+    @media(pointer:coarse){#dpad{display:flex!important}}
+    #dpad button{
+      background:rgba(10,6,28,.85);
+      border:1.5px solid rgba(139,61,255,.4);
+      color:#c084fc;
+      font-family:'Space Mono',monospace;
+      border-radius:10px;
+      font-size:12px;
+      padding:0;
+      cursor:pointer;
+      touch-action:none;
+      -webkit-tap-highlight-color:transparent;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    #dp-l,#dp-r{width:54px;height:46px;font-size:18px}
+    #dp-enter{
+      width:80px;height:46px;font-size:9px;
+      letter-spacing:.08em;
+      background:rgba(139,61,255,.2);
+      border-color:rgba(139,61,255,.6);
+      color:#d4aaff;
+    }
+    #dp-l:active,#dp-r:active{background:rgba(139,61,255,.25);color:#fff}
+    #dp-enter:active{background:rgba(139,61,255,.4);color:#fff}
+  `;
+  document.head.appendChild(dpStyle);
+
+  // Hold left/right
+  let holdL=false,holdR=false,holdIv=null;
+  function startHold(dir){
+    facing=dir;
+    holdIv=setInterval(()=>{
+      if(!shopOpen&&!dlgOpen){
+        px=Math.max(20,Math.min(CW-65,px+dir*5));
+        wt+=.05;if(wt>.1){wf=(wf+1)%4;wt=0;}
+      }
+    },16);
+  }
+  function stopHold(){clearInterval(holdIv);holdIv=null;}
+
+  const dpL=document.getElementById('dp-l');
+  const dpR=document.getElementById('dp-r');
+  const dpE=document.getElementById('dp-enter');
+
+  dpL.addEventListener('touchstart',e=>{e.preventDefault();startHold(-1);},{passive:false});
+  dpL.addEventListener('touchend',e=>{e.preventDefault();stopHold();if(nearShop)setTimeout(()=>enterShop(nearShop),80);},{passive:false});
+  dpR.addEventListener('touchstart',e=>{e.preventDefault();startHold(1);},{passive:false});
+  dpR.addEventListener('touchend',e=>{e.preventDefault();stopHold();if(nearShop)setTimeout(()=>enterShop(nearShop),80);},{passive:false});
+  dpE.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
+  dpE.addEventListener('touchend',e=>{
+    e.preventDefault();
+    if(shopOpen){closeShop();}
+    else if(dlgOpen){document.getElementById('dlg').click();}
+    else if(nearShop){enterShop(nearShop);}
+  },{passive:false});
+
+  // Also update ENTER button label
+  setInterval(()=>{
+    if(!dpE)return;
+    if(shopOpen)dpE.textContent='✕ EXIT';
+    else if(nearShop)dpE.textContent='▶ ENTER';
+    else dpE.textContent='ENTER';
+  },300);
+})();
 
 /* ══════════════════════════════════════════════
    GLOBAL DROP
@@ -1744,7 +2060,18 @@ function resizeWorld(){
   canvas.style.height=h+'px';canvas.style.width=CW+'px';
   py=Math.min(200,Math.round(h*.65));
 }
-window.addEventListener('resize',resizeWorld);resizeWorld();
+window.addEventListener('resize',resizeWorld);
+// Also handle orientation change on mobile
+window.addEventListener('orientationchange',()=>setTimeout(resizeWorld,200));
+resizeWorld();
+
+// Update ctrl hint for touch vs pointer devices
+(function(){
+  const ctrl=document.getElementById('ctrl');
+  if(window.matchMedia('(pointer:coarse)').matches){
+    ctrl.textContent='Tap map to walk · Tap shop to enter · Use ◀ ▶ buttons below';
+  }
+})();
 
 requestAnimationFrame(ts=>{lastT=ts;gameLoop(ts);});
 
