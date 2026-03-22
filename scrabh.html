@@ -44,6 +44,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   -webkit-backdrop-filter:blur(20px);
   position:relative;z-index:50;
 }
+@media(max-width:480px){
+  #hud{padding:0 10px;gap:7px;height:44px}
+  .logo{font-size:16px;letter-spacing:2px}
+  #hxp{max-width:80px;min-width:50px}
+  #hloc{display:none}
+}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;
   background:linear-gradient(120deg,#c084fc,#60c8ff);background-size:200%;
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
@@ -120,15 +126,35 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 @keyframes pflyup{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--px),var(--py))}}
 
 /* ════ LEVEL UP CARD ════ */
-#lvup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:none;pointer-events:none}
+#lvup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:none;pointer-events:auto;cursor:default}
 #lvup-card{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
   background:linear-gradient(135deg,#0c0620,#1a0840,#0c0620);
   border:2px solid #7b4fff;border-radius:16px;
   padding:clamp(20px,5vw,36px) clamp(20px,6vw,48px);
-  text-align:center;z-index:2001;display:none;pointer-events:none;
+  text-align:center;z-index:2001;display:none;pointer-events:auto;
   width:min(360px,90vw);
   box-shadow:0 0 80px rgba(123,79,255,.35);
+}
+/* Close button on level-up card */
+#lvu-close{
+  position:absolute;top:12px;right:14px;
+  width:30px;height:30px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:50%;
+  color:rgba(255,255,255,.5);
+  font-size:14px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+  font-family:sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+#lvu-close:hover,#lvu-close:active{
+  background:rgba(255,45,120,.18);
+  border-color:rgba(255,45,120,.45);
+  color:#ff6699;
+  transform:scale(1.1);
 }
 #lvup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,#7b4fff,#00d4ff,#ff2d78,#ffcc00,#7b4fff);background-size:200%;animation:barFlow 2s linear infinite}
 @keyframes barFlow{0%{background-position:0%}100%{background-position:200%}}
@@ -191,34 +217,110 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   grid-template-columns:1fr 300px;
   overflow:hidden;
 }
-@media(max-width:660px){
-  #spbody{grid-template-columns:1fr;overflow-y:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
-}
 
-/* Main tool panel */
+/* Main tool panel — desktop */
 #spmain{
   padding:20px 24px 24px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:thin;
   scrollbar-color:rgba(139,61,255,.2) transparent;
-}
-@media(max-width:660px){
-  #spmain{overflow-y:visible;padding:16px 16px 0}
+  min-height:0;
 }
 #spmain::-webkit-scrollbar{width:4px}
 #spmain::-webkit-scrollbar-thumb{background:rgba(139,61,255,.2);border-radius:2px}
 
-/* Sidebar */
+/* Sidebar — desktop */
 #spsidebar{
   border-left:1px solid rgba(255,255,255,.05);
   background:rgba(0,0,0,.25);
   padding:16px 14px 16px;
   display:flex;flex-direction:column;gap:10px;
   overflow-y:auto;-webkit-overflow-scrolling:touch;
+  min-height:0;
 }
+
+/* ── MOBILE: single scrollable column ── */
 @media(max-width:660px){
-  #spsidebar{border-left:none;border-top:1px solid rgba(255,255,255,.05);overflow-y:visible;padding:14px 16px 16px}
+  #spanel{height:92dvh}
+  #spbody{
+    grid-template-columns:1fr;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;
+    /* Children must NOT have their own overflow so spbody is the single scroller */
+  }
+  #spmain{
+    overflow-y:visible;
+    overflow-x:visible;
+    padding:14px 14px 0;
+    min-height:0;
+    /* Allow content to be its natural height — spbody scrolls */
+  }
+  #spsidebar{
+    border-left:none;
+    border-top:1px solid rgba(255,255,255,.05);
+    overflow-y:visible;
+    overflow-x:visible;
+    padding:12px 14px 80px; /* 80px bottom padding clears D-pad */
+    min-height:0;
+  }
+  /* Smaller text on mobile to fit more content */
+  .sec{font-size:8px;margin:12px 0 7px}
+  .info-box{font-size:12px;padding:9px 12px;margin-bottom:10px}
+  .cat-tabs{margin-bottom:8px}
+  .ctab{font-size:10px;padding:5px 9px}
+  .fmt-grid{grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px;max-height:160px}
+  .fmtb{padding:8px 3px 6px;border-radius:8px}
+  .fmtb .fi{font-size:16px;margin-bottom:3px}
+  .fmtb .fn{font-size:8px}
+  .conv-bar{padding:10px 12px;margin:8px 0}
+  .cd-v{font-size:26px}
+  .cd-arr{font-size:17px}
+  .qpicks{gap:4px;margin-bottom:3px}
+  .qp{font-size:9px;padding:4px 8px}
+  .qbtns{gap:5px;margin:6px 0}
+  .qb{min-width:0;flex:1;padding:8px 8px;font-size:11.5px}
+  .size-row{gap:8px;margin:5px 0}
+  .szf input{width:110px;font-size:15px;padding:7px 10px}
+  .ub{padding:7px 10px;font-size:10.5px}
+  .presets{gap:4px;margin:4px 0}
+  .pp{font-size:9px;padding:4px 8px}
+  .pdf-tools{grid-template-columns:repeat(3,1fr);gap:5px;margin:5px 0}
+  .pt{padding:11px 5px 9px;border-radius:9px}
+  .pt-ic{font-size:20px;margin-bottom:4px}
+  .pt-nm{font-size:7px}
+  .pt-ds{font-size:8.5px}
+  .mbtns{gap:3px;margin:5px 0}
+  .mb{padding:6px 10px;font-size:11px}
+  .rot-btns{gap:5px}
+  .rb{padding:8px 10px;font-size:12px}
+  .wm-grid{grid-template-columns:1fr;gap:7px}
+  /* Sidebar components on mobile */
+  .sb-drop{padding:14px 10px 12px}
+  .sb-drop .dz-ic{font-size:22px;margin-bottom:4px}
+  .sb-drop .dz-t{font-size:11px}
+  .sb-files{max-height:120px}
+  .sf{padding:7px 10px;gap:6px}
+  .sf-name{font-size:10.5px}
+  .btn-go{padding:11px 12px;font-size:15px;letter-spacing:2.5px}
+  .btn-sec,.btn-zip{padding:8px 6px;font-size:11px}
+  select{font-size:13px;padding:8px 10px}
+  .opt-box{font-size:12px;padding:9px 11px}
+  .opt-box input{font-size:12px;padding:7px 10px}
+}
+
+/* ── TINY PHONES (≤380px) ── */
+@media(max-width:380px){
+  .sph{padding:12px 12px 10px;gap:8px}
+  .sph-icon{width:36px;height:36px;font-size:17px;border-radius:8px}
+  .sph-name{font-size:14px;letter-spacing:1.5px}
+  .sph-desc{display:none}
+  #spmain{padding:11px 11px 0}
+  #spsidebar{padding:10px 11px 80px}
+  .pdf-tools{grid-template-columns:repeat(3,1fr);gap:4px}
+  .pt-ds{display:none}
+  .fmt-grid{grid-template-columns:repeat(auto-fill,minmax(54px,1fr))}
 }
 
 /* ════ SHARED UI COMPONENTS ════ */
@@ -418,13 +520,17 @@ input[type=file]{display:none}
 <body>
 <div id="cursor" style="position:fixed;width:10px;height:10px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;box-shadow:0 0 10px var(--gold);transform:translate(-50%,-50%);display:none"></div>
 <div id="toast"></div>
-<div id="lvup-overlay"></div>
+<div id="lvup-overlay" onclick="closeLvUp()"></div>
 <div id="lvup-card">
+  <button id="lvu-close" onclick="closeLvUp()" aria-label="Close">✕</button>
   <div class="lvu-title">✦ LEVEL UP ✦</div>
   <div class="lvu-num" id="lvu-num">2</div>
   <div class="lvu-sub" id="lvu-rank">APPRENTICE</div>
-  <div class="lvu-unlocked"><div style="font-family:'Space Mono',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Town Upgrades Unlocked</div><div id="lvu-text"></div></div>
-  <div style="margin-top:12px;font-family:'Space Mono',monospace;font-size:8.5px;color:rgba(139,61,255,.5)">Your buildings are evolving…</div>
+  <div class="lvu-unlocked">
+    <div style="font-family:'Space Mono',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Town Upgrades Unlocked</div>
+    <div id="lvu-text"></div>
+  </div>
+  <div style="margin-top:14px;font-family:'Space Mono',monospace;font-size:8px;color:rgba(139,61,255,.4);letter-spacing:.05em">Tap ✕ or click outside to continue</div>
 </div>
 
 <div id="app">
@@ -1137,7 +1243,7 @@ function drawShop3D(s){
     if(Math.floor(Date.now()/450)%2===0){
       ctx.fillStyle=`rgba(255,215,55,${p})`;ctx.fillRect(x+w/2-35,baseY-46,70,15);
       ctx.fillStyle='rgba(0,0,0,.9)';ctx.font='bold 5.5px "Space Mono"';ctx.textAlign='center';
-      ctx.fillText('▶ TAP / ENTER',x+w/2,baseY-35);
+      ctx.fillText('▶  PRESS ENTER',x+w/2,baseY-35);
     }
     ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(x+w/2-52,baseY+totalH+8,104,14);
     ctx.fillStyle='rgba(255,215,55,.8)';ctx.font='5px "Space Mono"';ctx.textAlign='center';
@@ -1297,7 +1403,7 @@ function walkTo(tx){
     px+=dir*5;wt+=.05;if(wt>.1){wf=(wf+1)%4;wt=0;}
     if((dir>0&&px>=tx)||(dir<0&&px<=tx)||keys['ArrowLeft']||keys['ArrowRight']||keys['a']||keys['d']){
       clearInterval(iv);
-      if(nearShop)setTimeout(()=>enterShop(nearShop),80);
+      // No auto-enter — user must press ENTER explicitly
     }
   },16);
 }
@@ -1318,9 +1424,11 @@ function walkTo(tx){
   [dpL,dpR].forEach((btn,i)=>{
     const dir=i===0?-1:1;
     btn.addEventListener('touchstart',e=>{e.preventDefault();startHold(dir);},{passive:false});
-    btn.addEventListener('touchend',e=>{e.preventDefault();stopHold();if(nearShop)setTimeout(()=>enterShop(nearShop),80);},{passive:false});
+    btn.addEventListener('touchend',e=>{e.preventDefault();stopHold();},{passive:false});
     btn.addEventListener('mousedown',()=>startHold(dir));
     btn.addEventListener('mouseup',()=>stopHold());
+    // touchcancel safety
+    btn.addEventListener('touchcancel',e=>{e.preventDefault();stopHold();},{passive:false});
   });
   dpM.addEventListener('click',()=>{
     if(shopOpen)closeShop();
@@ -1777,21 +1885,7 @@ async function dlZip(id){
 @keyframes lvup-out{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
 @keyframes particle-fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
 #lvup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;display:none;pointer-events:none}
-#lvup-card{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:linear-gradient(135deg,#0c0620 0%,#1a0840 50%,#0c0620 100%);
-  border:2px solid #7b4fff;
-  padding:36px 48px;text-align:center;z-index:2001;
-  display:none;pointer-events:none;min-width:320px;
-  box-shadow:0 0 80px rgba(123,79,255,.4),0 0 160px rgba(123,79,255,.15);
-}
-#lvup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7b4fff,#00d4ff,#ff2d78,#ffcc00,#7b4fff);background-size:200%;animation:shimmer 1.5s infinite}
-.lvup-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:4px;color:#c084fc;margin-bottom:8px}
-.lvup-level{font-family:'Bebas Neue',sans-serif;font-size:80px;letter-spacing:4px;line-height:1;margin-bottom:4px}
-.lvup-sub{font-family:'Space Mono',monospace;font-size:11px;color:#9b8fc0;letter-spacing:.1em;margin-bottom:20px}
-.lvup-unlocked{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);padding:10px 16px;border-radius:4px;font-size:13px;color:#fff;line-height:1.6}
-.lvup-unlocked b{color:#ffcc00}
-.particle{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:2002;animation:particle-fly 1s ease-out forwards}`;
+/* lvup-card CSS handled in main styles */`;
   document.head.appendChild(s);
 })();
 
@@ -1871,14 +1965,17 @@ function triggerLevelUp(lv){
   overlay.style.display='block';
   card.style.display='block';
   card.style.animation='lvup-in .5s cubic-bezier(.34,1.56,.64,1) forwards';
+}
 
-  // Auto-dismiss after 3.5s
+function closeLvUp(){
+  const overlay=document.getElementById('lvup-overlay');
+  const card=document.getElementById('lvup-card');
+  if(!card||card.style.display==='none')return;
+  card.style.animation='lvup-out .35s ease forwards';
   setTimeout(()=>{
-    card.style.animation='lvup-out .4s ease forwards';
-    setTimeout(()=>{
-      overlay.style.display='none';card.style.display='none';
-    },400);
-  },3500);
+    overlay.style.display='none';
+    card.style.display='none';
+  },350);
 }
 
 function spawnLvUpParticles(){
