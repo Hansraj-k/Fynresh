@@ -67,7 +67,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* ════ WORLD ════ */
 #world-wrap{flex:1;position:relative;overflow:hidden;cursor:default}
 #world-c{position:absolute;top:0;left:0;height:100%;image-rendering:pixelated;display:block}
+/* ── LOGO ── */
+.logo{display:inline-flex;flex-direction:row;align-items:center;gap:8px;text-decoration:none;line-height:1}
+.logo-img{height:36px;width:auto;display:block;flex-shrink:0;mix-blend-mode:multiply}
+[data-theme="dark"] .logo-img{mix-blend-mode:lighten}
+.logo-img-fallback{font-family:var(--mono);font-size:1rem;font-weight:700;letter-spacing:-.02em;color:var(--accent);display:none;flex-shrink:0}
+.logo-img.errored{display:none}
+.logo-img.errored ~ .logo-img-fallback{display:block}
+.logo-beta{font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--accent);padding:4px 6px;border-radius:2px;flex-shrink:0;line-height:1.4;align-self:center;writing-mode:vertical-lr}
+[data-theme="light"] .logo-beta{color:#fff}
+[data-theme="dark"] .logo-beta{color:#000}
 
+.header-right{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+   
 /* Global drop overlay */
 #world-wrap.drag-on::after{
   content:'✦  Drop files here! ✦';
